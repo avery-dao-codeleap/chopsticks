@@ -1,0 +1,258 @@
+openapi: 3.1.0
+info:
+  title: Chopsticks Edge Functions API
+  version: 1.0.0
+  description: |
+    Supabase Edge Functions for Chopsticks MVP.
+    Base URL: https://<project-ref>.supabase.co/functions/v1
+
+servers:
+  - url: https://{project}.supabase.co/functions/v1
+    variables:
+      project:
+        default: your-project-ref
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase JWT token
+
+  schemas:
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+    FirebaseTokenExchangeRequest:
+      type: object
+      required: [firebase_token]
+      properties:
+        firebase_token:
+          type: string
+          description: Firebase ID token from phone auth
+
+    FirebaseTokenExchangeResponse:
+      type: object
+      required: [access_token, user]
+      properties:
+        access_token:
+          type: string
+          description: Supabase JWT
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+          description: Token expiry in seconds
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            is_new:
+              type: boolean
+              description: True if user was just created
+
+    SuggestedUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        photo_url:
+          type: string
+        score:
+          type: number
+          description: Match score 0-100
+
+    SuggestPeopleRequest:
+      type: object
+      required: [request_id]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+
+    SuggestPeopleResponse:
+      type: object
+      properties:
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuggestedUser'
+          maxItems: 3
+        notifications_sent:
+          type: integer
+
+    CancelRequestRequest:
+      type: object
+      required: [request_id]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+
+    CancelRequestResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [canceled, takeover_pending]
+        participants_notified:
+          type: integer
+
+    DeleteAccountResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+
+paths:
+  /exchange-firebase-token:
+    post:
+      operationId: exchangeFirebaseToken
+      summary: Exchange Firebase ID token for Supabase JWT
+      description: |
+        Verifies Firebase phone auth token and returns a Supabase JWT.
+        Creates user record if first login.
+      security: []  # No auth required - this IS the auth endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FirebaseTokenExchangeRequest'
+      responses:
+        '200':
+          description: Token exchanged successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirebaseTokenExchangeResponse'
+        '400':
+          description: Invalid Firebase token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Firebase token expired or revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /suggest-people:
+    post:
+      operationId: suggestPeople
+      summary: Find and notify matching users for a meal request
+      description: |
+        Called after request creation. Finds up to 3 users matching
+        cuisine, budget, and location preferences. Sends push notifications.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestPeopleRequest'
+      responses:
+        '200':
+          description: Suggestions generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestPeopleResponse'
+        '404':
+          description: Request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /handle-request-cancel:
+    post:
+      operationId: handleRequestCancel
+      summary: Cancel a meal request and notify participants
+      description: |
+        Cancels the request and notifies all participants.
+        Participants can take over within 1 hour.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequestRequest'
+      responses:
+        '200':
+          description: Request canceled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelRequestResponse'
+        '403':
+          description: Not authorized (not the host)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /delete-account:
+    post:
+      operationId: deleteAccount
+      summary: Permanently delete user account and data
+      description: |
+        Hard deletes user data per GDPR requirements.
+        Anonymizes reviews, cancels active requests.
+      responses:
+        '200':
+          description: Account deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAccountResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /cleanup-expired-chats:
+    post:
+      operationId: cleanupExpiredChats
+      summary: Delete expired chat rooms (cron job)
+      description: |
+        Called daily via cron. Deletes request chats with no
+        activity for 7+ days and no meal confirmation.
+      security: []  # Called by cron with service role
+      responses:
+        '200':
+          description: Cleanup complete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted_count:
+                    type: integer

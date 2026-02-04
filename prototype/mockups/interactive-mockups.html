@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chopsticks - Feature Mockups</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 30px;
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      border: none;
+      background: #2d2d44;
+      color: #888;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: #3d3d54;
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: #ff6b35;
+      color: #fff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Phone Frame */
+    .phone-grid {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .phone-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .phone-label {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .phone {
+      width: 320px;
+      height: 640px;
+      background: #fff;
+      border-radius: 40px;
+      padding: 20px 15px;
+      position: relative;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .phone::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 25px;
+      background: #1a1a2e;
+      border-radius: 20px;
+    }
+
+    .screen {
+      background: #fafafa;
+      height: 100%;
+      border-radius: 25px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Screen Header */
+    .screen-header {
+      background: #ff6b35;
+      color: #fff;
+      padding: 40px 15px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .screen-header.white {
+      background: #fff;
+      color: #333;
+      border-bottom: 1px solid #eee;
+    }
+
+    .back-btn {
+      font-size: 20px;
+    }
+
+    .screen-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* Screen Body */
+    .screen-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background: #fafafa;
+    }
+
+    .screen-body.white {
+      background: #fff;
+    }
+
+    /* Quiz Styles */
+    .quiz-intro {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .quiz-emoji {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .quiz-subtitle {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      background: #ff6b35;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #888;
+    }
+
+    /* Quiz Question */
+    .progress-bar {
+      height: 4px;
+      background: #eee;
+      border-radius: 2px;
+      margin-bottom: 30px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #ff6b35;
+      border-radius: 2px;
+      width: 40%;
+    }
+
+    .question-text {
+      font-size: 20px;
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: #fff;
+      border: 2px solid #eee;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      border-color: #ff6b35;
+      background: #fff5f2;
+    }
+
+    .option-btn.selected {
+      border-color: #ff6b35;
+      background: #ff6b35;
+      color: #fff;
+    }
+
+    .option-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .skip-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .skip-link a {
+      color: #888;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* Spectrum */
+    .spectrum-container {
+      padding: 20px 0;
+    }
+
+    .spectrum-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .spectrum-label {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .spectrum-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .spectrum-dot {
+      flex: 1;
+      height: 50px;
+      background: #eee;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.2s;
+    }
+
+    .spectrum-dot:hover {
+      background: #ffe5dd;
+    }
+
+    .spectrum-dot.selected {
+      background: #ff6b35;
+    }
+
+    /* Profile Quiz Section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .section-link {
+      font-size: 13px;
+      color: #ff6b35;
+      text-decoration: none;
+    }
+
+    .quiz-answer {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .quiz-answer:last-child {
+      border-bottom: none;
+    }
+
+    .answer-label {
+      color: #888;
+      font-size: 14px;
+    }
+
+    .answer-value {
+      color: #333;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Discovery Tab */
+    .search-bar {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #eee;
+    }
+
+    .search-icon {
+      color: #888;
+    }
+
+    .search-input {
+      border: none;
+      flex: 1;
+      font-size: 14px;
+      color: #888;
+      background: transparent;
+    }
+
+    .your-lists {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .your-list-card {
+      flex: 1;
+      background: #fff;
+      border-radius: 16px;
+      padding: 15px;
+      text-align: center;
+      border: 1px solid #eee;
+    }
+
+    .your-list-icon {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .your-list-label {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .your-list-count {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .list-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      border: 1px solid #eee;
+    }
+
+    .list-cover {
+      height: 100px;
+      background: linear-gradient(135deg, #ff6b35, #ff8f65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .list-info {
+      padding: 15px;
+    }
+
+    .list-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .list-meta {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .list-progress {
+      margin-top: 10px;
+      height: 6px;
+      background: #eee;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .list-progress-fill {
+      height: 100%;
+      background: #4CAF50;
+      width: 25%;
+    }
+
+    /* Category Pills */
+    .category-section {
+      margin-bottom: 20px;
+    }
+
+    .category-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .category-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 8px 16px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    /* List Detail View */
+    .list-detail-cover {
+      height: 150px;
+      background: linear-gradient(135deg, #ff6b35, #ff8f65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      margin: -15px -15px 15px -15px;
+    }
+
+    .list-detail-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .list-detail-meta {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 15px;
+    }
+
+    .list-detail-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .list-progress-section {
+      background: #f5f5f5;
+      border-radius: 12px;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .restaurant-card {
+      display: flex;
+      gap: 12px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #eee;
+    }
+
+    .restaurant-rank {
+      width: 30px;
+      height: 30px;
+      background: #ff6b35;
+      color: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .restaurant-info {
+      flex: 1;
+    }
+
+    .restaurant-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 3px;
+    }
+
+    .restaurant-rating {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .restaurant-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      border: 1px solid #eee;
+      background: #fff;
+      color: #666;
+    }
+
+    .action-btn.done {
+      background: #4CAF50;
+      color: #fff;
+      border-color: #4CAF50;
+    }
+
+    .locked-section {
+      background: #f5f5f5;
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .lock-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .lock-text {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .unlock-btn {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Restaurant Detail */
+    .restaurant-gallery {
+      height: 180px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: -15px -15px 15px -15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+    }
+
+    .restaurant-detail-name {
+      font-size: 22px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .restaurant-detail-meta {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    .action-bar {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .action-bar-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      background: #fff;
+      text-align: center;
+    }
+
+    .action-bar-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .action-bar-label {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px;
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .cta-btn.secondary {
+      background: #fff;
+      border: 1px solid #eee;
+      color: #333;
+    }
+
+    .appears-on {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .appears-on-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .appears-item {
+      font-size: 13px;
+      color: #666;
+      padding: 5px 0;
+    }
+
+    .review-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      border: 1px solid #eee;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .review-stars {
+      color: #FFB800;
+    }
+
+    .review-author {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .review-text {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      display: flex;
+      background: #fff;
+      border-top: 1px solid #eee;
+      padding: 10px 0 25px;
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+    }
+
+    .nav-icon {
+      font-size: 22px;
+      margin-bottom: 3px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      color: #888;
+    }
+
+    .nav-item.active .nav-icon,
+    .nav-item.active .nav-label {
+      color: #ff6b35;
+    }
+
+    /* Collapsible Sections */
+    .section-group {
+      margin-bottom: 40px;
+    }
+
+    .section-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 15px 20px;
+      background: #2d2d44;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-group-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .section-group-toggle {
+      font-size: 20px;
+      transition: transform 0.2s;
+    }
+
+    .section-group-header.collapsed .section-group-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .section-group-content {
+      display: block;
+    }
+
+    .section-group-content.hidden {
+      display: none;
+    }
+
+    /* Invite Flow */
+    .invite-section {
+      margin-bottom: 20px;
+    }
+
+    .invite-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .time-picker {
+      display: flex;
+      gap: 10px;
+    }
+
+    .time-btn {
+      flex: 1;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .connection-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .connection-avatar {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .connection-name {
+      flex: 1;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .connection-check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+    }
+
+    .connection-check.checked {
+      background: #ff6b35;
+      border-color: #ff6b35;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      margin-top: 15px;
+    }
+
+    .toggle-text {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .toggle-switch {
+      width: 50px;
+      height: 28px;
+      background: #ddd;
+      border-radius: 14px;
+      position: relative;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chopsticks Mockups</h1>
+    <p class="subtitle">Interactive feature previews · Click sections to collapse/expand</p>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="showTab('quiz')">Personality Quiz</button>
+      <button class="tab-btn" onclick="showTab('discovery')">Discovery Tab</button>
+      <button class="tab-btn" onclick="showTab('lists')">List Detail</button>
+      <button class="tab-btn" onclick="showTab('restaurant')">Restaurant Detail</button>
+      <button class="tab-btn" onclick="showTab('invite')">Invite to Eat</button>
+      <button class="tab-btn" onclick="showTab('profile')">Profile Quiz</button>
+    </div>
+
+    <!-- QUIZ TAB -->
+    <div id="quiz" class="tab-content active">
+      <div class="section-group">
+        <div class="section-group-header" onclick="toggleSection(this)">
+          <span class="section-group-title">Quiz Onboarding Flow</span>
+          <span class="section-group-toggle">▼</span>
+        </div>
+        <div class="section-group-content">
+          <div class="phone-grid">
+            <!-- Quiz Intro -->
+            <div class="phone-wrapper">
+              <div class="phone-label">1. Quiz Intro</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-body white">
+                    <div class="quiz-intro">
+                      <div class="quiz-emoji">🍜</div>
+                      <h2 class="quiz-title">Let's learn your food personality</h2>
+                      <p class="quiz-subtitle">Answer a few questions so others know what kind of eater you are</p>
+                      <button class="btn btn-primary">Start Quiz</button>
+                      <button class="btn btn-secondary">Skip for now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- This or That -->
+            <div class="phone-wrapper">
+              <div class="phone-label">2. This or That Question</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-body white">
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 20%"></div>
+                    </div>
+                    <p class="question-text">Pho preference?</p>
+                    <div class="option-btn">
+                      <span class="option-text">🥩 Rare beef (tái)</span>
+                    </div>
+                    <div class="option-btn selected">
+                      <span class="option-text">🍖 Well-done (chín)</span>
+                    </div>
+                    <div class="skip-link">
+                      <a href="#">Skip this question</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Spectrum -->
+            <div class="phone-wrapper">
+              <div class="phone-label">3. Spectrum Question</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-body white">
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 40%"></div>
+                    </div>
+                    <p class="question-text">Spice tolerance?</p>
+                    <div class="spectrum-container">
+                      <div class="spectrum-labels">
+                        <span class="spectrum-label">None</span>
+                        <span class="spectrum-label">Extreme</span>
+                      </div>
+                      <div class="spectrum-options">
+                        <div class="spectrum-dot">😐</div>
+                        <div class="spectrum-dot">🙂</div>
+                        <div class="spectrum-dot selected">😋</div>
+                        <div class="spectrum-dot">🥵</div>
+                        <div class="spectrum-dot">🔥</div>
+                      </div>
+                    </div>
+                    <div class="skip-link">
+                      <a href="#">Skip this question</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Multiple Choice -->
+            <div class="phone-wrapper">
+              <div class="phone-label">4. Multiple Choice</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-body white">
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 60%"></div>
+                    </div>
+                    <p class="question-text">Best meal of the day?</p>
+                    <div class="option-btn">
+                      <span class="option-text">🌅 Breakfast</span>
+                    </div>
+                    <div class="option-btn">
+                      <span class="option-text">☀️ Lunch</span>
+                    </div>
+                    <div class="option-btn selected">
+                      <span class="option-text">🌙 Dinner</span>
+                    </div>
+                    <div class="option-btn">
+                      <span class="option-text">🌃 Late night</span>
+                    </div>
+                    <div class="skip-link">
+                      <a href="#">Skip this question</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Completion -->
+            <div class="phone-wrapper">
+              <div class="phone-label">5. Completion</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-body white">
+                    <div class="quiz-intro">
+                      <div class="quiz-emoji">🎉</div>
+                      <h2 class="quiz-title">Nice!</h2>
+                      <p class="quiz-subtitle">You can answer more questions anytime from your profile</p>
+                      <button class="btn btn-primary">Continue</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISCOVERY TAB -->
+    <div id="discovery" class="tab-content">
+      <div class="section-group">
+        <div class="section-group-header" onclick="toggleSection(this)">
+          <span class="section-group-title">Discovery Tab</span>
+          <span class="section-group-toggle">▼</span>
+        </div>
+        <div class="section-group-content">
+          <div class="phone-grid">
+            <div class="phone-wrapper">
+              <div class="phone-label">Discovery Home</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-header white">
+                    <span class="screen-title">Discover</span>
+                    <span style="margin-left: auto; font-size: 14px; color: #666;">HCMC ▼</span>
+                  </div>
+                  <div class="screen-body">
+                    <div class="search-bar">
+                      <span class="search-icon">🔍</span>
+                      <input class="search-input" placeholder="Search restaurants or lists" disabled>
+                    </div>
+
+                    <div class="your-lists">
+                      <div class="your-list-card">
+                        <div class="your-list-icon">❤️</div>
+                        <div class="your-list-label">Favorites</div>
+                        <div class="your-list-count">12</div>
+                      </div>
+                      <div class="your-list-card">
+                        <div class="your-list-icon">✓</div>
+                        <div class="your-list-label">Been There</div>
+                        <div class="your-list-count">8</div>
+                      </div>
+                    </div>
+
+                    <div class="category-section">
+                      <div class="category-label">Popular Lists</div>
+                    </div>
+
+                    <div class="list-card">
+                      <div class="list-cover">🍜</div>
+                      <div class="list-info">
+                        <div class="list-name">Best Pho in Saigon</div>
+                        <div class="list-meta">15 spots · Updated Feb 2026</div>
+                        <div class="list-progress">
+                          <div class="list-progress-fill" style="width: 20%"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="list-card">
+                      <div class="list-cover" style="background: linear-gradient(135deg, #667eea, #764ba2);">🥖</div>
+                      <div class="list-info">
+                        <div class="list-name">Best Bánh Mì in D1</div>
+                        <div class="list-meta">8 spots · Updated Jan 2026</div>
+                        <div class="list-progress">
+                          <div class="list-progress-fill" style="width: 37%"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="category-section" style="margin-top: 20px;">
+                      <div class="category-label">Browse by Category</div>
+                      <div class="category-pills">
+                        <span class="pill">🍜 Pho</span>
+                        <span class="pill">🍲 Bún</span>
+                        <span class="pill">🍚 Cơm</span>
+                        <span class="pill">🥖 Bánh Mì</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bottom-nav">
+                    <div class="nav-item">
+                      <div class="nav-icon">🏠</div>
+                      <div class="nav-label">Browse</div>
+                    </div>
+                    <div class="nav-item active">
+                      <div class="nav-icon">🔍</div>
+                      <div class="nav-label">Discover</div>
+                    </div>
+                    <div class="nav-item">
+                      <div class="nav-icon">💬</div>
+                      <div class="nav-label">Chat</div>
+                    </div>
+                    <div class="nav-item">
+                      <div class="nav-icon">👤</div>
+                      <div class="nav-label">Profile</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LISTS TAB -->
+    <div id="lists" class="tab-content">
+      <div class="section-group">
+        <div class="section-group-header" onclick="toggleSection(this)">
+          <span class="section-group-title">List Detail View</span>
+          <span class="section-group-toggle">▼</span>
+        </div>
+        <div class="section-group-content">
+          <div class="phone-grid">
+            <div class="phone-wrapper">
+              <div class="phone-label">List with Paywall</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-header white">
+                    <span class="back-btn">←</span>
+                    <span class="screen-title">Best Northern-Style Pho</span>
+                  </div>
+                  <div class="screen-body">
+                    <div class="list-detail-cover">🍜</div>
+                    <div class="list-detail-title">Best Northern-Style Pho</div>
+                    <div class="list-detail-meta">Ho Chi Minh City · 12 spots</div>
+                    <div class="list-detail-desc">Northern-style pho is all about the clear, delicate broth and simple toppings. Here are the best spots in Saigon.</div>
+
+                    <div class="list-progress-section">
+                      <div class="progress-text">Your progress: 3/12 visited</div>
+                      <div class="list-progress" style="height: 8px;">
+                        <div class="list-progress-fill" style="width: 25%"></div>
+                      </div>
+                    </div>
+
+                    <div class="restaurant-card">
+                      <div class="restaurant-rank">#1</div>
+                      <div class="restaurant-info">
+                        <div class="restaurant-name">Phở Thìn Bờ Hồ</div>
+                        <div class="restaurant-rating">⭐ 4.8 · 47 reviews · D1</div>
+                        <div class="restaurant-actions">
+                          <span class="action-btn done">✓ Been There</span>
+                          <span class="action-btn">❤️</span>
+                          <span class="action-btn">📤</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="restaurant-card">
+                      <div class="restaurant-rank">#2</div>
+                      <div class="restaurant-info">
+                        <div class="restaurant-name">Phở Lệ</div>
+                        <div class="restaurant-rating">⭐ 4.6 · 32 reviews · D3</div>
+                        <div class="restaurant-actions">
+                          <span class="action-btn">Mark Visited</span>
+                          <span class="action-btn">❤️</span>
+                          <span class="action-btn">📤</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="restaurant-card">
+                      <div class="restaurant-rank">#3</div>
+                      <div class="restaurant-info">
+                        <div class="restaurant-name">Phở Hòa Pasteur</div>
+                        <div class="restaurant-rating">⭐ 4.5 · 89 reviews · D3</div>
+                        <div class="restaurant-actions">
+                          <span class="action-btn done">✓ Been There</span>
+                          <span class="action-btn">❤️</span>
+                          <span class="action-btn">📤</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="locked-section">
+                      <div class="lock-icon">🔒</div>
+                      <div class="lock-text">See all 12 spots on this list</div>
+                      <button class="unlock-btn">Unlock Full List</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESTAURANT TAB -->
+    <div id="restaurant" class="tab-content">
+      <div class="section-group">
+        <div class="section-group-header" onclick="toggleSection(this)">
+          <span class="section-group-title">Restaurant Detail</span>
+          <span class="section-group-toggle">▼</span>
+        </div>
+        <div class="section-group-content">
+          <div class="phone-grid">
+            <div class="phone-wrapper">
+              <div class="phone-label">Restaurant with Actions</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-header white">
+                    <span class="back-btn">←</span>
+                    <span class="screen-title">Restaurant</span>
+                  </div>
+                  <div class="screen-body">
+                    <div class="restaurant-gallery">🍜</div>
+                    <div class="restaurant-detail-name">Phở Thìn Bờ Hồ</div>
+                    <div class="restaurant-detail-meta">⭐ 4.8 (47 reviews) · $$ · District 1</div>
+                    <div class="restaurant-detail-meta">📍 13 Lò Đúc, Hai Bà Trưng</div>
+
+                    <div class="action-bar">
+                      <div class="action-bar-btn">
+                        <div class="action-bar-icon">❤️</div>
+                        <div class="action-bar-label">Save</div>
+                      </div>
+                      <div class="action-bar-btn" style="background: #4CAF50; border-color: #4CAF50;">
+                        <div class="action-bar-icon" style="color: #fff;">✓</div>
+                        <div class="action-bar-label" style="color: #fff;">Been Here</div>
+                      </div>
+                      <div class="action-bar-btn">
+                        <div class="action-bar-icon">📤</div>
+                        <div class="action-bar-label">Share</div>
+                      </div>
+                    </div>
+
+                    <button class="cta-btn">🍽️ Invite Friends to Eat Here</button>
+                    <button class="cta-btn secondary">📝 Create Meal Request</button>
+
+                    <div class="appears-on">
+                      <div class="appears-on-title">Appears on Lists</div>
+                      <div class="appears-item">🥇 #1 on Best Northern-Style Pho</div>
+                      <div class="appears-item">🥉 #3 on Best Pho in Saigon</div>
+                    </div>
+
+                    <div style="margin-top: 15px; color: #888; font-size: 13px;">
+                      127 people have been here
+                    </div>
+
+                    <div class="section-header" style="margin-top: 20px;">
+                      <span class="section-title">Reviews (47)</span>
+                      <a href="#" class="section-link">Write Review</a>
+                    </div>
+
+                    <div class="review-card">
+                      <div class="review-header">
+                        <span class="review-stars">⭐⭐⭐⭐⭐</span>
+                        <span class="review-author">Mai L. · Jan 2026</span>
+                      </div>
+                      <div class="review-text">"The broth is incredible - clear and deeply flavorful. Get here early!"</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVITE TAB -->
+    <div id="invite" class="tab-content">
+      <div class="section-group">
+        <div class="section-group-header" onclick="toggleSection(this)">
+          <span class="section-group-title">Invite to Eat Flow</span>
+          <span class="section-group-toggle">▼</span>
+        </div>
+        <div class="section-group-content">
+          <div class="phone-grid">
+            <div class="phone-wrapper">
+              <div class="phone-label">Invite Friends</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-header white">
+                    <span class="back-btn">←</span>
+                    <span class="screen-title">Invite to Eat</span>
+                  </div>
+                  <div class="screen-body white">
+                    <div style="text-align: center; padding: 15px 0; border-bottom: 1px solid #eee; margin-bottom: 20px;">
+                      <div style="font-size: 30px; margin-bottom: 8px;">🍜</div>
+                      <div style="font-weight: 600; color: #333;">Phở Thìn Bờ Hồ</div>
+                      <div style="font-size: 13px; color: #888;">District 1</div>
+                    </div>
+
+                    <div class="invite-section">
+                      <div class="invite-label">When?</div>
+                      <div class="time-picker">
+                        <div class="time-btn" style="background: #ff6b35; color: #fff; border-color: #ff6b35;">Today</div>
+                        <div class="time-btn">Tomorrow</div>
+                        <div class="time-btn">Pick Date</div>
+                      </div>
+                      <div class="time-picker" style="margin-top: 10px;">
+                        <div class="time-btn" style="background: #ff6b35; color: #fff; border-color: #ff6b35;">7:00 PM</div>
+                        <div class="time-btn">8:00 PM</div>
+                        <div class="time-btn">Other</div>
+                      </div>
+                    </div>
+
+                    <div class="invite-section">
+                      <div class="invite-label">Who?</div>
+                      <div class="connection-item">
+                        <div class="connection-avatar">M</div>
+                        <div class="connection-name">Mai L.</div>
+                        <div class="connection-check checked">✓</div>
+                      </div>
+                      <div class="connection-item">
+                        <div class="connection-avatar" style="background: linear-gradient(135deg, #11998e, #38ef7d);">D</div>
+                        <div class="connection-name">David T.</div>
+                        <div class="connection-check checked">✓</div>
+                      </div>
+                      <div class="connection-item">
+                        <div class="connection-avatar" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">L</div>
+                        <div class="connection-name">Linh N.</div>
+                        <div class="connection-check"></div>
+                      </div>
+                    </div>
+
+                    <div class="toggle-option">
+                      <div class="toggle-text">Also open to strangers</div>
+                      <div class="toggle-switch"></div>
+                    </div>
+
+                    <button class="cta-btn" style="margin-top: 25px;">Send Invite</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div id="profile" class="tab-content">
+      <div class="section-group">
+        <div class="section-group-header" onclick="toggleSection(this)">
+          <span class="section-group-title">Quiz on Profile</span>
+          <span class="section-group-toggle">▼</span>
+        </div>
+        <div class="section-group-content">
+          <div class="phone-grid">
+            <div class="phone-wrapper">
+              <div class="phone-label">Profile with Quiz Answers</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-header white">
+                    <span class="back-btn">←</span>
+                    <span class="screen-title">Profile</span>
+                  </div>
+                  <div class="screen-body white">
+                    <div style="text-align: center; padding: 20px 0;">
+                      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #fff;">M</div>
+                      <div style="font-size: 20px; font-weight: 600; color: #333;">Mai, 28</div>
+                      <div style="font-size: 14px; color: #888; margin-top: 4px;">Local · 12 meals</div>
+                    </div>
+
+                    <div style="padding: 15px; background: #f9f9f9; border-radius: 12px; margin-bottom: 20px;">
+                      <p style="font-size: 14px; color: #333; line-height: 1.5;">"Always hunting for the best bánh mì in Saigon. Love hole-in-the-wall spots."</p>
+                    </div>
+
+                    <div class="section-header">
+                      <span class="section-title">🍜 Food Personality</span>
+                      <a href="#" class="section-link">See all 12</a>
+                    </div>
+
+                    <div style="background: #fff; border-radius: 12px; padding: 5px 15px; border: 1px solid #eee;">
+                      <div class="quiz-answer">
+                        <span class="answer-label">Pho</span>
+                        <span class="answer-value">Rare beef (tái)</span>
+                      </div>
+                      <div class="quiz-answer">
+                        <span class="answer-label">Spice</span>
+                        <span class="answer-value">🌶️🌶️🌶️ Hot</span>
+                      </div>
+                      <div class="quiz-answer">
+                        <span class="answer-label">Setting</span>
+                        <span class="answer-value">Street food > Restaurant</span>
+                      </div>
+                      <div class="quiz-answer">
+                        <span class="answer-label">Adventure</span>
+                        <span class="answer-value">"I'll try anything once"</span>
+                      </div>
+                      <div class="quiz-answer">
+                        <span class="answer-label">Sharing</span>
+                        <span class="answer-value">Everything shared</span>
+                      </div>
+                    </div>
+
+                    <div class="section-header" style="margin-top: 20px;">
+                      <span class="section-title">Cuisines</span>
+                    </div>
+                    <div class="category-pills">
+                      <span class="pill">🍜 Pho</span>
+                      <span class="pill">🍲 Bún</span>
+                      <span class="pill">🥖 Bánh Mì</span>
+                      <span class="pill">🍢 Street Food</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="phone-wrapper">
+              <div class="phone-label">Answer More Questions</div>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-header white">
+                    <span class="back-btn">←</span>
+                    <span class="screen-title">Food Personality</span>
+                  </div>
+                  <div class="screen-body white">
+                    <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee; margin-bottom: 20px;">
+                      <div style="font-size: 40px; margin-bottom: 10px;">🍜</div>
+                      <div style="font-size: 16px; color: #333; font-weight: 600;">12 of 29 answered</div>
+                      <div style="font-size: 13px; color: #888; margin-top: 5px;">Answer more to complete your profile</div>
+                    </div>
+
+                    <p class="question-text" style="font-size: 18px;">Trying new places?</p>
+                    <div class="option-btn">
+                      <span class="option-text">🔍 Love discovering new spots</span>
+                    </div>
+                    <div class="option-btn">
+                      <span class="option-text">🏠 Stick to my favorites</span>
+                    </div>
+                    <div class="skip-link">
+                      <a href="#">Skip · 17 more questions</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Show selected tab
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function toggleSection(header) {
+      header.classList.toggle('collapsed');
+      const content = header.nextElementSibling;
+      content.classList.toggle('hidden');
+    }
+  </script>
+</body>
+</html>

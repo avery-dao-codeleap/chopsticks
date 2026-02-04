@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "396488583343",
+    "project_id": "chopsticks-1ce58",
+    "storage_bucket": "chopsticks-1ce58.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:396488583343:android:5c61c0be70bddbc4384c5a",
+        "android_client_info": {
+          "package_name": "com.chopsticks.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmneg9euKVd0fohB-rG16nLzcTkgy6S-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
