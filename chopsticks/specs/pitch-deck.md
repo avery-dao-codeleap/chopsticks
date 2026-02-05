@@ -110,7 +110,6 @@ Thin profiles → need more depth for credibility
 │  VALIDATE       │  │  FOOD IDENTITY  │  │  SOCIAL GRAPH   │  │  MONETIZE       │
 │                 │  │  & DISCOVERY    │  │                 │  │                 │
 │  • Meal requests│  │  • Personality  │  │  • Connections  │  │  • Paywall:     │
-│  • Meal requests│  │  • Personality  │  │  • Connections  │  │  • Paywall:     │
 │  • Join & chat  │  │    quiz         │  │  • Share Card   │  │    full lists   │
 │  • Show-up      │  │  • Curated      │  │    (UA loop)    │  │  • Paywall:     │
 │    ratings      │  │    lists        │  │  • Invites      │  │    other cities │
