@@ -110,13 +110,13 @@ Thin profiles → need more depth for credibility
 │  VALIDATE       │  │  FOOD IDENTITY  │  │  SOCIAL GRAPH   │  │  MONETIZE       │
 │                 │  │  & DISCOVERY    │  │                 │  │                 │
 │  • Meal requests│  │  • Personality  │  │  • Connections  │  │  • Paywall:     │
-│  • Join & chat  │  │    quiz         │  │  • Share to     │  │    full lists   │
-│  • Show-up      │  │  • Curated      │  │    friends      │  │  • Paywall:     │
-│    ratings      │  │    lists        │  │  • One-tap      │  │    other cities │
-│                 │  │  • "Been there" │  │    meal invite  │  │  • Paid recs    │
-│                 │  │  • Reviews      │  │  • Activity     │  │                 │
-│                 │  │  • Favorites    │  │    feed         │  │                 │
-│                 │  │                 │  │                 │  │                 │
+│  • Meal requests│  │  • Personality  │  │  • Connections  │  │  • Paywall:     │
+│  • Join & chat  │  │    quiz         │  │  • Share Card   │  │    full lists   │
+│  • Show-up      │  │  • Curated      │  │    (UA loop)    │  │  • Paywall:     │
+│    ratings      │  │    lists        │  │  • Invites      │  │    other cities │
+│                 │  │  • "Been there" │  │  • Activity     │  │  • Paid recs    │
+│                 │  │  • Reviews      │  │    feed         │  │                 │
+│                 │  │  • Favorites    │  │                 │  │                 │
 └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘
      Strangers           Solo value          Sticky network        Revenue
      show up?            + credibility       + repeat usage
@@ -219,11 +219,43 @@ Thin profiles → need more depth for credibility
 - Add foodie connections
 - Share restaurants, reviews, lists to friends
 - One-tap meal invite ("Let's eat here tonight")
-- Activity feed (what are friends eating?)
+- **Itinerary Share Card** — the primary user acquisition loop (see next slides)
 
 ---
 
-## Slide 12: Phase 2 — Invite to Eat
+## Slide 12: Phase 2 — The Share Card (UA Loop)
+
+### How new users arrive with context, not confusion
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│   @Pho Thin — Thao Dien — 12pm — $$ 100–200k — Join?   │
+│                                                         │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │  🍜  CHOPSTICKS                                 │   │
+│   │  Pho Thin                                       │   │
+│   │  Thao Dien · Today 12:00 PM · $$ · 2 spots     │   │
+│   │  ✓ Recommended by 14 people                     │   │
+│   │  [Join This Meal →]                             │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                         │
+│   Share to: 📋 Copy  💬 WhatsApp  📤 Sheet             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Why this is the growth engine:**
+- New users see what the app *does* before they install
+- Tap link → install → first action is joining a real meal
+- Zero-friction onboarding: context arrives with the user
+- Every shared card is a micro-ad that explains the product
+
+**App not installed?** → Web landing page with card preview + install CTA
+
+---
+
+## Slide 13: Phase 2 — Invite to Eat
 
 ### Bridge discovery → social eating
 
@@ -250,7 +282,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 13: Phase 3 — Monetization
+## Slide 14: Phase 3 — Monetization
 
 ### Three revenue streams
 
@@ -267,7 +299,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 14: Travel Use Case
+## Slide 15: Travel Use Case
 
 ### Plan before you go, eat like a local when you arrive
 
@@ -291,7 +323,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 15: Competitive Landscape
+## Slide 16: Competitive Landscape
 
 | Competitor | What They Do | Chopsticks Difference |
 |------------|--------------|----------------------|
@@ -305,7 +337,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 16: Why Vietnam? Why Now?
+## Slide 17: Why Vietnam? Why Now?
 
 ### Vietnam is the perfect launch market
 
@@ -317,7 +349,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 17: Traction & Validation Plan
+## Slide 18: Traction & Validation Plan
 
 ### MVP Goal: Prove strangers show up
 
@@ -334,7 +366,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 18: The Big Picture
+## Slide 19: The Big Picture
 
 ```
                          ┌─────────────────────────────────┐
@@ -366,7 +398,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 19: Summary
+## Slide 20: Summary
 
 ### Chopsticks: Social dining, food identity, local discovery
 
@@ -383,7 +415,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 20: Let's Eat 🍜
+## Slide 21: Let's Eat 🍜
 
 ### Questions?
 

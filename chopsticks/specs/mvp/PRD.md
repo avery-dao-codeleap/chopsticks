@@ -235,58 +235,15 @@ Displayed on public profiles. Used for filtering join requests.
 
 ---
 
-## 6. Technical Requirements
+## 6. Technical Approach
 
-### 6.1 Platform
-- **Framework:** React Native (Expo SDK 52+)
-- **Target:** iOS 15+, Android 10+
-- **Language:** Bilingual (Vietnamese + English)
+React Native (Expo) mobile app, iOS + Android. Backend: Supabase (database, realtime chat, auth). Phone verification via Firebase. Bilingual from day one.
 
-### 6.2 Stack
-| Layer | Technology |
-|-------|------------|
-| Frontend | Expo, Expo Router, NativeWind (Tailwind) |
-| State | Zustand + TanStack Query |
-| Backend | Supabase (Postgres + Realtime + Edge Functions + Storage) |
-| Auth | Firebase Auth (phone OTP) → Supabase JWT |
-| Notifications | Expo Push Notifications |
-| i18n | react-i18next |
-
-### 6.3 Key Integrations
-- Phone verification: Firebase Auth
-- Face detection: `expo-face-detector`
-- Image upload: Supabase Storage
-- Realtime chat: Supabase Realtime
-- Push notifications: Expo Push
-
-**No:**
-- Google Maps API (deferred)
-- Map clustering (no map)
-- Google Places (manual seed)
+Full technical spec: [spec.md](./spec.md) · Database schema: [data-model.md](./data-model.md)
 
 ---
 
-## 7. Data Model Highlights
-
-**Key tables:**
-- `users` - Profile data
-- `user_preferences` - Cuisines, budget (editable)
-- `restaurants` - Curated + user-added
-- `meal_requests` - Active requests
-- `request_participants` - Who joined
-- `chats` - Request chats
-- `chat_participants` - Who's in chat
-- `messages` - Chat messages
-- `person_ratings` - "Did they show up?" (binary)
-- `reports` - Safety reports
-
-**RLS enabled on all tables.**
-
-Full schema: [data-model.md](./specs/mvp/data-model.md)
-
----
-
-## 8. Success Metrics (MVP)
+## 7. Success Metrics (MVP)
 
 | Metric | Target |
 |--------|--------|
@@ -300,7 +257,7 @@ Full schema: [data-model.md](./specs/mvp/data-model.md)
 
 ---
 
-## 9. Product Differentiators
+## 8. Product Differentiators
 
 1. **Request-based, not swipe-based** - Browse real meal plans, not profiles
 2. **Restaurant-first** - Not a stranger's home, always public venues
@@ -311,7 +268,7 @@ Full schema: [data-model.md](./specs/mvp/data-model.md)
 
 ---
 
-## 10. Out of Scope (Post-MVP)
+## 9. Out of Scope (Post-MVP)
 
 **Deferred features:**
 - Gender filter (collect data, implement later)
@@ -331,7 +288,7 @@ Full schema: [data-model.md](./specs/mvp/data-model.md)
 
 ---
 
-## 11. Risks & Mitigations
+## 10. Risks & Mitigations
 
 | Risk | Mitigation |
 |------|------------|
@@ -343,7 +300,7 @@ Full schema: [data-model.md](./specs/mvp/data-model.md)
 
 ---
 
-## 12. MVP Scope Summary
+## 11. MVP Scope Summary
 
 ### In Scope
 ✅ Phone auth + onboarding (9 steps)

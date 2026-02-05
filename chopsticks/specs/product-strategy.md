@@ -93,6 +93,7 @@ Connections between users beyond one-off meals.
 | **Foodie Connections** | **Post-MVP** | Add friends, build network |
 | **Share to Connections** | **Post-MVP** | Share restaurants, reviews, lists |
 | **One-Tap Meal Invite** | **Post-MVP** | Invite connections to eat together |
+| **Itinerary Share Card** | **Post-MVP** | Shareable meal card — primary UA loop. Format: `@Restaurant — District — Time — Budget — Join?` Handles both installed and non-installed recipients via deep link. |
 | Direct Messages | Future | Private chat outside meal requests |
 | Activity Feed | Future | See what connections are eating/reviewing |
 
@@ -178,11 +179,12 @@ Revenue features (all future).
 | **Foodie Connections** | Persistent relationships beyond single meals |
 | **Share to Connections** | Social distribution of restaurants/reviews/lists |
 | **One-Tap Meal Invite** | Frictionless "let's eat" to friends |
+| **Itinerary Share Card** | Primary UA loop — every shared card brings new users with context before they install |
 | **Activity Feed** | See what connections are doing (passive engagement) |
 
 **What we learn:**
 - Do meal companions add each other as connections?
-- Does sharing drive new user acquisition?
+- Does sharing drive new user acquisition? (Share Card is the key signal)
 - Do connections lead to repeat meals together?
 
 ---

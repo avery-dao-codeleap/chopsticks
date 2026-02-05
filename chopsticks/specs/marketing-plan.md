@@ -301,6 +301,20 @@
 | MAU | - | Target: 100 | Target: 1,000+ |
 | CAC (paid) | - | - | Track |
 
+### Product Success Metrics (tie marketing to outcomes)
+
+Marketing success is measured by whether acquired users actually *use the product*, not just install it. Track these from day 1:
+
+| Metric | Launch Target | Why It Matters |
+|--------|---------------|----------------|
+| Requests created/day | ~50 | Proves users understand and act on the core loop |
+| Join rate (requests with ≥1 joiner) | >50% | Proves demand-side engagement |
+| Show-up rate | >70% | The #1 validation metric — if this fails, everything stops |
+| Share Card shares/week | Track | Primary UA signal for Phase 2; tie influencer success to shares, not downloads |
+| 7-day retention | >40% | Downloads without retention = wasted CAC |
+
+**Attribution rule:** An influencer or channel "works" when it produces users who create or join requests — not just users who install.
+
 ### Attribution
 
 - UTM codes on all links
