@@ -138,6 +138,30 @@
 | D6 | Instagram | Weekend meal request promo |
 | D7 | All | Week 1 recap |
 
+### Launch Event
+
+**Concept:** Seed the first 100 users via a single launch event, concentrated in 3 high-density districts: Thao Dien, Binh Thanh, District 1. This creates immediate critical mass in the districts where early meal requests will appear.
+
+**Why an event, not just a TestFlight link:**
+- TestFlight distribution is invisible. An event creates buzz, word-of-mouth, and a story.
+- Concentrates early users geographically — requests appear in the same areas people actually eat.
+- Creates content: photos, reactions, founder story for social media on launch day.
+- Mirrors how Timeleft scaled: don't go live until there's density. An event is how you create that density.
+
+**Event format options:**
+
+| Option | Description | Pros | Cons |
+|--------|-------------|------|------|
+| Food crawl | Group walks through street food spots in target districts. Each person downloads app and creates their first request live. | High energy, shareable, on-brand | Requires coordination, weather-dependent |
+| Pop-up at coworking | Invite waitlist users to a coworking space. Guided onboarding over food + drinks. | Controlled environment, easy to iterate on UX | Lower energy, smaller organic reach |
+| Restaurant takeover | Partner with 2–3 restaurants in target districts. Invite waitlist users for a "first meal" experience. App onboarding happens in-context. | Authentic to the product, creates social proof | Requires restaurant partnership |
+
+**Target:** 100 TestFlight installs + 20+ meal requests created on launch day.
+
+**Districts:** Thao Dien / Binh Thanh / District 1 — high expat + local density, strong food scene, geographically close enough that early requests feel alive.
+
+---
+
 ### Launch Partnerships
 
 **Hostels & Guesthouses:**

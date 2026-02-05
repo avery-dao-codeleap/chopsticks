@@ -119,7 +119,7 @@ User food and matching preferences (1:1 with USER).
 | `updated_at` | TIMESTAMPTZ | DEFAULT NOW() | Last update |
 
 **Validation**:
-- `cuisines` values must be from predefined 14 categories or 'other'
+- `cuisines` values must be from predefined categories (see [Cuisine Types Reference](#cuisine-types-reference))
 - `budget_ranges` values must be: 'under_50k', '50k_150k', '150k_500k', '500k_plus'
 
 ---
@@ -155,7 +155,7 @@ Active meal requests created by users.
 | `id` | UUID | PK, DEFAULT uuid_generate_v4() | Primary key |
 | `requester_id` | UUID | FK → users(id), NOT NULL | Creator |
 | `restaurant_id` | UUID | FK → restaurants(id), NOT NULL | Venue |
-| `cuisine` | TEXT | NOT NULL | Cuisine type (1 of 14 categories) |
+| `cuisine` | TEXT | NOT NULL | Cuisine type (see [Cuisine Types Reference](#cuisine-types-reference)) |
 | `budget_range` | TEXT | NOT NULL | Budget range (1 of 4 ranges) |
 | `time_window` | TIMESTAMPTZ | NOT NULL | Meal time (within next 24h) |
 | `group_size` | INTEGER | NOT NULL, CHECK BETWEEN 2 AND 4 | Total spots |
@@ -295,17 +295,33 @@ Push notification records.
 All tables have RLS enabled. Key policies:
 
 ### USER
+
+**IMPORTANT (Constitution II)**: The `phone` column contains PII and MUST NOT be exposed in API responses. Use the `public_profiles` view for all client queries.
+
 ```sql
--- Anyone can read public profiles (excluding banned/deleted)
-CREATE POLICY "Public profiles readable"
+-- Create view that excludes sensitive columns
+CREATE VIEW public_profiles AS
+SELECT
+  id, firebase_uid, name, photo_url, age, gender, city, persona,
+  bio, meal_count, language, last_active_at, created_at
+FROM users
+WHERE deleted_at IS NULL AND banned_at IS NULL;
+
+-- Grant SELECT on view (not base table) to authenticated users
+GRANT SELECT ON public_profiles TO authenticated;
+
+-- Base table: only own row readable (for profile editing)
+CREATE POLICY "Own profile readable"
   ON users FOR SELECT
-  USING (deleted_at IS NULL AND banned_at IS NULL);
+  USING (auth.uid() = id);
 
 -- Users can update only their own row
 CREATE POLICY "Own profile editable"
   ON users FOR UPDATE
   USING (auth.uid() = id);
 ```
+
+**Client Code**: Always query `public_profiles` view, never `users` table directly (except for own profile).
 
 ### USER_PREFERENCES
 ```sql
@@ -421,11 +437,26 @@ CREATE POLICY "Own notifications only"
 
 ## Cuisine Types (Reference)
 
-**Vietnamese**: pho, bun_bo, bun_cha, com_tam, banh_mi, hu_tieu, cha, lau, banh_cuon, goi_cuon, xoi, che, ca_phe
+> **Source of truth**: `chopsticks/lib/constants.ts` → `CUISINE_CATEGORIES`
 
-**International**: korean, japanese, chinese, thai, indian, western, italian, fast_food, seafood, vegetarian_vegan, dessert_cafe
+| Key | Label (EN) | Label (VI) |
+|-----|------------|------------|
+| `noodles_congee` | Noodles & Congee | Bún/Phở/Cháo |
+| `rice` | Rice | Cơm |
+| `hotpot_grill` | Hotpot & Grill | Lẩu & Nướng |
+| `seafood` | Seafood | Hải sản |
+| `bread` | Bread | Bánh mì |
+| `vietnamese_cakes` | Vietnamese Cakes | Bánh Việt |
+| `snack` | Snack | Ăn vặt |
+| `dessert` | Dessert | Tráng miệng |
+| `drinks` | Drinks | Đồ uống |
+| `fast_food` | Fast Food | Đồ ăn nhanh |
+| `international` | International Food | Món quốc tế |
+| `healthy` | Healthy Food | Đồ ăn healthy |
+| `veggie` | Veggie | Chay |
+| `others` | Others | Khác |
 
-**Other**: other (with cuisine_custom text)
+**Total: 14 categories**
 
 ---
 

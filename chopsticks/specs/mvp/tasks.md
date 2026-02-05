@@ -77,14 +77,14 @@ All paths relative to `chopsticks/` (the Expo app root):
 
 - [X] T026 Define TypeScript types in `lib/types.ts` (User, MealRequest, Message, etc.) (Partial - in services/supabase.ts)
 - [X] T027 [P] Define Zod validation schemas in `lib/schemas.ts`
-- [X] T028 [P] Define app constants in `lib/constants.ts` (14 cuisines, 4 budgets, 22 districts)
+- [X] T028 [P] Define app constants in `lib/constants.ts` (cuisines, budgets, districts per data-model.md)
 - [X] T029 [P] Create utility functions in `lib/utils.ts` (formatDate, formatTime, etc.)
 
 ### i18n Setup
 
 - [X] T030 Configure react-i18next in `lib/i18n.ts` with expo-localization (Partial - needs proper setup)
-- [ ] T031 [P] Create English translations in `locales/en.json`
-- [ ] T032 [P] Create Vietnamese translations in `locales/vi.json`
+- [X] T031 [P] Create English translations in `locales/en.json`
+- [X] T032 [P] Create Vietnamese translations in `locales/vi.json`
 
 ### Navigation & Layout
 
@@ -139,7 +139,7 @@ All paths relative to `chopsticks/` (the Expo app root):
 - [ ] T050 [P] [US1] Create profile screen in `app/(auth)/onboarding/profile.tsx` (name, age, gender)
 - [ ] T051 [P] [US1] Create city check screen in `app/(auth)/onboarding/city.tsx` (HCMC only)
 - [ ] T052 [P] [US1] Create persona screen in `app/(auth)/onboarding/persona.tsx` (5 options)
-- [ ] T053 [P] [US1] Create cuisines screen in `app/(auth)/onboarding/cuisines.tsx` (14 categories)
+- [ ] T053 [P] [US1] Create cuisines screen in `app/(auth)/onboarding/cuisines.tsx` (per data-model.md)
 - [ ] T054 [P] [US1] Create budget screen in `app/(auth)/onboarding/budget.tsx` (4 ranges)
 - [ ] T055 [P] [US1] Create bio screen in `app/(auth)/onboarding/bio.tsx` (max 200 chars)
 - [ ] T056 [US1] Create intent screen in `app/(auth)/onboarding/intent.tsx` (know where to eat?)
@@ -435,6 +435,13 @@ All paths relative to `chopsticks/` (the Expo app root):
 - [ ] T141 Manual QA on physical Android device
 - [ ] T142 Run quickstart.md validation checklist
 
+### NFR Validation (Constitution III)
+
+- [ ] T143 Verify bundle size <50MB using `npx expo-optimize` and EAS build output
+- [ ] T144 Verify cold start <3s on mid-range Android (Samsung A53 or equivalent)
+- [ ] T145 Verify chat message delivery <500ms using Supabase realtime latency
+- [ ] T146 Verify 60fps scrolling on FlatList components (manual profiler check)
+
 ---
 
 ## Dependencies & Execution Order
@@ -526,8 +533,8 @@ T036, T037, T038, T039, T040, T041 (all [P])
 | Phase 7 | US5 - Chat | 15 |
 | Phase 8 | US6 - Rating | 6 |
 | Phase 9 | US7 - Settings | 11 |
-| Phase 10 | Polish | 12 |
-| **Total** | | **143** |
+| Phase 10 | Polish + NFR Validation | 16 |
+| **Total** | | **147** |
 
 ---
 

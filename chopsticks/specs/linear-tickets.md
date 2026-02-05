@@ -198,6 +198,12 @@
 | P1-034 | Nominate for list flow | Select list or suggest new | Medium | frontend |
 | P1-035 | Nomination admin queue | Internal tool to review nominations | Low | backend |
 
+### Epic: Open Requests at Restaurant
+
+| Ticket | Title | Description | Priority | Labels |
+|--------|-------|-------------|----------|--------|
+| P1-036 | Open requests on restaurant detail | Surface active meal requests at this restaurant; joinable inline from detail view | High | frontend |
+
 ---
 
 ## Phase 2: Social Graph
@@ -235,6 +241,18 @@
 | P2-017 | Invite notification | Push for meal invites | High | backend |
 | P2-018 | Accept/decline invite | Invitee responds to invite | High | frontend |
 
+### Epic: Itinerary Share Card (2E)
+
+The primary external sharing mechanic and the main UA loop. Format: `@Restaurant — District — Time — Budget — Join?`
+
+| Ticket | Title | Description | Priority | Labels |
+|--------|-------|-------------|----------|--------|
+| P2-019 | Share card layout | Restaurant name, district, time, budget range, Join CTA in shareable card format | High | frontend, design |
+| P2-020 | Share card visibility toggle | Connections only / Me only / Everyone | High | frontend |
+| P2-021 | Share card external share | Copy link, WhatsApp, Messenger, in-app to connections | High | frontend |
+| P2-022 | Share → join deep link | Tapping shared link opens request detail with join action; handles install flow | High | frontend, backend |
+| P2-023 | Social proof signal on card | "Recommended by X people" or "X saved this place" | Medium | frontend |
+
 ---
 
 ## Phase 3: Monetization
@@ -264,6 +282,15 @@
 | P3-009 | City unlock logic | Premium users can browse other cities | High | backend |
 | P3-010 | Hanoi content | Create lists and restaurants for Hanoi | High | content |
 | P3-011 | Per-city unlock option | Unlock single city vs all cities | Medium | frontend |
+
+### Epic: Sponsored Experiences (PARKED — do not build until Phase 2 organic loop validates)
+
+> ⚠️ Dinner Lab failed with this exact pattern. See competitive-research.md. Unblock only after Phase 2 share card shows strong organic engagement.
+
+| Ticket | Title | Description | Priority | Labels |
+|--------|-------|-------------|----------|--------|
+| P3-012 | [PARKED] Sponsored restaurant placement | Restaurants pay for boosted visibility in curated lists | Low | backend |
+| P3-013 | [PARKED] Sponsored meal requests | Restaurant sponsors a group meal as a marketing event | Low | backend, frontend |
 
 ---
 
@@ -306,6 +333,12 @@
 | MKT-016 | Facebook/Instagram ads setup | Pixel, audiences, campaign structure | Low | marketing |
 | MKT-017 | Creative testing | 5-10 ad variations | Low | marketing, design |
 | MKT-018 | Retargeting campaigns | Website visitors, app installers | Low | marketing |
+
+### Epic: Launch Event
+
+| Ticket | Title | Description | Priority | Labels |
+|--------|-------|-------------|----------|--------|
+| MKT-019 | Launch event — food crawl / pop-up | District-targeted food crawl or restaurant takeover. Target: 100 installs | High | marketing |
 
 ---
 

@@ -139,8 +139,9 @@ chopsticks/
 
 ## Complexity Tracking
 
-> No Constitution violations requiring justification.
+> Constitution exceptions are documented below with explicit justification.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| N/A | — | — |
+| **Constitution II**: Gender filter not enforced at DB level | MVP validates show-up rate before adding complexity. Gender data IS collected for future filtering. | Implementing full gender filter RLS adds ~2 days of work for a feature users haven't requested. Will add in Phase 1 if users report safety concerns. |
+| **Constitution III**: No 60fps validation task | Manual QA on physical devices (T140-T141) covers performance. Automated performance testing deferred post-MVP. | Adding FPS monitoring infrastructure is premature at 100-user scale. |

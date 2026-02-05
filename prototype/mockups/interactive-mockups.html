@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chopsticks - Feature Mockups</title>
+  <title>Chopsticks - Interactive Mockups</title>
   <style>
     * {
       margin: 0;
@@ -20,65 +20,85 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       font-size: 28px;
     }
 
     .subtitle {
       text-align: center;
       color: #888;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
+      font-size: 14px;
     }
 
-    /* Tab Navigation */
-    .tab-nav {
+    /* Phase Nav */
+    .phase-nav {
       display: flex;
-      gap: 10px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
+      gap: 8px;
       justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .phase-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    .phase-btn[data-phase="mvp"] { background: #ff6b35; opacity: 0.5; }
+    .phase-btn[data-phase="phase1"] { background: #667eea; opacity: 0.5; }
+    .phase-btn[data-phase="phase2"] { background: #11998e; opacity: 0.5; }
+    .phase-btn[data-phase="phase3"] { background: #FFB800; opacity: 0.5; }
+    .phase-btn.active { opacity: 1; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+
+    /* Feature Nav */
+    .feature-nav-row {
+      display: none;
+      flex-direction: row;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .feature-nav-row.visible {
+      display: flex;
     }
 
     .tab-btn {
-      padding: 12px 24px;
+      padding: 10px 18px;
       border: none;
       background: #2d2d44;
-      color: #888;
+      color: #aaa;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       transition: all 0.2s;
     }
 
-    .tab-btn:hover {
-      background: #3d3d54;
-      color: #fff;
-    }
+    .tab-btn:hover { background: #3d3d54; color: #fff; }
+    .tab-btn.active { background: #fff; color: #333; }
 
-    .tab-btn.active {
-      background: #ff6b35;
-      color: #fff;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
+    /* Tab Content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     /* Phone Frame */
     .phone-grid {
       display: flex;
-      gap: 30px;
+      gap: 24px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -91,145 +111,577 @@
 
     .phone-label {
       margin-bottom: 10px;
-      font-size: 14px;
+      font-size: 13px;
       color: #888;
+      text-align: center;
+      max-width: 160px;
     }
 
     .phone {
-      width: 320px;
-      height: 640px;
-      background: #fff;
-      border-radius: 40px;
-      padding: 20px 15px;
+      width: 300px;
+      height: 620px;
+      background: #000;
+      border-radius: 38px;
+      padding: 18px 13px;
       position: relative;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
 
     .phone::before {
       content: '';
       position: absolute;
-      top: 10px;
+      top: 8px;
       left: 50%;
       transform: translateX(-50%);
-      width: 80px;
-      height: 25px;
+      width: 70px;
+      height: 22px;
       background: #1a1a2e;
-      border-radius: 20px;
+      border-radius: 16px;
+      z-index: 2;
     }
 
     .screen {
       background: #fafafa;
       height: 100%;
-      border-radius: 25px;
+      border-radius: 24px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
+    /* Status Bar */
+    .status-bar {
+      background: #fff;
+      padding: 28px 16px 6px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #333;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
     /* Screen Header */
     .screen-header {
-      background: #ff6b35;
-      color: #fff;
-      padding: 40px 15px 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .screen-header.white {
       background: #fff;
       color: #333;
-      border-bottom: 1px solid #eee;
+      padding: 8px 14px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
     }
 
-    .back-btn {
-      font-size: 20px;
+    .screen-header.orange {
+      background: #ff6b35;
+      color: #fff;
+      border-bottom: none;
+      padding: 10px 14px 12px;
     }
 
-    .screen-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
+    .back-btn { font-size: 18px; cursor: pointer; }
+    .screen-title { font-size: 16px; font-weight: 600; flex: 1; }
+    .header-right { font-size: 18px; }
 
     /* Screen Body */
     .screen-body {
       flex: 1;
       overflow-y: auto;
-      padding: 15px;
-      background: #fafafa;
+      padding: 12px;
+      background: #f5f5f7;
     }
 
-    .screen-body.white {
+    .screen-body.white { background: #fff; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      display: flex;
       background: #fff;
+      border-top: 1px solid #f0f0f0;
+      padding: 8px 0 18px;
+      flex-shrink: 0;
     }
 
-    /* Quiz Styles */
-    .quiz-intro {
-      text-align: center;
-      padding: 40px 20px;
+    .nav-item { flex: 1; text-align: center; }
+    .nav-icon { font-size: 20px; margin-bottom: 2px; }
+    .nav-label { font-size: 9px; color: #999; }
+    .nav-item.active .nav-label { color: #ff6b35; }
+
+    /* Filter Pills */
+    .filter-row {
+      display: flex;
+      gap: 6px;
+      padding: 10px 0;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
 
-    .quiz-emoji {
-      font-size: 60px;
-      margin-bottom: 20px;
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      white-space: nowrap;
+      background: #fff;
+      color: #555;
+      border: 1px solid #e8e8e8;
     }
 
-    .quiz-title {
-      font-size: 22px;
-      color: #333;
+    .filter-pill.active {
+      background: #ff6b35;
+      color: #fff;
+      border-color: #ff6b35;
+    }
+
+    /* Request Card */
+    .request-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
       margin-bottom: 10px;
+      border: 1px solid #eee;
+    }
+
+    .request-card-top {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .request-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .request-card-info { flex: 1; }
+    .request-card-name { font-size: 14px; font-weight: 600; color: #333; }
+    .request-card-meta { font-size: 11px; color: #888; margin-top: 2px; }
+
+    .request-card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .spots-badge {
+      font-size: 11px;
+      color: #ff6b35;
+      font-weight: 600;
+      background: #fff5f2;
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+
+    .join-btn-small {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      padding: 5px 14px;
+      border-radius: 8px;
+      font-size: 12px;
       font-weight: 600;
     }
 
-    .quiz-subtitle {
-      color: #666;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 30px;
+    /* Avatar Row */
+    .avatar-row { display: flex; }
+
+    .mini-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      margin-left: -6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #fff;
+      font-weight: 600;
     }
 
+    .mini-avatar:first-child { margin-left: 0; }
+
+    /* Chat */
+    .chat-msg { margin-bottom: 10px; max-width: 85%; }
+    .chat-msg.right { margin-left: auto; }
+    .chat-sender { font-size: 10px; color: #999; margin-bottom: 2px; padding: 0 4px; }
+
+    .chat-bubble {
+      padding: 8px 10px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .chat-msg.right .chat-bubble {
+      background: #ff6b35;
+      color: #fff;
+      border-radius: 14px 14px 4px 14px;
+    }
+
+    .chat-msg:not(.right) .chat-bubble {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 14px 14px 14px 4px;
+    }
+
+    .chat-time { font-size: 9px; color: #bbb; text-align: right; padding: 2px 4px; }
+
+    .chat-input-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #fff;
+      border-top: 1px solid #f0f0f0;
+      flex-shrink: 0;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: #f5f5f7;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #999;
+      outline: none;
+    }
+
+    .chat-send { font-size: 18px; color: #ff6b35; }
+
+    .chat-info-bar {
+      background: #fff8f5;
+      border-bottom: 1px solid #ffe5dd;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-info-text { font-size: 11px; color: #ff6b35; font-weight: 500; }
+
+    /* Rating */
+    .rating-person-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .rating-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .rating-name { flex: 1; font-size: 14px; color: #333; font-weight: 500; }
+
+    .rating-toggle { display: flex; gap: 6px; }
+
+    .rating-btn {
+      padding: 5px 12px;
+      border-radius: 16px;
+      border: 1px solid #ddd;
+      background: #fff;
+      font-size: 12px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .rating-btn.yes { background: #4CAF50; color: #fff; border-color: #4CAF50; }
+    .rating-btn.no { background: #f44336; color: #fff; border-color: #f44336; }
+
+    /* History */
+    .history-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .history-date { text-align: center; min-width: 36px; }
+    .history-date-day { font-size: 18px; font-weight: 700; color: #333; }
+    .history-date-mon { font-size: 10px; color: #999; }
+    .history-content { flex: 1; }
+    .history-restaurant { font-size: 14px; font-weight: 600; color: #333; }
+    .history-detail { font-size: 11px; color: #888; margin-top: 2px; }
+    .history-people { display: flex; margin-top: 6px; }
+
+    /* Share Card */
+    .share-card-preview {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid #eee;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .share-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .share-card-logo {
+      width: 34px;
+      height: 34px;
+      background: #ff6b35;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .share-card-brand {
+      font-size: 11px;
+      font-weight: 700;
+      color: #ff6b35;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .share-card-restaurant { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 4px; }
+    .share-card-details { font-size: 13px; color: #666; line-height: 1.6; }
+    .share-card-proof { font-size: 11px; color: #999; margin-top: 4px; text-align: center; }
+
+    .share-card-cta {
+      margin-top: 12px;
+      padding: 10px 0;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+      color: #ff6b35;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .visibility-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 2px solid #eee;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+
+    .visibility-option.selected { border-color: #ff6b35; background: #fff8f5; }
+    .visibility-icon { font-size: 18px; }
+    .visibility-label { font-size: 13px; color: #333; font-weight: 500; flex: 1; }
+    .visibility-desc { font-size: 11px; color: #999; }
+
+    .share-btn-row { display: flex; gap: 8px; margin-top: 14px; }
+
+    .share-btn {
+      flex: 1;
+      padding: 10px 4px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      background: #fff;
+      text-align: center;
+    }
+
+    .share-btn-icon { font-size: 20px; }
+    .share-btn-label { font-size: 10px; color: #666; margin-top: 3px; }
+
+    /* AI / Insights */
+    .insight-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #eee;
+    }
+
+    .insight-card.premium { border-color: #FFB800; background: #fffbf0; }
+
+    .insight-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .insight-icon { font-size: 18px; }
+    .insight-title { font-size: 13px; font-weight: 600; color: #333; flex: 1; }
+
+    .premium-badge {
+      font-size: 9px;
+      background: #FFB800;
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .insight-text { font-size: 12px; color: #666; line-height: 1.4; }
+
+    /* Stats */
+    .stats-row { display: flex; gap: 8px; margin-bottom: 16px; }
+
+    .stat-card {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+      border: 1px solid #eee;
+    }
+
+    .stat-num { font-size: 20px; font-weight: 700; color: #333; }
+    .stat-label { font-size: 10px; color: #999; margin-top: 2px; }
+
+    /* Open Requests Section */
+    .open-requests-section {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .open-requests-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live-dot { width: 7px; height: 7px; background: #4CAF50; border-radius: 50%; }
+
+    .mini-request {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      border: 1px solid #f0f0f0;
+    }
+
+    .mini-request-time { font-size: 12px; color: #ff6b35; font-weight: 600; min-width: 42px; }
+    .mini-request-info { flex: 1; }
+    .mini-request-name { font-size: 12px; color: #333; font-weight: 500; }
+    .mini-request-meta { font-size: 10px; color: #999; }
+
+    .mini-request-join {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Reusable */
     .btn {
       display: block;
       width: 100%;
-      padding: 15px;
+      padding: 12px;
       border: none;
       border-radius: 12px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .btn-primary { background: #ff6b35; color: #fff; }
+    .btn-green { background: #4CAF50; color: #fff; }
+    .btn-secondary { background: #f5f5f7; color: #666; }
+
+    .celebration { text-align: center; padding: 40px 20px; }
+    .celebration-emoji { font-size: 56px; margin-bottom: 12px; }
+    .celebration-title { font-size: 22px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .celebration-sub { font-size: 13px; color: #888; line-height: 1.5; margin-bottom: 24px; }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      border: 1px solid #eee;
+    }
+
+    .search-icon { color: #bbb; font-size: 15px; }
+
+    .search-input {
+      border: none;
+      flex: 1;
+      font-size: 13px;
+      color: #999;
+      background: transparent;
+      outline: none;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
     }
 
-    .btn-primary {
-      background: #ff6b35;
-      color: #fff;
+    .section-title { font-size: 14px; font-weight: 600; color: #333; }
+    .section-link { font-size: 12px; color: #ff6b35; text-decoration: none; }
+
+    .category-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .pill {
+      padding: 6px 12px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #555;
     }
 
-    .btn-secondary {
-      background: transparent;
-      color: #888;
+    .quiz-answer {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
     }
 
-    /* Quiz Question */
-    .progress-bar {
-      height: 4px;
-      background: #eee;
-      border-radius: 2px;
-      margin-bottom: 30px;
-    }
+    .quiz-answer:last-child { border-bottom: none; }
+    .answer-label { color: #999; font-size: 13px; }
+    .answer-value { color: #333; font-size: 13px; font-weight: 500; }
 
-    .progress-fill {
-      height: 100%;
-      background: #ff6b35;
-      border-radius: 2px;
-      width: 40%;
-    }
+    .progress-bar { height: 4px; background: #eee; border-radius: 2px; margin-bottom: 24px; }
+    .progress-fill { height: 100%; background: #ff6b35; border-radius: 2px; }
 
     .question-text {
-      font-size: 20px;
+      font-size: 18px;
       color: #333;
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
       font-weight: 500;
     }
 
@@ -237,630 +689,200 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
       background: #fff;
       border: 2px solid #eee;
-      border-radius: 16px;
-      margin-bottom: 12px;
+      border-radius: 14px;
+      margin-bottom: 10px;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .option-btn:hover {
-      border-color: #ff6b35;
-      background: #fff5f2;
-    }
+    .option-btn.selected { border-color: #ff6b35; background: #ff6b35; color: #fff; }
+    .option-text { font-size: 15px; font-weight: 500; }
 
-    .option-btn.selected {
-      border-color: #ff6b35;
-      background: #ff6b35;
-      color: #fff;
-    }
+    .skip-link { text-align: center; margin-top: 16px; }
+    .skip-link a { color: #bbb; text-decoration: none; font-size: 13px; }
 
-    .option-text {
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .skip-link {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .skip-link a {
-      color: #888;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    /* Spectrum */
-    .spectrum-container {
-      padding: 20px 0;
-    }
-
-    .spectrum-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-
-    .spectrum-label {
-      font-size: 12px;
-      color: #888;
-    }
-
-    .spectrum-options {
-      display: flex;
-      gap: 8px;
-    }
+    .spectrum-container { padding: 16px 0; }
+    .spectrum-labels { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .spectrum-label { font-size: 11px; color: #999; }
+    .spectrum-options { display: flex; gap: 6px; }
 
     .spectrum-dot {
       flex: 1;
-      height: 50px;
+      height: 46px;
       background: #eee;
-      border-radius: 12px;
-      cursor: pointer;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      transition: all 0.2s;
+      font-size: 18px;
+      cursor: pointer;
     }
 
-    .spectrum-dot:hover {
-      background: #ffe5dd;
-    }
-
-    .spectrum-dot.selected {
-      background: #ff6b35;
-    }
-
-    /* Profile Quiz Section */
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .section-link {
-      font-size: 13px;
-      color: #ff6b35;
-      text-decoration: none;
-    }
-
-    .quiz-answer {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .quiz-answer:last-child {
-      border-bottom: none;
-    }
-
-    .answer-label {
-      color: #888;
-      font-size: 14px;
-    }
-
-    .answer-value {
-      color: #333;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    /* Discovery Tab */
-    .search-bar {
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #eee;
-    }
-
-    .search-icon {
-      color: #888;
-    }
-
-    .search-input {
-      border: none;
-      flex: 1;
-      font-size: 14px;
-      color: #888;
-      background: transparent;
-    }
-
-    .your-lists {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 25px;
-    }
-
-    .your-list-card {
-      flex: 1;
-      background: #fff;
-      border-radius: 16px;
-      padding: 15px;
-      text-align: center;
-      border: 1px solid #eee;
-    }
-
-    .your-list-icon {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-
-    .your-list-label {
-      font-size: 12px;
-      color: #888;
-    }
-
-    .your-list-count {
-      font-size: 20px;
-      font-weight: 600;
-      color: #333;
-    }
+    .spectrum-dot.selected { background: #ff6b35; }
 
     .list-card {
       background: #fff;
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       border: 1px solid #eee;
     }
 
     .list-cover {
-      height: 100px;
-      background: linear-gradient(135deg, #ff6b35, #ff8f65);
+      height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 40px;
+      font-size: 36px;
     }
 
-    .list-info {
-      padding: 15px;
-    }
+    .list-info { padding: 10px 12px; }
+    .list-name { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 3px; }
+    .list-meta { font-size: 11px; color: #999; }
 
-    .list-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
-    }
+    .list-progress { margin-top: 8px; height: 5px; background: #eee; border-radius: 3px; overflow: hidden; }
+    .list-progress-fill { height: 100%; background: #4CAF50; }
 
-    .list-meta {
-      font-size: 12px;
-      color: #888;
-    }
+    .your-lists { display: flex; gap: 8px; margin-bottom: 14px; }
 
-    .list-progress {
-      margin-top: 10px;
-      height: 6px;
-      background: #eee;
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .list-progress-fill {
-      height: 100%;
-      background: #4CAF50;
-      width: 25%;
-    }
-
-    /* Category Pills */
-    .category-section {
-      margin-bottom: 20px;
-    }
-
-    .category-label {
-      font-size: 14px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    .category-pills {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      padding: 8px 16px;
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #333;
-    }
-
-    /* List Detail View */
-    .list-detail-cover {
-      height: 150px;
-      background: linear-gradient(135deg, #ff6b35, #ff8f65);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 60px;
-      margin: -15px -15px 15px -15px;
-    }
-
-    .list-detail-title {
-      font-size: 20px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .list-detail-meta {
-      font-size: 13px;
-      color: #888;
-      margin-bottom: 15px;
-    }
-
-    .list-detail-desc {
-      font-size: 14px;
-      color: #666;
-      line-height: 1.5;
-      margin-bottom: 15px;
-    }
-
-    .list-progress-section {
-      background: #f5f5f5;
-      border-radius: 12px;
-      padding: 12px 15px;
-      margin-bottom: 20px;
-    }
-
-    .progress-text {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-
-    .restaurant-card {
-      display: flex;
-      gap: 12px;
-      padding: 15px;
-      background: #fff;
-      border-radius: 16px;
-      margin-bottom: 12px;
-      border: 1px solid #eee;
-    }
-
-    .restaurant-rank {
-      width: 30px;
-      height: 30px;
-      background: #ff6b35;
-      color: #fff;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .restaurant-info {
+    .your-list-card {
       flex: 1;
-    }
-
-    .restaurant-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 3px;
-    }
-
-    .restaurant-rating {
-      font-size: 12px;
-      color: #888;
-    }
-
-    .restaurant-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .action-btn {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 11px;
-      border: 1px solid #eee;
       background: #fff;
-      color: #666;
-    }
-
-    .action-btn.done {
-      background: #4CAF50;
-      color: #fff;
-      border-color: #4CAF50;
-    }
-
-    .locked-section {
-      background: #f5f5f5;
-      border-radius: 16px;
-      padding: 25px;
+      border-radius: 12px;
+      padding: 10px;
       text-align: center;
-      margin-top: 10px;
+      border: 1px solid #eee;
     }
 
-    .lock-icon {
-      font-size: 30px;
-      margin-bottom: 10px;
-    }
+    .your-list-icon { font-size: 20px; }
+    .your-list-label { font-size: 10px; color: #999; }
+    .your-list-count { font-size: 18px; font-weight: 700; color: #333; }
 
-    .lock-text {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 15px;
-    }
-
-    .unlock-btn {
-      background: #ff6b35;
-      color: #fff;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    /* Restaurant Detail */
     .restaurant-gallery {
-      height: 180px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      margin: -15px -15px 15px -15px;
+      height: 140px;
+      margin: -12px -12px 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 50px;
+      font-size: 48px;
     }
 
-    .restaurant-detail-name {
-      font-size: 22px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 8px;
-    }
+    .restaurant-detail-name { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 4px; }
+    .restaurant-detail-meta { font-size: 13px; color: #888; margin-bottom: 3px; }
 
-    .restaurant-detail-meta {
-      font-size: 14px;
-      color: #888;
-      margin-bottom: 5px;
-    }
-
-    .action-bar {
-      display: flex;
-      gap: 10px;
-      margin: 20px 0;
-    }
+    .action-bar { display: flex; gap: 8px; margin: 14px 0; }
 
     .action-bar-btn {
       flex: 1;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 10px 4px;
+      border-radius: 10px;
       border: 1px solid #eee;
       background: #fff;
       text-align: center;
     }
 
-    .action-bar-icon {
-      font-size: 20px;
-      margin-bottom: 4px;
-    }
-
-    .action-bar-label {
-      font-size: 11px;
-      color: #666;
-    }
+    .action-bar-icon { font-size: 18px; }
+    .action-bar-label { font-size: 10px; color: #666; margin-top: 2px; }
 
     .cta-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       width: 100%;
-      padding: 15px;
+      padding: 12px;
       background: #ff6b35;
       color: #fff;
       border: none;
       border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .cta-btn.secondary {
-      background: #fff;
-      border: 1px solid #eee;
-      color: #333;
-    }
-
-    .appears-on {
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px solid #eee;
-    }
-
-    .appears-on-title {
       font-size: 14px;
       font-weight: 600;
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    .appears-item {
-      font-size: 13px;
-      color: #666;
-      padding: 5px 0;
-    }
-
-    .review-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 15px;
-      border: 1px solid #eee;
-    }
-
-    .review-header {
-      display: flex;
-      justify-content: space-between;
       margin-bottom: 8px;
     }
 
-    .review-stars {
-      color: #FFB800;
-    }
+    .cta-btn.secondary { background: #fff; border: 1px solid #eee; color: #333; }
 
-    .review-author {
-      font-size: 12px;
-      color: #888;
-    }
+    .appears-on { margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
+    .appears-on-title { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+    .appears-item { font-size: 12px; color: #666; padding: 3px 0; }
 
-    .review-text {
-      font-size: 14px;
-      color: #333;
-      line-height: 1.5;
-    }
-
-    /* Bottom Nav */
-    .bottom-nav {
-      display: flex;
+    .review-card {
       background: #fff;
-      border-top: 1px solid #eee;
-      padding: 10px 0 25px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      border: 1px solid #eee;
     }
 
-    .nav-item {
-      flex: 1;
+    .review-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .review-stars { color: #FFB800; font-size: 12px; }
+    .review-author { font-size: 11px; color: #999; }
+    .review-text { font-size: 12px; color: #333; line-height: 1.4; }
+
+    .locked-section {
+      background: #f7f7f9;
+      border-radius: 14px;
+      padding: 20px;
       text-align: center;
+      margin-top: 8px;
     }
 
-    .nav-icon {
-      font-size: 22px;
-      margin-bottom: 3px;
-    }
+    .lock-icon { font-size: 26px; margin-bottom: 6px; }
+    .lock-text { font-size: 13px; color: #666; margin-bottom: 12px; }
 
-    .nav-label {
-      font-size: 10px;
-      color: #888;
-    }
-
-    .nav-item.active .nav-icon,
-    .nav-item.active .nav-label {
-      color: #ff6b35;
-    }
-
-    /* Collapsible Sections */
-    .section-group {
-      margin-bottom: 40px;
-    }
-
-    .section-group-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      padding: 15px 20px;
-      background: #2d2d44;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
-
-    .section-group-title {
-      font-size: 18px;
+    .unlock-btn {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
       font-weight: 600;
     }
 
-    .section-group-toggle {
-      font-size: 20px;
-      transition: transform 0.2s;
-    }
+    .invite-section { margin-bottom: 16px; }
+    .invite-label { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
 
-    .section-group-header.collapsed .section-group-toggle {
-      transform: rotate(-90deg);
-    }
-
-    .section-group-content {
-      display: block;
-    }
-
-    .section-group-content.hidden {
-      display: none;
-    }
-
-    /* Invite Flow */
-    .invite-section {
-      margin-bottom: 20px;
-    }
-
-    .invite-label {
-      font-size: 14px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    .time-picker {
-      display: flex;
-      gap: 10px;
-    }
+    .time-picker { display: flex; gap: 6px; }
 
     .time-btn {
       flex: 1;
-      padding: 12px;
+      padding: 10px 4px;
       background: #fff;
       border: 1px solid #eee;
       border-radius: 10px;
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       color: #333;
     }
 
     .connection-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid #eee;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
     }
 
     .connection-avatar {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
+      font-size: 14px;
       font-weight: 600;
     }
 
-    .connection-name {
-      flex: 1;
-      font-size: 15px;
-      color: #333;
-    }
+    .connection-name { flex: 1; font-size: 14px; color: #333; }
 
     .connection-check {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border: 2px solid #ddd;
       border-radius: 6px;
     }
@@ -872,643 +894,1782 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 12px;
     }
 
     .toggle-option {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 15px;
+      padding: 12px;
       background: #fff;
-      border-radius: 12px;
+      border-radius: 10px;
       border: 1px solid #eee;
-      margin-top: 15px;
+      margin-top: 12px;
     }
 
-    .toggle-text {
-      font-size: 14px;
-      color: #333;
-    }
+    .toggle-text { font-size: 13px; color: #333; }
 
     .toggle-switch {
-      width: 50px;
-      height: 28px;
+      width: 44px;
+      height: 24px;
       background: #ddd;
-      border-radius: 14px;
+      border-radius: 12px;
       position: relative;
     }
+
+    .toggle-switch.on { background: #ff6b35; }
 
     .toggle-switch::after {
       content: '';
       position: absolute;
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       background: #fff;
       border-radius: 50%;
-      top: 3px;
-      left: 3px;
+      top: 2px;
+      left: 2px;
       transition: 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch.on::after { left: 22px; }
+
+    /* Persona bar chart */
+    .persona-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .persona-label { font-size: 12px; color: #333; min-width: 55px; }
+    .persona-bar-bg { flex: 1; height: 18px; background: #f0f0f0; border-radius: 9px; overflow: hidden; }
+    .persona-bar-fill { height: 100%; border-radius: 9px; }
+    .persona-pct { font-size: 11px; color: #999; min-width: 30px; text-align: right; }
+
+    /* Info box for detail screens */
+    .info-box {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+    }
+
+    .info-label { font-size: 13px; color: #888; }
+    .info-value { font-size: 13px; font-weight: 600; color: #333; }
+    .info-value.green { color: #4CAF50; }
+
+    /* Group size row */
+    .group-size-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 6px;
+    }
+
+    .group-size-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .group-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .group-avatar.placeholder {
+      background: #ddd;
+      color: #999;
+    }
+
+    /* Join type boxes */
+    .join-type-row { display: flex; gap: 8px; margin-bottom: 14px; }
+
+    .join-type-box {
+      flex: 1;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .join-type-box.selected {
+      border-color: #ff6b35;
+      background: #fff8f5;
+    }
+
+    .join-type-title { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 3px; }
+    .join-type-desc { font-size: 10px; color: #888; }
+
+    /* Chat list item */
+    .chat-list-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .chat-list-emoji { font-size: 28px; }
+    .chat-list-content { flex: 1; min-width: 0; }
+    .chat-list-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 2px; }
+    .chat-list-preview { font-size: 12px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chat-list-preview.unread { color: #ff6b35; font-weight: 500; }
+    .chat-list-time { font-size: 11px; color: #bbb; white-space: nowrap; }
+
+    .unread-badge {
+      background: #ff6b35;
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Restaurant list item for create flow */
+    .restaurant-pick-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 8px;
+      border: 1px solid #eee;
+    }
+
+    .restaurant-pick-icon { font-size: 24px; }
+    .restaurant-pick-info { flex: 1; }
+    .restaurant-pick-name { font-size: 14px; font-weight: 600; color: #333; }
+    .restaurant-pick-meta { font-size: 12px; color: #888; margin-top: 1px; }
+    .restaurant-pick-arrow { font-size: 18px; color: #ff6b35; }
+
+    /* Selected restaurant box */
+    .selected-restaurant-box {
+      background: #fff8f5;
+      border: 1px solid #ffe5dd;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .selected-restaurant-emoji { font-size: 28px; }
+    .selected-restaurant-name { font-size: 14px; font-weight: 600; color: #333; }
+    .selected-restaurant-meta { font-size: 12px; color: #888; }
+
+    /* Section label */
+    .section-label-gray {
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      margin-top: 4px;
+    }
+
+    /* Unlock premium button gold style */
+    .btn-premium {
+      background: linear-gradient(135deg, #FFB800, #ff8c00);
+      color: #fff;
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    /* Time pill active */
+    .time-pill-active {
+      background: #ff6b35;
+      color: #fff;
+      border-color: #ff6b35 !important;
+    }
+
+    /* Suggestion pills for "also like" */
+    .suggestion-pill {
+      display: inline-block;
+      padding: 6px 12px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #555;
+      margin-right: 6px;
+      margin-bottom: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Chopsticks Mockups</h1>
-    <p class="subtitle">Interactive feature previews · Click sections to collapse/expand</p>
+<div class="container">
+  <h1>Chopsticks Mockups</h1>
+  <p class="subtitle">Interactive feature previews · Select a phase and feature below</p>
 
-    <!-- Tab Navigation -->
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="showTab('quiz')">Personality Quiz</button>
-      <button class="tab-btn" onclick="showTab('discovery')">Discovery Tab</button>
-      <button class="tab-btn" onclick="showTab('lists')">List Detail</button>
-      <button class="tab-btn" onclick="showTab('restaurant')">Restaurant Detail</button>
-      <button class="tab-btn" onclick="showTab('invite')">Invite to Eat</button>
-      <button class="tab-btn" onclick="showTab('profile')">Profile Quiz</button>
-    </div>
-
-    <!-- QUIZ TAB -->
-    <div id="quiz" class="tab-content active">
-      <div class="section-group">
-        <div class="section-group-header" onclick="toggleSection(this)">
-          <span class="section-group-title">Quiz Onboarding Flow</span>
-          <span class="section-group-toggle">▼</span>
-        </div>
-        <div class="section-group-content">
-          <div class="phone-grid">
-            <!-- Quiz Intro -->
-            <div class="phone-wrapper">
-              <div class="phone-label">1. Quiz Intro</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-body white">
-                    <div class="quiz-intro">
-                      <div class="quiz-emoji">🍜</div>
-                      <h2 class="quiz-title">Let's learn your food personality</h2>
-                      <p class="quiz-subtitle">Answer a few questions so others know what kind of eater you are</p>
-                      <button class="btn btn-primary">Start Quiz</button>
-                      <button class="btn btn-secondary">Skip for now</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- This or That -->
-            <div class="phone-wrapper">
-              <div class="phone-label">2. This or That Question</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-body white">
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width: 20%"></div>
-                    </div>
-                    <p class="question-text">Pho preference?</p>
-                    <div class="option-btn">
-                      <span class="option-text">🥩 Rare beef (tái)</span>
-                    </div>
-                    <div class="option-btn selected">
-                      <span class="option-text">🍖 Well-done (chín)</span>
-                    </div>
-                    <div class="skip-link">
-                      <a href="#">Skip this question</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Spectrum -->
-            <div class="phone-wrapper">
-              <div class="phone-label">3. Spectrum Question</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-body white">
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width: 40%"></div>
-                    </div>
-                    <p class="question-text">Spice tolerance?</p>
-                    <div class="spectrum-container">
-                      <div class="spectrum-labels">
-                        <span class="spectrum-label">None</span>
-                        <span class="spectrum-label">Extreme</span>
-                      </div>
-                      <div class="spectrum-options">
-                        <div class="spectrum-dot">😐</div>
-                        <div class="spectrum-dot">🙂</div>
-                        <div class="spectrum-dot selected">😋</div>
-                        <div class="spectrum-dot">🥵</div>
-                        <div class="spectrum-dot">🔥</div>
-                      </div>
-                    </div>
-                    <div class="skip-link">
-                      <a href="#">Skip this question</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Multiple Choice -->
-            <div class="phone-wrapper">
-              <div class="phone-label">4. Multiple Choice</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-body white">
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width: 60%"></div>
-                    </div>
-                    <p class="question-text">Best meal of the day?</p>
-                    <div class="option-btn">
-                      <span class="option-text">🌅 Breakfast</span>
-                    </div>
-                    <div class="option-btn">
-                      <span class="option-text">☀️ Lunch</span>
-                    </div>
-                    <div class="option-btn selected">
-                      <span class="option-text">🌙 Dinner</span>
-                    </div>
-                    <div class="option-btn">
-                      <span class="option-text">🌃 Late night</span>
-                    </div>
-                    <div class="skip-link">
-                      <a href="#">Skip this question</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Completion -->
-            <div class="phone-wrapper">
-              <div class="phone-label">5. Completion</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-body white">
-                    <div class="quiz-intro">
-                      <div class="quiz-emoji">🎉</div>
-                      <h2 class="quiz-title">Nice!</h2>
-                      <p class="quiz-subtitle">You can answer more questions anytime from your profile</p>
-                      <button class="btn btn-primary">Continue</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DISCOVERY TAB -->
-    <div id="discovery" class="tab-content">
-      <div class="section-group">
-        <div class="section-group-header" onclick="toggleSection(this)">
-          <span class="section-group-title">Discovery Tab</span>
-          <span class="section-group-toggle">▼</span>
-        </div>
-        <div class="section-group-content">
-          <div class="phone-grid">
-            <div class="phone-wrapper">
-              <div class="phone-label">Discovery Home</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-header white">
-                    <span class="screen-title">Discover</span>
-                    <span style="margin-left: auto; font-size: 14px; color: #666;">HCMC ▼</span>
-                  </div>
-                  <div class="screen-body">
-                    <div class="search-bar">
-                      <span class="search-icon">🔍</span>
-                      <input class="search-input" placeholder="Search restaurants or lists" disabled>
-                    </div>
-
-                    <div class="your-lists">
-                      <div class="your-list-card">
-                        <div class="your-list-icon">❤️</div>
-                        <div class="your-list-label">Favorites</div>
-                        <div class="your-list-count">12</div>
-                      </div>
-                      <div class="your-list-card">
-                        <div class="your-list-icon">✓</div>
-                        <div class="your-list-label">Been There</div>
-                        <div class="your-list-count">8</div>
-                      </div>
-                    </div>
-
-                    <div class="category-section">
-                      <div class="category-label">Popular Lists</div>
-                    </div>
-
-                    <div class="list-card">
-                      <div class="list-cover">🍜</div>
-                      <div class="list-info">
-                        <div class="list-name">Best Pho in Saigon</div>
-                        <div class="list-meta">15 spots · Updated Feb 2026</div>
-                        <div class="list-progress">
-                          <div class="list-progress-fill" style="width: 20%"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="list-card">
-                      <div class="list-cover" style="background: linear-gradient(135deg, #667eea, #764ba2);">🥖</div>
-                      <div class="list-info">
-                        <div class="list-name">Best Bánh Mì in D1</div>
-                        <div class="list-meta">8 spots · Updated Jan 2026</div>
-                        <div class="list-progress">
-                          <div class="list-progress-fill" style="width: 37%"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="category-section" style="margin-top: 20px;">
-                      <div class="category-label">Browse by Category</div>
-                      <div class="category-pills">
-                        <span class="pill">🍜 Pho</span>
-                        <span class="pill">🍲 Bún</span>
-                        <span class="pill">🍚 Cơm</span>
-                        <span class="pill">🥖 Bánh Mì</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="bottom-nav">
-                    <div class="nav-item">
-                      <div class="nav-icon">🏠</div>
-                      <div class="nav-label">Browse</div>
-                    </div>
-                    <div class="nav-item active">
-                      <div class="nav-icon">🔍</div>
-                      <div class="nav-label">Discover</div>
-                    </div>
-                    <div class="nav-item">
-                      <div class="nav-icon">💬</div>
-                      <div class="nav-label">Chat</div>
-                    </div>
-                    <div class="nav-item">
-                      <div class="nav-icon">👤</div>
-                      <div class="nav-label">Profile</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- LISTS TAB -->
-    <div id="lists" class="tab-content">
-      <div class="section-group">
-        <div class="section-group-header" onclick="toggleSection(this)">
-          <span class="section-group-title">List Detail View</span>
-          <span class="section-group-toggle">▼</span>
-        </div>
-        <div class="section-group-content">
-          <div class="phone-grid">
-            <div class="phone-wrapper">
-              <div class="phone-label">List with Paywall</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-header white">
-                    <span class="back-btn">←</span>
-                    <span class="screen-title">Best Northern-Style Pho</span>
-                  </div>
-                  <div class="screen-body">
-                    <div class="list-detail-cover">🍜</div>
-                    <div class="list-detail-title">Best Northern-Style Pho</div>
-                    <div class="list-detail-meta">Ho Chi Minh City · 12 spots</div>
-                    <div class="list-detail-desc">Northern-style pho is all about the clear, delicate broth and simple toppings. Here are the best spots in Saigon.</div>
-
-                    <div class="list-progress-section">
-                      <div class="progress-text">Your progress: 3/12 visited</div>
-                      <div class="list-progress" style="height: 8px;">
-                        <div class="list-progress-fill" style="width: 25%"></div>
-                      </div>
-                    </div>
-
-                    <div class="restaurant-card">
-                      <div class="restaurant-rank">#1</div>
-                      <div class="restaurant-info">
-                        <div class="restaurant-name">Phở Thìn Bờ Hồ</div>
-                        <div class="restaurant-rating">⭐ 4.8 · 47 reviews · D1</div>
-                        <div class="restaurant-actions">
-                          <span class="action-btn done">✓ Been There</span>
-                          <span class="action-btn">❤️</span>
-                          <span class="action-btn">📤</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="restaurant-card">
-                      <div class="restaurant-rank">#2</div>
-                      <div class="restaurant-info">
-                        <div class="restaurant-name">Phở Lệ</div>
-                        <div class="restaurant-rating">⭐ 4.6 · 32 reviews · D3</div>
-                        <div class="restaurant-actions">
-                          <span class="action-btn">Mark Visited</span>
-                          <span class="action-btn">❤️</span>
-                          <span class="action-btn">📤</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="restaurant-card">
-                      <div class="restaurant-rank">#3</div>
-                      <div class="restaurant-info">
-                        <div class="restaurant-name">Phở Hòa Pasteur</div>
-                        <div class="restaurant-rating">⭐ 4.5 · 89 reviews · D3</div>
-                        <div class="restaurant-actions">
-                          <span class="action-btn done">✓ Been There</span>
-                          <span class="action-btn">❤️</span>
-                          <span class="action-btn">📤</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="locked-section">
-                      <div class="lock-icon">🔒</div>
-                      <div class="lock-text">See all 12 spots on this list</div>
-                      <button class="unlock-btn">Unlock Full List</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RESTAURANT TAB -->
-    <div id="restaurant" class="tab-content">
-      <div class="section-group">
-        <div class="section-group-header" onclick="toggleSection(this)">
-          <span class="section-group-title">Restaurant Detail</span>
-          <span class="section-group-toggle">▼</span>
-        </div>
-        <div class="section-group-content">
-          <div class="phone-grid">
-            <div class="phone-wrapper">
-              <div class="phone-label">Restaurant with Actions</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-header white">
-                    <span class="back-btn">←</span>
-                    <span class="screen-title">Restaurant</span>
-                  </div>
-                  <div class="screen-body">
-                    <div class="restaurant-gallery">🍜</div>
-                    <div class="restaurant-detail-name">Phở Thìn Bờ Hồ</div>
-                    <div class="restaurant-detail-meta">⭐ 4.8 (47 reviews) · $$ · District 1</div>
-                    <div class="restaurant-detail-meta">📍 13 Lò Đúc, Hai Bà Trưng</div>
-
-                    <div class="action-bar">
-                      <div class="action-bar-btn">
-                        <div class="action-bar-icon">❤️</div>
-                        <div class="action-bar-label">Save</div>
-                      </div>
-                      <div class="action-bar-btn" style="background: #4CAF50; border-color: #4CAF50;">
-                        <div class="action-bar-icon" style="color: #fff;">✓</div>
-                        <div class="action-bar-label" style="color: #fff;">Been Here</div>
-                      </div>
-                      <div class="action-bar-btn">
-                        <div class="action-bar-icon">📤</div>
-                        <div class="action-bar-label">Share</div>
-                      </div>
-                    </div>
-
-                    <button class="cta-btn">🍽️ Invite Friends to Eat Here</button>
-                    <button class="cta-btn secondary">📝 Create Meal Request</button>
-
-                    <div class="appears-on">
-                      <div class="appears-on-title">Appears on Lists</div>
-                      <div class="appears-item">🥇 #1 on Best Northern-Style Pho</div>
-                      <div class="appears-item">🥉 #3 on Best Pho in Saigon</div>
-                    </div>
-
-                    <div style="margin-top: 15px; color: #888; font-size: 13px;">
-                      127 people have been here
-                    </div>
-
-                    <div class="section-header" style="margin-top: 20px;">
-                      <span class="section-title">Reviews (47)</span>
-                      <a href="#" class="section-link">Write Review</a>
-                    </div>
-
-                    <div class="review-card">
-                      <div class="review-header">
-                        <span class="review-stars">⭐⭐⭐⭐⭐</span>
-                        <span class="review-author">Mai L. · Jan 2026</span>
-                      </div>
-                      <div class="review-text">"The broth is incredible - clear and deeply flavorful. Get here early!"</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- INVITE TAB -->
-    <div id="invite" class="tab-content">
-      <div class="section-group">
-        <div class="section-group-header" onclick="toggleSection(this)">
-          <span class="section-group-title">Invite to Eat Flow</span>
-          <span class="section-group-toggle">▼</span>
-        </div>
-        <div class="section-group-content">
-          <div class="phone-grid">
-            <div class="phone-wrapper">
-              <div class="phone-label">Invite Friends</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-header white">
-                    <span class="back-btn">←</span>
-                    <span class="screen-title">Invite to Eat</span>
-                  </div>
-                  <div class="screen-body white">
-                    <div style="text-align: center; padding: 15px 0; border-bottom: 1px solid #eee; margin-bottom: 20px;">
-                      <div style="font-size: 30px; margin-bottom: 8px;">🍜</div>
-                      <div style="font-weight: 600; color: #333;">Phở Thìn Bờ Hồ</div>
-                      <div style="font-size: 13px; color: #888;">District 1</div>
-                    </div>
-
-                    <div class="invite-section">
-                      <div class="invite-label">When?</div>
-                      <div class="time-picker">
-                        <div class="time-btn" style="background: #ff6b35; color: #fff; border-color: #ff6b35;">Today</div>
-                        <div class="time-btn">Tomorrow</div>
-                        <div class="time-btn">Pick Date</div>
-                      </div>
-                      <div class="time-picker" style="margin-top: 10px;">
-                        <div class="time-btn" style="background: #ff6b35; color: #fff; border-color: #ff6b35;">7:00 PM</div>
-                        <div class="time-btn">8:00 PM</div>
-                        <div class="time-btn">Other</div>
-                      </div>
-                    </div>
-
-                    <div class="invite-section">
-                      <div class="invite-label">Who?</div>
-                      <div class="connection-item">
-                        <div class="connection-avatar">M</div>
-                        <div class="connection-name">Mai L.</div>
-                        <div class="connection-check checked">✓</div>
-                      </div>
-                      <div class="connection-item">
-                        <div class="connection-avatar" style="background: linear-gradient(135deg, #11998e, #38ef7d);">D</div>
-                        <div class="connection-name">David T.</div>
-                        <div class="connection-check checked">✓</div>
-                      </div>
-                      <div class="connection-item">
-                        <div class="connection-avatar" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">L</div>
-                        <div class="connection-name">Linh N.</div>
-                        <div class="connection-check"></div>
-                      </div>
-                    </div>
-
-                    <div class="toggle-option">
-                      <div class="toggle-text">Also open to strangers</div>
-                      <div class="toggle-switch"></div>
-                    </div>
-
-                    <button class="cta-btn" style="margin-top: 25px;">Send Invite</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROFILE TAB -->
-    <div id="profile" class="tab-content">
-      <div class="section-group">
-        <div class="section-group-header" onclick="toggleSection(this)">
-          <span class="section-group-title">Quiz on Profile</span>
-          <span class="section-group-toggle">▼</span>
-        </div>
-        <div class="section-group-content">
-          <div class="phone-grid">
-            <div class="phone-wrapper">
-              <div class="phone-label">Profile with Quiz Answers</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-header white">
-                    <span class="back-btn">←</span>
-                    <span class="screen-title">Profile</span>
-                  </div>
-                  <div class="screen-body white">
-                    <div style="text-align: center; padding: 20px 0;">
-                      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #fff;">M</div>
-                      <div style="font-size: 20px; font-weight: 600; color: #333;">Mai, 28</div>
-                      <div style="font-size: 14px; color: #888; margin-top: 4px;">Local · 12 meals</div>
-                    </div>
-
-                    <div style="padding: 15px; background: #f9f9f9; border-radius: 12px; margin-bottom: 20px;">
-                      <p style="font-size: 14px; color: #333; line-height: 1.5;">"Always hunting for the best bánh mì in Saigon. Love hole-in-the-wall spots."</p>
-                    </div>
-
-                    <div class="section-header">
-                      <span class="section-title">🍜 Food Personality</span>
-                      <a href="#" class="section-link">See all 12</a>
-                    </div>
-
-                    <div style="background: #fff; border-radius: 12px; padding: 5px 15px; border: 1px solid #eee;">
-                      <div class="quiz-answer">
-                        <span class="answer-label">Pho</span>
-                        <span class="answer-value">Rare beef (tái)</span>
-                      </div>
-                      <div class="quiz-answer">
-                        <span class="answer-label">Spice</span>
-                        <span class="answer-value">🌶️🌶️🌶️ Hot</span>
-                      </div>
-                      <div class="quiz-answer">
-                        <span class="answer-label">Setting</span>
-                        <span class="answer-value">Street food > Restaurant</span>
-                      </div>
-                      <div class="quiz-answer">
-                        <span class="answer-label">Adventure</span>
-                        <span class="answer-value">"I'll try anything once"</span>
-                      </div>
-                      <div class="quiz-answer">
-                        <span class="answer-label">Sharing</span>
-                        <span class="answer-value">Everything shared</span>
-                      </div>
-                    </div>
-
-                    <div class="section-header" style="margin-top: 20px;">
-                      <span class="section-title">Cuisines</span>
-                    </div>
-                    <div class="category-pills">
-                      <span class="pill">🍜 Pho</span>
-                      <span class="pill">🍲 Bún</span>
-                      <span class="pill">🥖 Bánh Mì</span>
-                      <span class="pill">🍢 Street Food</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="phone-wrapper">
-              <div class="phone-label">Answer More Questions</div>
-              <div class="phone">
-                <div class="screen">
-                  <div class="screen-header white">
-                    <span class="back-btn">←</span>
-                    <span class="screen-title">Food Personality</span>
-                  </div>
-                  <div class="screen-body white">
-                    <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee; margin-bottom: 20px;">
-                      <div style="font-size: 40px; margin-bottom: 10px;">🍜</div>
-                      <div style="font-size: 16px; color: #333; font-weight: 600;">12 of 29 answered</div>
-                      <div style="font-size: 13px; color: #888; margin-top: 5px;">Answer more to complete your profile</div>
-                    </div>
-
-                    <p class="question-text" style="font-size: 18px;">Trying new places?</p>
-                    <div class="option-btn">
-                      <span class="option-text">🔍 Love discovering new spots</span>
-                    </div>
-                    <div class="option-btn">
-                      <span class="option-text">🏠 Stick to my favorites</span>
-                    </div>
-                    <div class="skip-link">
-                      <a href="#">Skip · 17 more questions</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Phase Nav -->
+  <div class="phase-nav">
+    <button class="phase-btn active" data-phase="mvp" onclick="selectPhase('mvp')">MVP</button>
+    <button class="phase-btn" data-phase="phase1" onclick="selectPhase('phase1')">Phase 1 — Discovery</button>
+    <button class="phase-btn" data-phase="phase2" onclick="selectPhase('phase2')">Phase 2 — Social</button>
+    <button class="phase-btn" data-phase="phase3" onclick="selectPhase('phase3')">Phase 3 — Monetization</button>
   </div>
 
-  <script>
-    function showTab(tabId) {
-      // Hide all tabs
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
+  <!-- Feature Nav Rows -->
+  <div class="feature-nav-row visible" data-phase="mvp">
+    <button class="tab-btn active" onclick="selectFeature('browse', this)">Browse &amp; Join</button>
+    <button class="tab-btn" onclick="selectFeature('create', this)">Create Request</button>
+    <button class="tab-btn" onclick="selectFeature('chat', this)">Chat</button>
+    <button class="tab-btn" onclick="selectFeature('rating', this)">Post-Meal Rating</button>
+  </div>
 
-      // Show selected tab
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
-    }
+  <div class="feature-nav-row" data-phase="phase1">
+    <button class="tab-btn" onclick="selectFeature('quiz', this)">Personality Quiz</button>
+    <button class="tab-btn" onclick="selectFeature('discovery', this)">Discovery</button>
+    <button class="tab-btn" onclick="selectFeature('lists', this)">Curated Lists</button>
+    <button class="tab-btn" onclick="selectFeature('restaurant', this)">Restaurant Detail</button>
+    <button class="tab-btn" onclick="selectFeature('profile', this)">Profile</button>
+  </div>
 
-    function toggleSection(header) {
-      header.classList.toggle('collapsed');
-      const content = header.nextElementSibling;
-      content.classList.toggle('hidden');
-    }
-  </script>
+  <div class="feature-nav-row" data-phase="phase2">
+    <button class="tab-btn" onclick="selectFeature('invite', this)">Invite to Eat</button>
+    <button class="tab-btn" onclick="selectFeature('sharecard', this)">Itinerary Share Card</button>
+  </div>
+
+  <div class="feature-nav-row" data-phase="phase3">
+    <button class="tab-btn" onclick="selectFeature('history', this)">Food History</button>
+    <button class="tab-btn" onclick="selectFeature('ai', this)">AI Insights</button>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MVP SCREENS                                                   -->
+  <!-- ============================================================ -->
+
+  <!-- BROWSE & JOIN -->
+  <div class="tab-content active" id="browse">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Browse Feed -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Browse Feed</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">Browse</span>
+              <span class="header-right">⚙️</span>
+            </div>
+            <div class="screen-body">
+              <div class="filter-row">
+                <span class="filter-pill active">All</span>
+                <span class="filter-pill">District 1</span>
+                <span class="filter-pill">Thao Dien</span>
+                <span class="filter-pill">Vietnamese</span>
+                <span class="filter-pill">Budget</span>
+              </div>
+              <!-- Card 1 -->
+              <div class="request-card">
+                <div class="request-card-top">
+                  <div class="request-card-icon" style="background:#fff5f2;">🍜</div>
+                  <div class="request-card-info">
+                    <div class="request-card-name">Pho Thin</div>
+                    <div class="request-card-meta">District 1 · 12:00 PM</div>
+                  </div>
+                </div>
+                <div class="request-card-bottom">
+                  <div class="avatar-row">
+                    <div class="mini-avatar" style="background:#ff6b35;">M</div>
+                    <div class="mini-avatar" style="background:#667eea;">L</div>
+                  </div>
+                  <span class="spots-badge">2 spots left</span>
+                  <button class="join-btn-small">Join</button>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="request-card">
+                <div class="request-card-top">
+                  <div class="request-card-icon" style="background:#f0f4ff;">🍛</div>
+                  <div class="request-card-info">
+                    <div class="request-card-name">Bún Bò Huế</div>
+                    <div class="request-card-meta">Thao Dien · 6:30 PM</div>
+                  </div>
+                </div>
+                <div class="request-card-bottom">
+                  <div class="avatar-row">
+                    <div class="mini-avatar" style="background:#11998e;">H</div>
+                  </div>
+                  <span class="spots-badge">3 spots left</span>
+                  <button class="join-btn-small">Join</button>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div class="request-card">
+                <div class="request-card-top">
+                  <div class="request-card-icon" style="background:#fff0f5;">🍲</div>
+                  <div class="request-card-info">
+                    <div class="request-card-name">Lẻ Quán</div>
+                    <div class="request-card-meta">District 7 · 7:00 PM · Approval</div>
+                  </div>
+                </div>
+                <div class="request-card-bottom">
+                  <div class="avatar-row">
+                    <div class="mini-avatar" style="background:#e91e63;">T</div>
+                    <div class="mini-avatar" style="background:#FFB800;">N</div>
+                  </div>
+                  <span class="spots-badge">1 spot left</span>
+                  <button class="join-btn-small">Request</button>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Request Detail -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Request Detail</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Meal Request</span>
+            </div>
+            <div class="screen-body white">
+              <!-- Creator mini card -->
+              <div style="display:flex;align-items:center;gap:12px;padding:14px 0 10px;border-bottom:1px solid #f0f0f0;margin-bottom:14px;">
+                <div style="width:48px;height:48px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;flex-shrink:0;">M</div>
+                <div style="flex:1;">
+                  <div style="font-size:15px;font-weight:600;color:#333;">Mai</div>
+                  <div style="font-size:11px;color:#999;">25 · Female</div>
+                  <span style="display:inline-block;background:#fff5f2;color:#ff6b35;font-size:11px;padding:2px 8px;border-radius:10px;margin-top:3px;">Local</span>
+                </div>
+              </div>
+              <div style="font-size:12px;color:#888;font-style:italic;margin-bottom:14px;">"I eat pho every morning"</div>
+              <!-- Info box -->
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">Cuisine</span><span class="info-value">Noodles &amp; Congee</span></div>
+                <div class="info-row"><span class="info-label">Budget</span><span class="info-value">100–200k</span></div>
+                <div class="info-row"><span class="info-label">Time</span><span class="info-value">Today 12:00 PM</span></div>
+                <div class="info-row"><span class="info-label">District</span><span class="info-value">District 1</span></div>
+                <div class="info-row"><span class="info-label">Spots</span><span class="info-value green">2/4 remaining</span></div>
+              </div>
+              <!-- Restaurant -->
+              <div style="font-size:14px;font-weight:600;color:#333;">Pho Thin</div>
+              <div style="font-size:12px;color:#888;margin-bottom:12px;">123 Nguyen Hue, D1</div>
+              <!-- Who's joined -->
+              <div style="font-size:12px;color:#999;margin-bottom:6px;">Already joined</div>
+              <div class="avatar-row" style="margin-bottom:18px;">
+                <div class="mini-avatar" style="background:#ff6b35;width:32px;height:32px;font-size:13px;">M</div>
+                <div class="mini-avatar" style="background:#667eea;width:32px;height:32px;font-size:13px;">L</div>
+              </div>
+              <button class="btn btn-green">Join This Meal</button>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 3: You're In! -->
+      <div class="phone-wrapper">
+        <div class="phone-label">You're In!</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-body white" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div class="celebration">
+                <div class="celebration-emoji">🎉</div>
+                <div class="celebration-title">You're In!</div>
+                <div class="celebration-sub">You've joined Mai's meal at Pho Thin. The group chat is now open — say hi!</div>
+                <button class="btn btn-primary">Open Chat</button>
+                <button class="btn btn-secondary">View Details</button>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item" style="position:relative;"><div class="nav-icon">💬</div><div class="nav-label">Chats</div><span style="position:absolute;top:2px;right:12px;background:#ff6b35;color:#fff;border-radius:50%;width:15px;height:15px;font-size:9px;display:flex;align-items:center;justify-content:center;">1</span></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid browse -->
+  </div><!-- end tab-content browse -->
+
+  <!-- CREATE REQUEST -->
+  <div class="tab-content" id="create">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Pick a Restaurant -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Pick a Restaurant</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Create Request</span>
+              <span style="font-size:12px;color:#999;">1/3</span>
+            </div>
+            <div class="screen-body">
+              <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input class="search-input" type="text" placeholder="Search restaurants..." readonly>
+              </div>
+              <div class="section-label-gray">RECENT</div>
+              <div class="restaurant-pick-item">
+                <span class="restaurant-pick-icon">🍜</span>
+                <div class="restaurant-pick-info">
+                  <div class="restaurant-pick-name">Pho Thin</div>
+                  <div class="restaurant-pick-meta">District 1 · Vietnamese</div>
+                </div>
+                <span class="restaurant-pick-arrow">›</span>
+              </div>
+              <div class="restaurant-pick-item">
+                <span class="restaurant-pick-icon">🍛</span>
+                <div class="restaurant-pick-info">
+                  <div class="restaurant-pick-name">Bún Bò Huế</div>
+                  <div class="restaurant-pick-meta">Thao Dien · Northern</div>
+                </div>
+                <span class="restaurant-pick-arrow">›</span>
+              </div>
+              <div class="section-label-gray">ALL RESTAURANTS</div>
+              <div class="restaurant-pick-item">
+                <span class="restaurant-pick-icon">🍲</span>
+                <div class="restaurant-pick-info">
+                  <div class="restaurant-pick-name">Lẻ Quán</div>
+                  <div class="restaurant-pick-meta">District 7 · Southern</div>
+                </div>
+                <span class="restaurant-pick-arrow">›</span>
+              </div>
+              <div class="restaurant-pick-item">
+                <span class="restaurant-pick-icon">🍕</span>
+                <div class="restaurant-pick-info">
+                  <div class="restaurant-pick-name">Pizza Mđ</div>
+                  <div class="restaurant-pick-meta">District 1 · Italian</div>
+                </div>
+                <span class="restaurant-pick-arrow">›</span>
+              </div>
+              <div class="restaurant-pick-item">
+                <span class="restaurant-pick-icon">🥘</span>
+                <div class="restaurant-pick-info">
+                  <div class="restaurant-pick-name">Hủ Tiếu</div>
+                  <div class="restaurant-pick-meta">District 5 · Southern</div>
+                </div>
+                <span class="restaurant-pick-arrow">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Meal Details -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Meal Details</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Create Request</span>
+              <span style="font-size:12px;color:#999;">2/3</span>
+            </div>
+            <div class="screen-body">
+              <div class="selected-restaurant-box">
+                <span class="selected-restaurant-emoji">🍜</span>
+                <div>
+                  <div class="selected-restaurant-name">Pho Thin</div>
+                  <div class="selected-restaurant-meta">District 1</div>
+                </div>
+              </div>
+              <div class="invite-label">When?</div>
+              <div class="time-picker" style="margin-bottom:16px;">
+                <div class="time-btn time-pill-active">Today</div>
+                <div class="time-btn time-pill-active">7:00 PM</div>
+                <div class="time-btn">Tomorrow</div>
+              </div>
+              <div class="invite-label">Group Size</div>
+              <div class="group-size-row">
+                <div class="group-size-btn">−</div>
+                <div class="group-avatar" style="background:#ff6b35;">M</div>
+                <div class="group-avatar" style="background:#667eea;">You</div>
+                <div class="group-avatar placeholder">+</div>
+                <div class="group-avatar placeholder">+</div>
+                <div class="group-size-btn">+</div>
+              </div>
+              <div style="text-align:center;font-size:12px;color:#999;margin-bottom:16px;">2–4 people</div>
+              <div class="invite-label">Join Type</div>
+              <div class="join-type-row">
+                <div class="join-type-box selected">
+                  <div class="join-type-title">Open</div>
+                  <div class="join-type-desc">Anyone can join</div>
+                </div>
+                <div class="join-type-box">
+                  <div class="join-type-title">Approval</div>
+                  <div class="join-type-desc">You approve each person</div>
+                </div>
+              </div>
+              <button class="btn btn-primary">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 3: Request Created! -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Request Created!</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Done</span>
+            </div>
+            <div class="screen-body white" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div class="celebration">
+                <div class="celebration-emoji">🍜</div>
+                <div class="celebration-title">Request Created!</div>
+                <div class="celebration-sub">Your meal at Pho Thin is live. People nearby can see and join it.</div>
+              </div>
+              <div class="info-box" style="width:100%;">
+                <div class="info-row"><span class="info-label">Restaurant</span><span class="info-value">Pho Thin</span></div>
+                <div class="info-row"><span class="info-label">Time</span><span class="info-value">Today 7:00 PM</span></div>
+                <div class="info-row"><span class="info-label">Size</span><span class="info-value">Up to 4</span></div>
+                <div class="info-row"><span class="info-label">Type</span><span class="info-value">Open</span></div>
+              </div>
+              <button class="btn btn-primary">See My Request</button>
+              <button class="btn btn-secondary">Share Request</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid create -->
+  </div><!-- end tab-content create -->
+
+  <!-- CHAT -->
+  <div class="tab-content" id="chat">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Your Chats -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Your Chats</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">Chats</span>
+              <span class="header-right">✏️</span>
+            </div>
+            <div class="screen-body white">
+              <!-- Chat 1 unread -->
+              <div class="chat-list-item">
+                <span class="chat-list-emoji">🍜</span>
+                <div class="chat-list-content">
+                  <div class="chat-list-title">Pho Thin — Tonight</div>
+                  <div class="chat-list-preview unread">Mai: See you there! 😊</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                  <span class="chat-list-time">2m ago</span>
+                  <span class="unread-badge">2</span>
+                </div>
+              </div>
+              <!-- Chat 2 read -->
+              <div class="chat-list-item">
+                <span class="chat-list-emoji">🍲</span>
+                <div class="chat-list-content">
+                  <div class="chat-list-title">Lẻ Quán — Last Friday</div>
+                  <div class="chat-list-preview">Linh: Great food!</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;">
+                  <span class="chat-list-time">1d ago</span>
+                </div>
+              </div>
+              <!-- Chat 3 unread -->
+              <div class="chat-list-item">
+                <span class="chat-list-emoji">🍛</span>
+                <div class="chat-list-content">
+                  <div class="chat-list-title">Bún Bò Huế — Tomorrow</div>
+                  <div class="chat-list-preview unread">Hoa: What time should we meet?</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                  <span class="chat-list-time">3h ago</span>
+                  <span class="unread-badge">1</span>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item active" style="position:relative;"><div class="nav-icon">💬</div><div class="nav-label">Chats</div><span style="position:absolute;top:2px;right:10px;background:#ff6b35;color:#fff;border-radius:50%;width:15px;height:15px;font-size:9px;display:flex;align-items:center;justify-content:center;">3</span></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Group Chat -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Group Chat</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Pho Thin — Tonight</span>
+            </div>
+            <div class="chat-info-bar">
+              <span>🍜</span>
+              <span class="chat-info-text">Tonight at 12:00 PM · District 1</span>
+            </div>
+            <div class="screen-body" style="padding:12px 10px;">
+              <div class="chat-msg">
+                <div class="chat-sender">Mai</div>
+                <div class="chat-bubble">Hey everyone! I'm so excited 😄</div>
+                <div class="chat-time">11:52</div>
+              </div>
+              <div class="chat-msg right">
+                <div class="chat-bubble">On my way! Should be there by 12</div>
+                <div class="chat-time">11:55</div>
+              </div>
+              <div class="chat-msg">
+                <div class="chat-sender">Linh</div>
+                <div class="chat-bubble">I'm already at the restaurant. It's amazing!</div>
+                <div class="chat-time">11:58</div>
+              </div>
+              <div class="chat-msg right">
+                <div class="chat-bubble">Save me a spot 😂</div>
+                <div class="chat-time">11:59</div>
+              </div>
+              <div class="chat-msg">
+                <div class="chat-sender">Mai</div>
+                <div class="chat-bubble">Already done! Table's ready</div>
+                <div class="chat-time">12:00</div>
+              </div>
+            </div>
+            <div class="chat-input-bar">
+              <input class="chat-input" type="text" placeholder="Message..." readonly>
+              <span class="chat-send">➜</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid chat -->
+  </div><!-- end tab-content chat -->
+
+  <!-- POST-MEAL RATING -->
+  <div class="tab-content" id="rating">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Rate Your Meal -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Rate Your Meal</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">Rate Your Meal</span>
+            </div>
+            <div class="screen-body white">
+              <div style="font-size:12px;color:#999;text-align:center;padding:10px 0 4px;">Pho Thin · Today at 12:00 PM</div>
+              <div class="section-title" style="text-align:center;margin-bottom:14px;">Did everyone show up?</div>
+              <!-- Mai -->
+              <div class="rating-person-row">
+                <div class="rating-avatar" style="background:#ff6b35;">M</div>
+                <span class="rating-name">Mai</span>
+                <div class="rating-toggle">
+                  <button class="rating-btn yes">Yes</button>
+                  <button class="rating-btn">No</button>
+                </div>
+              </div>
+              <!-- Linh -->
+              <div class="rating-person-row">
+                <div class="rating-avatar" style="background:#667eea;">L</div>
+                <span class="rating-name">Linh</span>
+                <div class="rating-toggle">
+                  <button class="rating-btn yes">Yes</button>
+                  <button class="rating-btn">No</button>
+                </div>
+              </div>
+              <!-- Hoa — unselected -->
+              <div class="rating-person-row">
+                <div class="rating-avatar" style="background:#11998e;">H</div>
+                <span class="rating-name">Hoa</span>
+                <div class="rating-toggle">
+                  <button class="rating-btn">Yes</button>
+                  <button class="rating-btn">No</button>
+                </div>
+              </div>
+              <div style="margin-top:24px;">
+                <button class="btn btn-primary">Submit Ratings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Thanks! -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Thanks!</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-body white" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div class="celebration">
+                <div class="celebration-emoji">⭐</div>
+                <div class="celebration-title">Thanks!</div>
+                <div class="celebration-sub">Your ratings help build trust in the community. You'll earn a meal badge after your 5th meal!</div>
+              </div>
+              <div class="info-box" style="width:100%;">
+                <div class="info-row"><span class="info-label">Meals eaten</span><span class="info-value">3</span></div>
+                <div class="info-row"><span class="info-label">Trust score</span><span class="info-value">Building</span></div>
+                <div class="info-row"><span class="info-label">Next badge</span><span class="info-value green">2 more meals</span></div>
+              </div>
+              <button class="btn btn-primary">Back to Home</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid rating -->
+  </div><!-- end tab-content rating -->
+
+  <!-- ============================================================ -->
+  <!-- PHASE 1 SCREENS                                               -->
+  <!-- ============================================================ -->
+
+  <!-- PERSONALITY QUIZ -->
+  <div class="tab-content" id="quiz">
+    <div class="phone-grid">
+
+      <!-- Phone 1: This or That -->
+      <div class="phone-wrapper">
+        <div class="phone-label">This or That</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Food Quiz</span>
+            </div>
+            <div class="screen-body white">
+              <div class="progress-bar"><div class="progress-fill" style="width:30%;"></div></div>
+              <div class="question-text">Pick one: What's your ideal Tuesday night?</div>
+              <div class="option-btn selected">
+                <span class="option-text">🍜 A steaming bowl of pho at a hole-in-the-wall</span>
+              </div>
+              <div class="option-btn">
+                <span class="option-text">🍷 A new restaurant with a great wine list</span>
+              </div>
+              <div class="skip-link"><a href="#">Skip this one</a></div>
+              <div style="text-align:center;font-size:12px;color:#bbb;margin-top:16px;">Question 2 of 5</div>
+              <div style="margin-top:20px;">
+                <button class="btn btn-primary">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Spectrum Question -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Spectrum Question</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Food Quiz</span>
+            </div>
+            <div class="screen-body white">
+              <div class="progress-bar"><div class="progress-fill" style="width:60%;"></div></div>
+              <div class="question-text">How adventurous are you with new cuisines?</div>
+              <div class="spectrum-container">
+                <div class="spectrum-labels">
+                  <span class="spectrum-label">Play it safe</span>
+                  <span class="spectrum-label">Try anything</span>
+                </div>
+                <div class="spectrum-options">
+                  <div class="spectrum-dot">😶</div>
+                  <div class="spectrum-dot">🙂</div>
+                  <div class="spectrum-dot">😃</div>
+                  <div class="spectrum-dot selected">🤩</div>
+                  <div class="spectrum-dot">🔥</div>
+                </div>
+              </div>
+              <div class="skip-link"><a href="#">Skip this one</a></div>
+              <div style="margin-top:24px;">
+                <button class="btn btn-primary">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid quiz -->
+  </div><!-- end tab-content quiz -->
+
+  <!-- DISCOVERY -->
+  <div class="tab-content" id="discovery">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Explore -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Explore</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">Discover</span>
+              <span class="header-right">🔍</span>
+            </div>
+            <div class="screen-body">
+              <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input class="search-input" type="text" placeholder="Search cuisines, spots..." readonly>
+              </div>
+              <div class="section-header">
+                <span class="section-title">Categories</span>
+                <a href="#" class="section-link">See all</a>
+              </div>
+              <div class="category-pills" style="margin-bottom:14px;">
+                <span class="pill">🍜 Noodles</span>
+                <span class="pill">🍛 Curries</span>
+                <span class="pill">🥗 Healthy</span>
+                <span class="pill">🍕 Pizza</span>
+                <span class="pill">🍱 Japanese</span>
+              </div>
+              <div class="section-header">
+                <span class="section-title">Trending Lists</span>
+                <a href="#" class="section-link">See all</a>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#fff5f2;">🍜</div>
+                <div class="list-info">
+                  <div class="list-name">Top 10 Pho in HCMC</div>
+                  <div class="list-meta">10 spots · Updated today</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:70%;"></div></div>
+                </div>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#f0f4ff;">🌙</div>
+                <div class="list-info">
+                  <div class="list-name">Late Night Eats</div>
+                  <div class="list-meta">8 spots · Thao Dien focus</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:40%;"></div></div>
+                </div>
+              </div>
+              <div class="section-header">
+                <span class="section-title">For You</span>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#fff0f5;">🥘</div>
+                <div class="list-info">
+                  <div class="list-name">Comfort Food Classics</div>
+                  <div class="list-meta">12 spots · Based on your taste</div>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item active"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: For You — Personalized -->
+      <div class="phone-wrapper">
+        <div class="phone-label">For You — Personalized</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Based on Your Taste</span>
+            </div>
+            <div class="screen-body">
+              <div style="background:#fff5f2;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px;color:#ff6b35;font-weight:500;">✨ These lists match your food personality</div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#fff5f2;">🍜</div>
+                <div class="list-info">
+                  <div class="list-name">Top 10 Pho in HCMC</div>
+                  <div class="list-meta">10 spots · Updated today</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:70%;"></div></div>
+                </div>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#fff0f5;">🥘</div>
+                <div class="list-info">
+                  <div class="list-name">Comfort Food Classics</div>
+                  <div class="list-meta">12 spots · Southern cuisine</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:55%;"></div></div>
+                </div>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#f0f4ff;">🌙</div>
+                <div class="list-info">
+                  <div class="list-name">Late Night Eats</div>
+                  <div class="list-meta">8 spots · Thao Dien focus</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:40%;"></div></div>
+                </div>
+              </div>
+              <div class="restaurant-pick-item">
+                <span class="restaurant-pick-icon">🍜</span>
+                <div class="restaurant-pick-info">
+                  <div class="restaurant-pick-name">Pho Binh</div>
+                  <div class="restaurant-pick-meta">District 1 · Matches your top 3 preferences</div>
+                </div>
+                <span class="restaurant-pick-arrow">›</span>
+              </div>
+              <div class="restaurant-pick-item">
+                <span class="restaurant-pick-icon">🍲</span>
+                <div class="restaurant-pick-info">
+                  <div class="restaurant-pick-name">Lẻ Quán</div>
+                  <div class="restaurant-pick-meta">District 7 · Popular with locals like you</div>
+                </div>
+                <span class="restaurant-pick-arrow">›</span>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item active"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid discovery -->
+  </div><!-- end tab-content discovery -->
+
+  <!-- CURATED LISTS -->
+  <div class="tab-content" id="lists">
+    <div class="phone-grid">
+
+      <!-- Phone 1: All Lists -->
+      <div class="phone-wrapper">
+        <div class="phone-label">All Lists</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">Curated Lists</span>
+            </div>
+            <div class="screen-body">
+              <div class="filter-row">
+                <span class="filter-pill active">All</span>
+                <span class="filter-pill">Noodles</span>
+                <span class="filter-pill">District 1</span>
+                <span class="filter-pill">Trending</span>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#fff5f2;">🍜</div>
+                <div class="list-info">
+                  <div class="list-name">Top 10 Pho in HCMC</div>
+                  <div class="list-meta">10 spots · Updated today</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:70%;"></div></div>
+                </div>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#f0f4ff;">🌙</div>
+                <div class="list-info">
+                  <div class="list-name">Late Night Eats</div>
+                  <div class="list-meta">8 spots · Thao Dien focus</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:40%;"></div></div>
+                </div>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#f0fff4;">💎</div>
+                <div class="list-info">
+                  <div class="list-name">Hidden Gems</div>
+                  <div class="list-meta">6 spots · Off the beaten path</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:20%;"></div></div>
+                </div>
+              </div>
+              <div class="list-card">
+                <div class="list-cover" style="background:#fff0f5;">🥘</div>
+                <div class="list-info">
+                  <div class="list-name">Comfort Food Classics</div>
+                  <div class="list-meta">12 spots · Southern cuisine</div>
+                  <div class="list-progress"><div class="list-progress-fill" style="width:55%;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item active"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: List Detail with Paywall -->
+      <div class="phone-wrapper">
+        <div class="phone-label">List Detail with Paywall</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Top 10 Pho in HCMC</span>
+            </div>
+            <div class="screen-body white">
+              <!-- List header -->
+              <div style="text-align:center;padding:14px 0 10px;">
+                <div style="font-size:36px;">🍜</div>
+                <div style="font-size:13px;color:#888;">10 spots across HCMC</div>
+                <div style="font-size:12px;color:#bbb;">Updated today</div>
+              </div>
+              <!-- Ranked restaurants -->
+              <div class="request-card" style="display:flex;align-items:center;gap:10px;padding:10px 12px;">
+                <span style="font-size:18px;font-weight:700;color:#ff6b35;min-width:22px;">1</span>
+                <div style="flex:1;">
+                  <div class="request-card-name">Pho Thin</div>
+                  <div class="request-card-meta">District 1 · Vietnamese</div>
+                </div>
+                <span style="font-size:14px;color:#bbb;">☐</span>
+              </div>
+              <div class="request-card" style="display:flex;align-items:center;gap:10px;padding:10px 12px;">
+                <span style="font-size:18px;font-weight:700;color:#ff6b35;min-width:22px;">2</span>
+                <div style="flex:1;">
+                  <div class="request-card-name">Pho Binh</div>
+                  <div class="request-card-meta">Bui Vien · Vietnamese</div>
+                </div>
+                <span style="font-size:14px;color:#bbb;">☐</span>
+              </div>
+              <div class="request-card" style="display:flex;align-items:center;gap:10px;padding:10px 12px;">
+                <span style="font-size:18px;font-weight:700;color:#ff6b35;min-width:22px;">3</span>
+                <div style="flex:1;">
+                  <div class="request-card-name">Pho Dac Kiet</div>
+                  <div class="request-card-meta">District 5 · Vietnamese</div>
+                </div>
+                <span style="font-size:14px;color:#bbb;">☐</span>
+              </div>
+              <!-- Blurred items 4 & 5 -->
+              <div class="request-card" style="display:flex;align-items:center;gap:10px;padding:10px 12px;opacity:0.3;filter:blur(2px);pointer-events:none;">
+                <span style="font-size:18px;font-weight:700;color:#ff6b35;min-width:22px;">4</span>
+                <div style="flex:1;">
+                  <div class="request-card-name">Pho Huong Lan</div>
+                  <div class="request-card-meta">District 7 · Vietnamese</div>
+                </div>
+                <span style="font-size:14px;color:#bbb;">☐</span>
+              </div>
+              <div class="request-card" style="display:flex;align-items:center;gap:10px;padding:10px 12px;opacity:0.3;filter:blur(2px);pointer-events:none;">
+                <span style="font-size:18px;font-weight:700;color:#ff6b35;min-width:22px;">5</span>
+                <div style="flex:1;">
+                  <div class="request-card-name">Pho Mai Hoa</div>
+                  <div class="request-card-meta">Thao Dien · Vietnamese</div>
+                </div>
+                <span style="font-size:14px;color:#bbb;">☐</span>
+              </div>
+              <!-- Locked section -->
+              <div class="locked-section">
+                <div class="lock-icon">🔒</div>
+                <div class="lock-text">See all 10 spots — upgrade to Premium</div>
+                <button class="unlock-btn">Unlock · $0.99</button>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item active"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid lists -->
+  </div><!-- end tab-content lists -->
+
+  <!-- RESTAURANT DETAIL -->
+  <div class="tab-content" id="restaurant">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Restaurant Info -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Restaurant Info</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Restaurant</span>
+            </div>
+            <div class="screen-body white">
+              <div class="restaurant-gallery" style="background:#fff5f2;">🍜</div>
+              <div class="restaurant-detail-name">Pho Thin</div>
+              <div class="restaurant-detail-meta">District 1 · Vietnamese · $$</div>
+              <div class="restaurant-detail-meta">123 Nguyen Hue Street</div>
+              <div class="action-bar">
+                <div class="action-bar-btn"><div class="action-bar-icon">❤️</div><div class="action-bar-label">Save</div></div>
+                <div class="action-bar-btn"><div class="action-bar-icon">📝</div><div class="action-bar-label">Review</div></div>
+                <div class="action-bar-btn"><div class="action-bar-icon">✓</div><div class="action-bar-label">Been There</div></div>
+                <div class="action-bar-btn"><div class="action-bar-icon">•••</div><div class="action-bar-label">More</div></div>
+              </div>
+              <div class="section-title" style="margin-bottom:6px;">About</div>
+              <div style="font-size:13px;color:#666;line-height:1.5;margin-bottom:12px;">A legendary pho spot run by a 3rd-generation family. Open since 1985.</div>
+              <div class="review-card">
+                <div class="review-header">
+                  <span class="review-stars">★★★★★</span>
+                  <span class="review-author">Mai · 2 days ago</span>
+                </div>
+                <div class="review-text">Best pho in the city, hands down.</div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item active"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Open Requests Here -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Open Requests Here</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Pho Thin</span>
+            </div>
+            <div class="screen-body white">
+              <!-- Compact gallery -->
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 0 6px;">
+                <div style="width:60px;height:60px;border-radius:14px;background:#fff5f2;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🍜</div>
+                <div>
+                  <div class="restaurant-detail-name" style="font-size:17px;">Pho Thin</div>
+                  <div class="restaurant-detail-meta">District 1 · Vietnamese</div>
+                </div>
+              </div>
+              <!-- Open requests -->
+              <div class="open-requests-section" style="margin-top:10px;">
+                <div class="open-requests-title"><span class="live-dot"></span> Open Requests Now</div>
+                <div class="mini-request">
+                  <span class="mini-request-time">12:00</span>
+                  <div class="mini-request-info">
+                    <div class="mini-request-name">Mai's Meal</div>
+                    <div class="mini-request-meta">2 spots left</div>
+                  </div>
+                  <button class="mini-request-join">Join</button>
+                </div>
+                <div class="mini-request">
+                  <span class="mini-request-time">6:30</span>
+                  <div class="mini-request-info">
+                    <div class="mini-request-name">Evening Pho</div>
+                    <div class="mini-request-meta">Open · 3 spots</div>
+                  </div>
+                  <button class="mini-request-join">Join</button>
+                </div>
+                <div class="mini-request">
+                  <span class="mini-request-time">7:00</span>
+                  <div class="mini-request-info">
+                    <div class="mini-request-name">Friends &amp; Pho</div>
+                    <div class="mini-request-meta">Approval needed</div>
+                  </div>
+                  <button class="mini-request-join">Request</button>
+                </div>
+              </div>
+              <div style="margin-top:18px;">
+                <button class="btn btn-primary">Create Request Here</button>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item active"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid restaurant -->
+  </div><!-- end tab-content restaurant -->
+
+  <!-- PROFILE -->
+  <div class="tab-content" id="profile">
+    <div class="phone-grid">
+
+      <!-- Phone 1: My Profile -->
+      <div class="phone-wrapper">
+        <div class="phone-label">My Profile</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">Profile</span>
+              <span class="header-right">⚙️</span>
+            </div>
+            <div class="screen-body white">
+              <!-- Avatar & name -->
+              <div style="text-align:center;padding:18px 0 10px;">
+                <div style="width:72px;height:72px;border-radius:50%;background:#ff6b35;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;margin:0 auto 8px;">You</div>
+                <div style="font-size:18px;font-weight:600;color:#333;">You</div>
+                <span style="display:inline-block;background:#fff5f2;color:#ff6b35;font-size:12px;padding:3px 10px;border-radius:12px;margin-top:4px;">Local</span>
+              </div>
+              <!-- Stats -->
+              <div class="stats-row">
+                <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Meals</div></div>
+                <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">Connections</div></div>
+                <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">Lists</div></div>
+              </div>
+              <!-- Food Personality -->
+              <div class="section-title" style="margin-bottom:8px;">Food Personality</div>
+              <div class="quiz-answer"><span class="answer-label">Ideal Tuesday?</span><span class="answer-value">Pho hole-in-the-wall</span></div>
+              <div class="quiz-answer"><span class="answer-label">Adventure level?</span><span class="answer-value">Pretty adventurous</span></div>
+              <div class="quiz-answer"><span class="answer-label">Favorite cuisine?</span><span class="answer-value">Vietnamese</span></div>
+              <!-- Bio -->
+              <div class="section-title" style="margin-top:14px;margin-bottom:6px;">Bio</div>
+              <div style="font-size:13px;color:#666;line-height:1.5;">I eat pho every morning and try a new restaurant every week.</div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item active"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid profile -->
+  </div><!-- end tab-content profile -->
+
+  <!-- ============================================================ -->
+  <!-- PHASE 2 SCREENS                                               -->
+  <!-- ============================================================ -->
+
+  <!-- INVITE TO EAT -->
+  <div class="tab-content" id="invite">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Select Friends -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Select Friends</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Invite to Eat</span>
+            </div>
+            <div class="screen-body white">
+              <div style="font-size:13px;color:#888;margin-bottom:14px;">Inviting to eat at Pho Thin</div>
+              <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input class="search-input" type="text" placeholder="Search friends..." readonly>
+              </div>
+              <div class="invite-label" style="margin-top:14px;">Your Connections</div>
+              <div class="connection-item">
+                <div class="connection-avatar" style="background:#ff6b35;">M</div>
+                <span class="connection-name">Mai</span>
+                <div class="connection-check checked">✓</div>
+              </div>
+              <div class="connection-item">
+                <div class="connection-avatar" style="background:#667eea;">L</div>
+                <span class="connection-name">Linh</span>
+                <div class="connection-check checked">✓</div>
+              </div>
+              <div class="connection-item">
+                <div class="connection-avatar" style="background:#11998e;">H</div>
+                <span class="connection-name">Hoa</span>
+                <div class="connection-check"></div>
+              </div>
+              <div class="connection-item">
+                <div class="connection-avatar" style="background:#e91e63;">T</div>
+                <span class="connection-name">Thu</span>
+                <div class="connection-check"></div>
+              </div>
+              <div style="margin-top:20px;">
+                <button class="btn btn-primary">Invite 2 Friends →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Set Time & Details -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Set Time &amp; Details</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Invite Details</span>
+            </div>
+            <div class="screen-body white">
+              <div class="selected-restaurant-box">
+                <span class="selected-restaurant-emoji">🍜</span>
+                <div>
+                  <div class="selected-restaurant-name">Pho Thin</div>
+                  <div class="selected-restaurant-meta">District 1</div>
+                </div>
+              </div>
+              <div class="invite-label">When?</div>
+              <div class="time-picker" style="margin-bottom:16px;">
+                <div class="time-btn time-pill-active">Today</div>
+                <div class="time-btn time-pill-active">7:00 PM</div>
+                <div class="time-btn">Tomorrow</div>
+              </div>
+              <div class="invite-label">Invited</div>
+              <div class="avatar-row" style="margin-bottom:16px;">
+                <div class="mini-avatar" style="background:#ff6b35;width:34px;height:34px;font-size:13px;">M</div>
+                <div class="mini-avatar" style="background:#667eea;width:34px;height:34px;font-size:13px;">L</div>
+              </div>
+              <div class="toggle-option">
+                <span class="toggle-text">Open to others too?</span>
+                <div class="toggle-switch"></div>
+              </div>
+              <div style="margin-top:20px;">
+                <button class="btn btn-primary">Send Invites</button>
+                <button class="btn btn-secondary">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid invite -->
+  </div><!-- end tab-content invite -->
+
+  <!-- ITINERARY SHARE CARD -->
+  <div class="tab-content" id="sharecard">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Share Your Meal -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Share Your Meal</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Share</span>
+            </div>
+            <div class="screen-body white">
+              <!-- Share card preview -->
+              <div class="share-card-preview">
+                <div class="share-card-header">
+                  <div class="share-card-logo">🥢</div>
+                  <div class="share-card-brand">CHOPSTICKS</div>
+                </div>
+                <div class="share-card-restaurant">@Pho Thin</div>
+                <div class="share-card-details">📍 Thao Dien · 🕐 12:00 PM · 💰 100–200k VND · 👥 1 spot left</div>
+                <div class="share-card-proof">Recommended by 3 people</div>
+                <div class="share-card-cta">Join This Meal →</div>
+              </div>
+              <!-- Visibility -->
+              <div class="invite-label">Visibility</div>
+              <div class="visibility-option selected">
+                <span class="visibility-icon">🌍</span>
+                <div style="flex:1;">
+                  <div class="visibility-label">Everyone</div>
+                  <div class="visibility-desc">Anyone with the link can see and join</div>
+                </div>
+              </div>
+              <div class="visibility-option">
+                <span class="visibility-icon">👥</span>
+                <div style="flex:1;">
+                  <div class="visibility-label">Connections</div>
+                  <div class="visibility-desc">Only your food friends</div>
+                </div>
+              </div>
+              <div class="visibility-option">
+                <span class="visibility-icon">🔒</span>
+                <div style="flex:1;">
+                  <div class="visibility-label">Me only</div>
+                  <div class="visibility-desc">Private, just for you</div>
+                </div>
+              </div>
+              <!-- Share buttons -->
+              <div class="share-btn-row">
+                <div class="share-btn"><div class="share-btn-icon">📋</div><div class="share-btn-label">Copy Link</div></div>
+                <div class="share-btn"><div class="share-btn-icon">💬</div><div class="share-btn-label">WhatsApp</div></div>
+                <div class="share-btn"><div class="share-btn-icon">📤</div><div class="share-btn-label">Share</div></div>
+                <div class="share-btn"><div class="share-btn-icon">🔗</div><div class="share-btn-label">In-App</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Someone Shared With You -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Someone Shared With You</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Meal Invite</span>
+            </div>
+            <div class="screen-body white">
+              <div style="font-size:13px;color:#999;margin-bottom:14px;">Mai shared this with you</div>
+              <!-- Same share card -->
+              <div class="share-card-preview">
+                <div class="share-card-header">
+                  <div class="share-card-logo">🥢</div>
+                  <div class="share-card-brand">CHOPSTICKS</div>
+                </div>
+                <div class="share-card-restaurant">@Pho Thin</div>
+                <div class="share-card-details">📍 Thao Dien · 🕐 12:00 PM · 💰 100–200k VND · 👥 1 spot left</div>
+                <div class="share-card-proof">Recommended by 3 people</div>
+                <div class="share-card-cta">Join This Meal →</div>
+              </div>
+              <!-- Info box -->
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">Who shared</span><span class="info-value">Mai</span></div>
+                <div class="info-row"><span class="info-label">When</span><span class="info-value">5 min ago</span></div>
+                <div class="info-row"><span class="info-label">Spots</span><span class="info-value green">1 left</span></div>
+              </div>
+              <button class="btn btn-green">Join This Meal</button>
+              <button class="btn btn-secondary">View Restaurant</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid sharecard -->
+  </div><!-- end tab-content sharecard -->
+
+  <!-- ============================================================ -->
+  <!-- PHASE 3 SCREENS                                               -->
+  <!-- ============================================================ -->
+
+  <!-- FOOD HISTORY -->
+  <div class="tab-content" id="history">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Food History -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Food History</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">Food History</span>
+            </div>
+            <div class="screen-body">
+              <div class="stats-row">
+                <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Total Meals</div></div>
+                <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">This Month</div></div>
+                <div class="stat-card"><div class="stat-num">4.2★</div><div class="stat-label">Avg Rating</div></div>
+              </div>
+              <div class="section-title" style="margin-bottom:8px;">Recent Meals</div>
+              <!-- Jan 30 -->
+              <div class="history-item">
+                <div class="history-date"><div class="history-date-day">30</div><div class="history-date-mon">Jan</div></div>
+                <div class="history-content">
+                  <div class="history-restaurant">Pho Thin</div>
+                  <div class="history-detail">With Mai, Linh</div>
+                  <div class="history-people">
+                    <div class="mini-avatar" style="background:#ff6b35;">M</div>
+                    <div class="mini-avatar" style="background:#667eea;">L</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Jan 28 -->
+              <div class="history-item">
+                <div class="history-date"><div class="history-date-day">28</div><div class="history-date-mon">Jan</div></div>
+                <div class="history-content">
+                  <div class="history-restaurant">Bún Bò Huế</div>
+                  <div class="history-detail">With Hoa, Thu</div>
+                  <div class="history-people">
+                    <div class="mini-avatar" style="background:#11998e;">H</div>
+                    <div class="mini-avatar" style="background:#e91e63;">T</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Jan 25 -->
+              <div class="history-item">
+                <div class="history-date"><div class="history-date-day">25</div><div class="history-date-mon">Jan</div></div>
+                <div class="history-content">
+                  <div class="history-restaurant">Lẻ Quán</div>
+                  <div class="history-detail">Solo discovery</div>
+                  <div class="history-people">
+                    <div class="mini-avatar" style="background:#667eea;">You</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Jan 22 -->
+              <div class="history-item">
+                <div class="history-date"><div class="history-date-day">22</div><div class="history-date-mon">Jan</div></div>
+                <div class="history-content">
+                  <div class="history-restaurant">Pizza Mđ</div>
+                  <div class="history-detail">With Mai</div>
+                  <div class="history-people">
+                    <div class="mini-avatar" style="background:#ff6b35;">M</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Meal Details -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Meal Details</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Jan 30 · Pho Thin</span>
+            </div>
+            <div class="screen-body white">
+              <!-- Restaurant icon -->
+              <div style="text-align:center;padding:16px 0 8px;">
+                <div style="width:64px;height:64px;border-radius:50%;background:#fff5f2;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 8px;">🍜</div>
+                <div class="restaurant-detail-name">Pho Thin</div>
+                <div class="restaurant-detail-meta">District 1 · Jan 30, 2026 · 12:00 PM</div>
+              </div>
+              <!-- Who was there -->
+              <div class="section-title" style="margin-bottom:8px;">Who was there</div>
+              <div class="rating-person-row">
+                <div class="rating-avatar" style="background:#ff6b35;">M</div>
+                <span class="rating-name">Mai</span>
+                <span style="color:#4CAF50;font-size:16px;font-weight:600;">✓</span>
+              </div>
+              <div class="rating-person-row">
+                <div class="rating-avatar" style="background:#667eea;">L</div>
+                <span class="rating-name">Linh</span>
+                <span style="color:#4CAF50;font-size:16px;font-weight:600;">✓</span>
+              </div>
+              <div class="rating-person-row">
+                <div class="rating-avatar" style="background:#11998e;">You</div>
+                <span class="rating-name">You</span>
+                <span style="color:#4CAF50;font-size:16px;font-weight:600;">✓</span>
+              </div>
+              <!-- Your Rating -->
+              <div class="section-title" style="margin-top:14px;margin-bottom:6px;">Your Rating</div>
+              <div style="font-size:22px;color:#FFB800;margin-bottom:10px;">★★★★☆</div>
+              <div class="review-card">
+                <div class="review-text">Great pho and lovely company. Will definitely go back!</div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid history -->
+  </div><!-- end tab-content history -->
+
+  <!-- AI INSIGHTS -->
+  <div class="tab-content" id="ai">
+    <div class="phone-grid">
+
+      <!-- Phone 1: Your Food DNA -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Your Food DNA</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="screen-title">AI Insights</span>
+            </div>
+            <div class="screen-body">
+              <!-- Food Personality card -->
+              <div class="insight-card">
+                <div class="insight-header">
+                  <span class="insight-icon">🧠</span>
+                  <span class="insight-title">Your Food Personality</span>
+                </div>
+                <div class="insight-text">Based on 12 meals and 15 quiz answers, you're a <strong>Curious Local</strong> — adventurous but rooted.</div>
+              </div>
+              <!-- Persona bars -->
+              <div style="background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid #eee;">
+                <div class="persona-bar-row">
+                  <span class="persona-label">Adventur</span>
+                  <div class="persona-bar-bg"><div class="persona-bar-fill" style="width:78%;background:#ff6b35;"></div></div>
+                  <span class="persona-pct">78%</span>
+                </div>
+                <div class="persona-bar-row">
+                  <span class="persona-label">Social</span>
+                  <div class="persona-bar-bg"><div class="persona-bar-fill" style="width:65%;background:#667eea;"></div></div>
+                  <span class="persona-pct">65%</span>
+                </div>
+                <div class="persona-bar-row">
+                  <span class="persona-label">Comfort</span>
+                  <div class="persona-bar-bg"><div class="persona-bar-fill" style="width:45%;background:#11998e;"></div></div>
+                  <span class="persona-pct">45%</span>
+                </div>
+                <div class="persona-bar-row">
+                  <span class="persona-label">Healthy</span>
+                  <div class="persona-bar-bg"><div class="persona-bar-fill" style="width:30%;background:#4CAF50;"></div></div>
+                  <span class="persona-pct">30%</span>
+                </div>
+              </div>
+              <!-- Next Great Meal card -->
+              <div class="insight-card">
+                <div class="insight-header">
+                  <span class="insight-icon">🔮</span>
+                  <span class="insight-title">Your Next Great Meal</span>
+                </div>
+                <div class="insight-text">Based on your pattern, you'd love trying <strong>Huong Lan</strong> in District 7.</div>
+              </div>
+              <!-- Premium card -->
+              <div class="insight-card premium">
+                <div class="insight-header">
+                  <span class="insight-icon">🌟</span>
+                  <span class="insight-title">Weekly Taste Report</span>
+                  <span class="premium-badge">Premium</span>
+                </div>
+                <div class="insight-text" style="filter:blur(2px);opacity:0.6;">Get a personalized weekly digest of your top meals and trending spots nearby.</div>
+              </div>
+              <button class="btn-premium">Unlock Premium Insights</button>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: AI Recommendation -->
+      <div class="phone-wrapper">
+        <div class="phone-label">AI Recommendation</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>9:41</span><span>●●● ▶ 🔋</span></div>
+            <div class="screen-header">
+              <span class="back-btn">←</span>
+              <span class="screen-title">Where Should I Eat?</span>
+            </div>
+            <div class="screen-body white">
+              <div style="text-align:center;font-size:48px;padding:24px 0 12px;">🤖</div>
+              <div class="question-text" style="font-size:16px;margin-bottom:18px;">What are you in the mood for?</div>
+              <div class="option-btn selected">
+                <span class="option-text">🍜 Something comforting</span>
+              </div>
+              <div class="option-btn">
+                <span class="option-text">🥗 Something light</span>
+              </div>
+              <div class="option-btn">
+                <span class="option-text">🍕 Something fun</span>
+              </div>
+              <div class="option-btn">
+                <span class="option-text">🔥 Something new</span>
+              </div>
+              <button class="btn btn-primary" style="margin-top:10px;">Find My Match</button>
+              <div class="locked-section">
+                <div class="lock-icon">🔒</div>
+                <div class="lock-text">AI Matching requires Premium</div>
+                <button class="unlock-btn">Unlock · $0.99/mo</button>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+              <div class="nav-item"><div class="nav-icon">🧭</div><div class="nav-label">Discover</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end phone-grid ai -->
+  </div><!-- end tab-content ai -->
+
+</div><!-- end container -->
+
+<script>
+  function selectPhase(phase) {
+    // Deactivate all phase buttons, activate the clicked one
+    document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.phase-btn[data-phase="${phase}"]`).classList.add('active');
+
+    // Hide all feature-nav-rows, show the one matching phase
+    document.querySelectorAll('.feature-nav-row').forEach(r => r.classList.remove('visible'));
+    document.querySelector(`.feature-nav-row[data-phase="${phase}"]`).classList.add('visible');
+
+    // Click the first tab button in the visible nav row to activate it
+    const firstTab = document.querySelector(`.feature-nav-row[data-phase="${phase}"] .tab-btn`);
+    if (firstTab) firstTab.click();
+  }
+
+  function selectFeature(featureId, btn) {
+    // Deactivate all tab buttons in the current visible nav row
+    const visibleRow = document.querySelector('.feature-nav-row.visible');
+    visibleRow.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Hide all tab-content, show the matching one
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(featureId).classList.add('active');
+  }
+</script>
+
 </body>
 </html>

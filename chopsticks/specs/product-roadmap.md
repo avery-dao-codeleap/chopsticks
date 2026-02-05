@@ -99,6 +99,8 @@ MVP validates (>70% show-up rate confirmed over 2+ weeks)
 | "Been there" marks per user (30-day) | >5 | ⬜ |
 | Favorites saved per user (30-day) | >3 | ⬜ |
 | Reviews written per user (30-day) | >1 | ⬜ |
+| Solo recommendation → visit rate | >25% | ⬜ |
+| Solo visit rate by persona (segment) | Track all 5 | ⬜ |
 | 7-day retention | >50% (up from 40%) | ⬜ |
 
 ### Features
@@ -127,6 +129,7 @@ MVP validates (>70% show-up rate confirmed over 2+ weeks)
 | "Been there" | Mark restaurants as visited | P0 |
 | Favorites | Save restaurants to personal list | P0 |
 | Restaurant detail | Enhanced view with lists, stats | P0 |
+| Open requests at restaurant | Show active meal requests happening at this restaurant | P1 |
 | Initial list seed | 15-20 curated lists at launch | P0 |
 
 **Spec:** [curated-lists.md](./post-mvp/curated-lists.md)
@@ -211,6 +214,25 @@ Phase 1 shows measurable retention lift from discovery features
 | Invite notification | Push + in-app for invitees | P0 |
 | Accept/decline | Invitee responds to invite | P0 |
 
+#### 2E: Itinerary Share Card
+
+This is the primary external sharing mechanic and the main user acquisition loop. A shareable card that turns a meal request into an invite anyone can act on.
+
+**Format:** `@Pho Thin — Thao Dien — 12pm — $$ 100–200k — Join?`
+
+| Feature | Description | Priority |
+|---------|-------------|----------|
+| Share card layout | Restaurant name, district, time, budget range, "Join?" CTA | P0 |
+| Visibility toggle | Connections only / Me only / Everyone | P0 |
+| External share | Copy link or share to WhatsApp/Messenger | P0 |
+| In-app share | Send directly to connections | P0 |
+| Share → join flow | Tapping shared link opens the request detail with join action | P0 |
+| Social proof signal | Show "recommended by X people" or "X saved this place" on the card | P1 |
+
+**Why this matters:** This card is both the UA mechanic and the Phase 2 share feature. If people share it externally, new users arrive with context — they already know what the app does before they open it. See [competitive-research.md](./competitive-research.md) for why demand-side cold start kills most apps in this space.
+
+---
+
 #### 2D: Activity Feed (Optional)
 
 | Feature | Description | Priority |
@@ -274,6 +296,22 @@ Phase 2 shows strong social graph formation and retention
 | "Where should I eat?" | AI-powered recommendation | P2 |
 | Based on preferences | Use quiz, history, favorites | P2 |
 | Premium feature | Paid per-request or subscription | P2 |
+
+#### 3D: Sponsored Experiences (Park Until Phase 2 Validates)
+
+> **Status:** Not designed. Do not build until the organic loop is proven and users have established trust in the platform.
+
+Potential second revenue stream beyond the paywall. Restaurants and experience providers pay for placement or sponsored meal events.
+
+| Feature | Description | Priority |
+|---------|-------------|----------|
+| Sponsored restaurant placement | Restaurants pay for boosted visibility in curated lists | P2 |
+| Guided tour partnerships | Local guides offer curated dining tours bookable via the app | P2 |
+| Sponsored meal requests | A restaurant sponsors a group meal as a marketing event | P2 |
+
+**Risk:** Sponsored content in social apps degrades trust if introduced too early or too aggressively. Dinner Lab tried to monetize crowdsourced data before the product had earned trust — it failed. See [competitive-research.md](./competitive-research.md) for the full pattern. Only pursue once organic engagement is strong and users see the app as a trusted source.
+
+---
 
 ### Decisions to Make
 - [ ] Pricing: subscription vs one-time vs hybrid?
@@ -433,6 +471,7 @@ Phase 2 shows strong social graph formation and retention
 | [product-strategy.md](./product-strategy.md) | Vision, pillars, feature inventory |
 | [foodie-personality-quiz.md](./post-mvp/foodie-personality-quiz.md) | Quiz feature spec |
 | [curated-lists.md](./post-mvp/curated-lists.md) | Lists & discovery feature spec |
+| [competitive-research.md](./competitive-research.md) | Failed + surviving social dining apps, risk mapping |
 | [pitch-deck.md](./pitch-deck.md) | Investor/stakeholder pitch |
 
 ---

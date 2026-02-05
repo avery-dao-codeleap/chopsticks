@@ -227,7 +227,7 @@ All tables have RLS enabled.
 | 3 | Profile | Name, age, gender | Name: 1-50 chars, Age: 18-100 |
 | 4 | City Check | City | If not HCMC → show "Available in HCMC only" |
 | 5 | Persona | Select 1 of 5 | Local, New to city, Expat, Traveler, Student |
-| 6 | Cuisines | Select 1+ of 14 | Multi-select chips |
+| 6 | Cuisines | Select 1+ (see [data-model.md](./data-model.md#cuisine-types-reference)) | Multi-select chips |
 | 7 | Budget | Select 1+ of 4 | Multi-select buttons |
 | 8 | Bio | Text input (food-related) | Max 200 chars, prompt: "Tell us something food-related about yourself" |
 | 9 | Intent | "Do you know where to eat?" | Yes → Create flow, No → Browse flow |
@@ -255,7 +255,7 @@ Screen: Create Request
      - Enter: Name, Address, District (required)
 
 2. Cuisine Selection
-   - 14 categories (single-select)
+   - Single-select from cuisine categories (see [data-model.md](./data-model.md#cuisine-types-reference))
 
 3. Budget Selection
    - 4 ranges (single-select)
@@ -292,7 +292,7 @@ Screen: Browse Requests (Home)
 
 2. Filter Bar
    - District (dropdown: 22 HCMC districts)
-   - Cuisine (multi-select: 14 categories)
+   - Cuisine (multi-select, see [data-model.md](./data-model.md#cuisine-types-reference))
    - Budget (multi-select: 4 ranges)
 
 3. Tap card → Request Detail Screen
@@ -439,7 +439,7 @@ On submit:
 **Language Selection:**
 - Onboarding: Auto-detect from device → user can change in settings
 - Stored in `users.language`
-- All UI strings translated (14 cuisines, 4 budget ranges, 22 districts, etc.)
+- All UI strings translated (all cuisines per [data-model.md](./data-model.md#cuisine-types-reference), 4 budget ranges, 22 districts, etc.)
 
 **Translation keys:**
 ```json

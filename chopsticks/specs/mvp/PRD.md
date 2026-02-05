@@ -62,7 +62,7 @@ Displayed on public profiles. Used for filtering join requests.
 3. Name, age, gender
 4. City check → "Currently available in HCMC only" (block if not HCMC)
 5. Persona selection (5 options)
-6. Cuisine preferences (14 categories, multi-select)
+6. Cuisine preferences (see [data-model.md](./data-model.md#cuisine-types-reference), multi-select)
 7. Budget preferences (4 ranges, multi-select)
 8. Bio (food-related prompt, max 200 chars)
 9. **Final question:** "Do you know where to eat?"
@@ -87,7 +87,7 @@ Displayed on public profiles. Used for filtering join requests.
 #### Creating a Request
 **Required fields:**
 - **Restaurant:** Pick from curated list (~50-100) OR manual entry (name + address + district required)
-- **Cuisine:** 1 of 14 categories
+- **Cuisine:** 1 category (see [data-model.md](./data-model.md#cuisine-types-reference))
 - **Budget:** 1 of 4 ranges
 - **Time:** Date + time picker (next 24 hours)
 - **Group size:** 2-4 people
@@ -102,7 +102,7 @@ Displayed on public profiles. Used for filtering join requests.
 
 **Filters:**
 - District (22 HCMC districts)
-- Cuisine (14 categories)
+- Cuisine (see [data-model.md](./data-model.md#cuisine-types-reference))
 - Budget (4 ranges)
 
 **Each request shows:**
@@ -305,7 +305,7 @@ Full schema: [data-model.md](./specs/mvp/data-model.md)
 1. **Request-based, not swipe-based** - Browse real meal plans, not profiles
 2. **Restaurant-first** - Not a stranger's home, always public venues
 3. **Safety by design** - Face detection, approval mode, show-up ratings
-4. **Vietnam-specific** - 14 cuisine categories match local food culture
+4. **Vietnam-specific** - Cuisine categories match local food culture (see [data-model.md](./data-model.md#cuisine-types-reference))
 5. **Lean coordination** - Just chat + location reveal, no complex features
 6. **Validation-focused** - MVP exists to prove "strangers show up together"
 
