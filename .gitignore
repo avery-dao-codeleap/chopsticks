@@ -49,3 +49,7 @@ yarn-error.log*
 *.orig
 .cache/
 tmp/
+
+# Sprint tracking (local only)
+.sprint.json
+sprint-*.md
