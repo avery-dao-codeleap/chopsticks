@@ -2,6 +2,8 @@
 
 *Social Dining App for Vietnam*
 
+*Last Updated: February 9, 2026*
+
 ---
 
 ## Slide 1: The Problem
@@ -102,28 +104,54 @@ Thin profiles → need more depth for credibility
 ## Slide 7: Post-MVP Roadmap
 
 ```
-        MVP                PHASE 1              PHASE 2              PHASE 3
-         │                    │                    │                    │
-         ▼                    ▼                    ▼                    ▼
+   PHASE 0            PHASE 1              PHASE 2              PHASE 3
+   MVP                IDENTITY &           SOCIAL               MONETIZATION
+                      DISCOVERY            GRAPH
+
+   ════════════       ════════════         ════════════         ════════════
+
+   Validate           Give users           Turn meals           Prove
+   core loop          solo value &         into lasting         revenue
+                      richer identity      connections          model
+
+   Unlock:            Unlock:              Unlock:              Unlock:
+   Launch             >70% show-up         Retention lift       Strong
+                      rate                 from Phase 1         social graph
+
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
 │                 │  │                 │  │                 │  │                 │
-│  VALIDATE       │  │  FOOD IDENTITY  │  │  SOCIAL GRAPH   │  │  MONETIZE       │
-│                 │  │  & DISCOVERY    │  │                 │  │                 │
-│  • Meal requests│  │  • Personality  │  │  • Connections  │  │  • Paywall:     │
-│  • Join & chat  │  │    quiz         │  │  • Share Card   │  │    full lists   │
-│  • Show-up      │  │  • Curated      │  │    (UA loop)    │  │  • Paywall:     │
-│    ratings      │  │    lists        │  │  • Invites      │  │    other cities │
-│                 │  │  • "Been there" │  │  • Activity     │  │  • Paid recs    │
-│                 │  │  • Reviews      │  │    feed         │  │                 │
-│                 │  │  • Favorites    │  │                 │  │                 │
+│  • Meal         │  │  • Personality  │  │  • Connections  │  │  • Paywall:     │
+│    requests     │  │    quiz         │  │  • Share to     │  │    full lists   │
+│  • Browse &     │  │  • Curated      │  │    connections  │  │  • Paywall:     │
+│    join         │  │    lists        │  │  • Invite to    │  │    other cities │
+│  • Group chat   │  │  • "Been there" │  │    eat          │  │  • Paid recs    │
+│  • Show-up      │  │    tracking     │  │  • Share Card   │  │                 │
+│    ratings      │  │  • Favorites    │  │    ★ UA LOOP    │  │                 │
+│                 │  │  • Reviews      │  │                 │  │                 │
+│                 │  │  • Nominations  │  │                 │  │                 │
 └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘
-     Strangers           Solo value          Sticky network        Revenue
-     show up?            + credibility       + repeat usage
-```
 
 ---
 
-## Slide 8: Phase 1 — Foodie Personality Quiz
+## Slide 8: Phase 1 — Solo Value & Food Identity
+
+### Goal: Users engage even when not planning meals
+
+**Unlock condition:** MVP validates (>70% show-up rate)
+
+**The problem Phase 1 solves:**
+- MVP profiles are thin (just cuisines + bio)
+- Users only open app when planning meals
+- No retention outside of active meal coordination
+
+**Phase 1 features give users:**
+1. **Deeper identity** — Foodie personality quiz makes profiles credible
+2. **Solo discovery** — Browse curated lists, track "been there"
+3. **Passive engagement** — Save favorites, write reviews, nominate spots
+
+---
+
+## Slide 9: Phase 1 — Foodie Personality Quiz
 
 ### Make profiles credible and distinctive
 
@@ -141,9 +169,11 @@ Thin profiles → need more depth for credibility
 **5 random questions** in onboarding (optional, skippable)
 **Answers visible** on public profile
 
+**Result:** Richer profiles → better approval decisions → higher match quality
+
 ---
 
-## Slide 9: Phase 1 — Curated Lists
+## Slide 10: Phase 1 — Curated Lists
 
 ### Hyper-specific discovery, not generic "best of" lists
 
@@ -165,7 +195,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 10: Phase 1 — Discovery Tab
+## Slide 11: Phase 1 — Discovery Tab
 
 ```
 ┌─────────────────────────────────────┐
@@ -195,7 +225,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 11: Phase 2 — Social Graph
+## Slide 12: Phase 2 — Social Graph
 
 ### Turn one-off meals into lasting connections
 
@@ -222,9 +252,16 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 12: Phase 2 — The Share Card (UA Loop)
+## Slide 13: Phase 2 — The Share Card (★ UA Loop)
 
-### How new users arrive with context, not confusion
+### THIS IS THE GROWTH ENGINE
+
+**The problem most social dining apps face:**
+- Users arrive confused ("what is this app?")
+- Cold start problem: empty network = no value
+- Generic invites don't explain the product
+
+**The Share Card solves this:**
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -239,22 +276,23 @@ Thin profiles → need more depth for credibility
 │   │  [Join This Meal →]                             │   │
 │   └─────────────────────────────────────────────────┘   │
 │                                                         │
-│   Share to: 📋 Copy  💬 WhatsApp  📤 Sheet             │
+│   Share to: 📋 Copy  💬 WhatsApp  📤 Messenger         │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Why this is the growth engine:**
-- New users see what the app *does* before they install
-- Tap link → install → first action is joining a real meal
-- Zero-friction onboarding: context arrives with the user
-- Every shared card is a micro-ad that explains the product
+**Why this works:**
+1. **Context before install** — New users see what the app does before downloading
+2. **Demand-side cold start solved** — They arrive wanting something specific (this meal)
+3. **Zero-friction onboarding** — First action is joining a real meal, not exploring an empty app
+4. **Viral by design** — Every shared card is a micro-ad that explains the product
 
 **App not installed?** → Web landing page with card preview + install CTA
+**Already installed?** → Deep link straight to the meal request
 
 ---
 
-## Slide 13: Phase 2 — Invite to Eat
+## Slide 14: Phase 2 — Invite to Eat
 
 ### Bridge discovery → social eating
 
@@ -281,7 +319,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 14: Phase 3 — Monetization
+## Slide 15: Phase 3 — Monetization
 
 ### Three revenue streams
 
@@ -298,7 +336,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 15: Travel Use Case
+## Slide 16: Travel Use Case
 
 ### Plan before you go, eat like a local when you arrive
 
@@ -322,21 +360,55 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 16: Competitive Landscape
+## Slide 17: Competitive Landscape
+
+### The Fragmented Discovery Problem
+
+**Today's food discovery workflow is broken:**
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                                                          │
+│  1. DISCOVERY         TikTok/YouTube                     │
+│     └─ Find food review content                          │
+│                                                          │
+│  2. VALIDATION        Comments + Google Maps             │
+│     └─ Cross-check reviews, confirm it's good           │
+│                                                          │
+│  3. ORGANIZATION      ???                                │
+│     └─ No centralized place to save finds               │
+│                                                          │
+│  4. ACTION            Manual coordination                │
+│     └─ WhatsApp group: "Want to try that place?"        │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Chopsticks centralizes all 4 steps + adds the social dining layer**
+
+### How We Compare
 
 | Competitor | What They Do | Chopsticks Difference |
 |------------|--------------|----------------------|
+| **TikTok/YouTube** | Viral food content, no save/organize | Curated lists you can save, track, and share |
+| **Google Maps** | Final verification destination | Discovery + validation + social in one place |
+| **TripAdvisor** | Tourist reviews, fragmented from social content | Local community, integrated with social discovery |
+| **Yelp** | Business listings and reviews | People-powered curation + social dining attached |
+| **The Infatuation** | Editorial lists | + Community curation + tracking + social meetups |
 | **Eatwith** | Hosted dinners in homes | Public restaurants, peer-to-peer |
 | **Meetup** | Event groups | Meal-specific, lower commitment |
 | **Bumble BFF** | Friend matching | Food-centered identity, real intent |
-| **Yelp/Google** | Restaurant reviews | People-powered, social eating attached |
-| **The Infatuation** | Editorial lists | + Community curation + tracking + social |
 
-**Unique position:** Food identity + discovery + social eating in one app
+**Unique position:** The only app that centralizes discovery, validation, organization, AND turns it into real social dining experiences
+
+**Key insight from competitive research:**
+- Apps that solve cold start via demand-side activation (Share Card) survive
+- Apps that expect users to explore an empty network fail
+- See: [competitive-research.md](./competitive-research.md)
 
 ---
 
-## Slide 17: Why Vietnam? Why Now?
+## Slide 18: Why Vietnam? Why Now?
 
 ### Vietnam is the perfect launch market
 
@@ -348,7 +420,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 18: Traction & Validation Plan
+## Slide 19: Traction & Validation Plan
 
 ### MVP Goal: Prove strangers show up
 
@@ -365,7 +437,7 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 19: The Big Picture
+## Slide 20: The Big Picture
 
 ```
                          ┌─────────────────────────────────┐
@@ -397,24 +469,29 @@ Thin profiles → need more depth for credibility
 
 ---
 
-## Slide 20: Summary
+## Slide 21: Summary
 
 ### Chopsticks: Social dining, food identity, local discovery
 
-**MVP** — Validate strangers show up to eat together
+**Phase 0 (MVP)** — Validate strangers show up to eat together (>70% show-up rate)
 
-**Phase 1** — Food identity (quiz) + discovery (curated lists)
+**Phase 1** — Solo value: Quiz + curated lists + reviews → Retention lift
 
-**Phase 2** — Social graph (connections, sharing, invites)
+**Phase 2** — Sticky network: Connections + Share Card (UA loop) → Repeat meals
 
-**Phase 3** — Monetization (paywalls, premium features)
+**Phase 3** — Revenue: Paywalls (lists, cities) + premium features
 
 **Launch:** Ho Chi Minh City
-**Expand:** Hanoi, Da Nang, Bangkok, Singapore
+**Expand:** Hanoi → Da Nang → Bangkok → Singapore
+
+**Key differentiators:**
+- Food-first identity (not dating, not Meetup)
+- Share Card solves cold start problem
+- Centralized discovery + social dining
 
 ---
 
-## Slide 21: Let's Eat 🍜
+## Slide 22: Let's Eat 🍜
 
 ### Questions?
 
