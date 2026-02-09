@@ -262,15 +262,30 @@ When deciding what to build next, score features on:
 
 ## 8. Competitive Positioning
 
-| Competitor | What They Do | How Chopsticks Differs |
-|------------|--------------|------------------------|
-| **Eatwith** | Hosted dinners in homes | Public restaurants only, peer-to-peer not host-guest |
-| **Meetup** | Event groups | Meal-specific, lower commitment, no group management |
-| **Bumble BFF** | Friend matching | Food-centered identity, specific meal intent, not generic friendship |
-| **Yelp/Google Maps** | Restaurant discovery | People-powered curation, social eating attached |
-| **The Infatuation** | Editorial lists | Community nominations + personal tracking + social layer |
+### The Current Fragmented Experience
 
-**Chopsticks' unique position:** The only app where food identity is the foundation, and discovery is tied to social eating.
+Today's food discovery workflow is broken across multiple platforms:
+1. **Discovery**: TikTok/YouTube for food review content
+2. **Validation**: Read comments for confirmation, check Google Maps for reviews/stars
+3. **Organization**: No centralized place to save and organize finds
+4. **Action**: Manually coordinate with friends to actually go
+
+**The Pain Point**: People want a centralized platform that combines discovery, validation, organization, and social coordination.
+
+### How We Compare
+
+| Competitor | What They Do | Chopsticks Difference |
+|------------|--------------|----------------------|
+| **TikTok/YouTube** | Viral food content, no save/organize | Curated lists you can save, track, and share |
+| **Google Maps** | Final verification destination | Discovery + validation + social in one place |
+| **TripAdvisor** | Tourist reviews, fragmented from social content | Local community, integrated with social discovery |
+| **Yelp** | Business listings and reviews | People-powered curation + social dining attached |
+| **The Infatuation** | Editorial lists | + Community curation + tracking + social meetups |
+| **Eatwith** | Hosted dinners in homes | Public restaurants, peer-to-peer |
+| **Meetup** | Event groups | Meal-specific, lower commitment |
+| **Bumble BFF** | Friend matching | Food-centered identity |
+
+**Unique position:** The only app that centralizes food discovery, validation, organization, AND turns it into real social dining experiences.
 
 ---
 
