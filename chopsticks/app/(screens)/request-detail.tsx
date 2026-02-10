@@ -1,46 +1,100 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { MOCK_REQUESTS } from '@/lib/mockData';
-import { useRequestsStore } from '@/stores/requests';
+import { CUISINE_CATEGORIES, BUDGET_RANGES, HCMC_DISTRICTS } from '@/lib/constants';
+import { useRequest, useJoinRequest } from '@/hooks/queries/useRequests';
+import { useAuthStore } from '@/stores/auth';
 import { useI18n } from '@/lib/i18n';
+
+const CUISINE_EMOJIS: Record<string, string> = {
+  noodles_congee: '🍜', rice: '🍚', hotpot_grill: '🍲', seafood: '🦐',
+  bread: '🥖', vietnamese_cakes: '🍰', snack: '🍿', dessert: '🍨',
+  drinks: '🧋', fast_food: '🍔', international: '🌍', healthy: '🥗',
+  veggie: '🥦', others: '🍽️',
+};
+
+function formatTimeWindow(iso: string): string {
+  const date = new Date(iso);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  const dayStr = isToday ? 'Today' : 'Tomorrow';
+  const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return `${dayStr}, ${timeStr}`;
+}
 
 export default function RequestDetailScreen() {
   const { requestId } = useLocalSearchParams<{ requestId: string }>();
   const router = useRouter();
-  const { t } = useI18n();
-  const myRequests = useRequestsStore(state => state.myRequests);
-  const pendingJoins = useRequestsStore(state => state.pendingJoins);
-  const approveJoin = useRequestsStore(state => state.approveJoin);
-  const denyJoin = useRequestsStore(state => state.denyJoin);
+  const { t, language } = useI18n();
+  const session = useAuthStore(state => state.session);
 
-  const request = MOCK_REQUESTS.find(r => r.id === requestId) || myRequests.find(r => r.id === requestId) || MOCK_REQUESTS[0];
-  const spotsLeft = request.spotsTotal - request.spotsTaken;
-  const { requester, restaurant } = request;
-  const isOwner = requester.id === 'me';
-  const myPendingJoins = pendingJoins.filter(j => j.requestId === request.id);
+  const { data: request, isLoading } = useRequest(requestId);
+  const joinRequest = useJoinRequest();
 
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [joinMessage, setJoinMessage] = useState('');
 
-  const handleJoin = () => {
-    if (request.joinType === 'open') {
-      Alert.alert(t('joinedTitle'), t('joinedBody', { name: restaurant.name }), [
-        { text: t('openChat'), onPress: () => router.push({ pathname: '/(screens)/chat-detail', params: { chatId: 'c1' } }) },
-      ]);
+  if (isLoading || !request) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0a0a0a', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#f97316" />
+      </View>
+    );
+  }
+
+  const { restaurants: restaurant, users: requester } = request;
+  const isOwner = session?.user?.id === request.requester_id;
+  const spotsLeft = request.group_size - request.participant_count - 1; // -1 for the requester
+  const cuisineEmoji = CUISINE_EMOJIS[request.cuisine] ?? '🍽️';
+  const cuisineCat = CUISINE_CATEGORIES.find(c => c.id === request.cuisine);
+  const cuisineLabel = cuisineCat ? (language === 'vi' ? cuisineCat.labelVi : cuisineCat.label) : request.cuisine;
+  const budgetCat = BUDGET_RANGES.find(b => b.id === request.budget_range);
+  const budgetLabel = budgetCat ? (language === 'vi' ? budgetCat.labelVi : budgetCat.label) : request.budget_range;
+
+  // Map district ID to display name for approval requests
+  const district = HCMC_DISTRICTS.find(d => d.id === restaurant.district);
+  const districtLabel = district ? (language === 'vi' ? district.nameVi : district.name) : restaurant.district;
+
+  const handleJoin = async () => {
+    if (!session?.user?.id) return;
+
+    if (request.join_type === 'open') {
+      try {
+        await joinRequest.mutateAsync({
+          requestId: request.id,
+          userId: session.user.id,
+          joinType: 'open',
+        });
+        Alert.alert(t('joinedTitle'), t('joinedBody', { name: restaurant.name }), [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
+      } catch {
+        Alert.alert('Error', 'Failed to join. You may have already joined.');
+      }
     } else {
       setShowJoinModal(true);
     }
   };
 
-  const handleSendJoinRequest = () => {
+  const handleSendJoinRequest = async () => {
+    if (!session?.user?.id) return;
     if (!joinMessage.trim()) {
       Alert.alert(t('sayAnything'), t('tellSomethingInteresting'));
       return;
     }
-    setShowJoinModal(false);
-    setJoinMessage('');
-    Alert.alert(t('requestSent'), t('requestSentBody', { name: requester.name }));
+
+    try {
+      await joinRequest.mutateAsync({
+        requestId: request.id,
+        userId: session.user.id,
+        joinType: 'approval',
+      });
+      setShowJoinModal(false);
+      setJoinMessage('');
+      Alert.alert(t('requestSent'), t('requestSentBody', { name: requester?.name ?? '' }));
+    } catch {
+      Alert.alert('Error', 'Failed to send request. You may have already requested.');
+    }
   };
 
   return (
@@ -48,20 +102,24 @@ export default function RequestDetailScreen() {
       <ScrollView style={{ flex: 1, backgroundColor: '#0a0a0a' }}>
         {/* Restaurant header */}
         <View style={{ height: 180, backgroundColor: '#171717', alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 56 }}>{request.cuisineEmoji}</Text>
-          <Text style={{ color: '#6b7280', fontSize: 13, marginTop: 8 }}>{restaurant.cuisine} · {restaurant.priceRange}</Text>
+          <Text style={{ fontSize: 56 }}>{cuisineEmoji}</Text>
+          <Text style={{ color: '#6b7280', fontSize: 13, marginTop: 8 }}>{cuisineLabel} · {budgetLabel}</Text>
         </View>
 
         <View style={{ padding: 20 }}>
           {/* Restaurant info */}
-          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>{restaurant.name}</Text>
-          <Text style={{ color: '#9ca3af', fontSize: 14, marginTop: 4 }}>{restaurant.address}</Text>
+          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>
+            {request.join_type === 'approval' ? districtLabel : restaurant.name}
+          </Text>
+          <Text style={{ color: '#9ca3af', fontSize: 14, marginTop: 4 }}>
+            {request.join_type === 'approval' ? `📍 Area only (full address shared after approval)` : restaurant.address}
+          </Text>
 
           <View style={{ height: 1, backgroundColor: '#262626', marginVertical: 20 }} />
 
           {/* Requester profile */}
           <TouchableOpacity
-            onPress={() => { if (!isOwner) router.push({ pathname: '/(screens)/user-profile', params: { userId: requester.id } }); }}
+            onPress={() => { if (!isOwner && requester?.id) router.push({ pathname: '/(screens)/user-profile', params: { userId: requester.id } }); }}
             activeOpacity={isOwner ? 1 : 0.7}
             style={{ flexDirection: 'row', alignItems: 'center' }}
           >
@@ -69,24 +127,23 @@ export default function RequestDetailScreen() {
               width: 52, height: 52, borderRadius: 26,
               backgroundColor: '#262626', alignItems: 'center', justifyContent: 'center', marginRight: 14,
             }}>
-              <Text style={{ fontSize: 22, color: '#fff' }}>{requester.name[0]}</Text>
+              <Text style={{ fontSize: 22, color: '#fff' }}>{requester?.name?.[0] ?? '?'}</Text>
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>
-                  {requester.name}, {requester.age}
+                  {requester?.name ?? 'Unknown'}{requester?.age ? `, ${requester.age}` : ''}
                 </Text>
-                {requester.verified && (
-                  <Text style={{ color: '#60a5fa', fontSize: 14, marginLeft: 6 }}>✓</Text>
-                )}
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, flexWrap: 'wrap', gap: 6 }}>
-                <View style={{ backgroundColor: requester.persona === 'local' ? '#16a34a20' : '#8b5cf620', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 }}>
-                  <Text style={{ color: requester.persona === 'local' ? '#4ade80' : '#a78bfa', fontSize: 11, fontWeight: '600' }}>
-                    {requester.persona === 'local' ? '📍 Local' : '✈️ Traveler'}
-                  </Text>
-                </View>
-                <Text style={{ color: '#6b7280', fontSize: 12 }}>🍜 {requester.mealCount} meals</Text>
+                {requester?.persona && (
+                  <View style={{ backgroundColor: requester.persona === 'local' ? '#16a34a20' : '#8b5cf620', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 }}>
+                    <Text style={{ color: requester.persona === 'local' ? '#4ade80' : '#a78bfa', fontSize: 11, fontWeight: '600' }}>
+                      {requester.persona === 'local' ? '📍 Local' : `✈️ ${requester.persona.charAt(0).toUpperCase() + requester.persona.slice(1)}`}
+                    </Text>
+                  </View>
+                )}
+                <Text style={{ color: '#6b7280', fontSize: 12 }}>🍜 {requester?.meal_count ?? 0} meals</Text>
               </View>
             </View>
             {!isOwner && <Text style={{ color: '#4b5563', fontSize: 18 }}>›</Text>}
@@ -94,104 +151,71 @@ export default function RequestDetailScreen() {
 
           {/* Requester bio */}
           <Text style={{ color: '#9ca3af', fontSize: 13, marginTop: 12, fontStyle: 'italic' }}>
-            "{requester.bio || t('noBioYet')}"
+            "{requester?.bio || t('noBioYet')}"
           </Text>
 
           <View style={{ height: 1, backgroundColor: '#262626', marginVertical: 20 }} />
+
+          {/* Request description */}
+          {request.description && (
+            <>
+              <View style={{ backgroundColor: '#171717', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#262626' }}>
+                <Text style={{ color: '#9ca3af', fontSize: 12, fontWeight: '600', marginBottom: 6 }}>
+                  💬 About this meal
+                </Text>
+                <Text style={{ color: '#fff', fontSize: 14, lineHeight: 20 }}>
+                  {request.description}
+                </Text>
+              </View>
+              <View style={{ height: 1, backgroundColor: '#262626', marginVertical: 20 }} />
+            </>
+          )}
 
           {/* Meal details */}
           <View style={{ gap: 14 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ color: '#9ca3af', fontSize: 14 }}>{t('time')}</Text>
-              <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>{request.timeWindow}</Text>
+              <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>{formatTimeWindow(request.time_window)}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ color: '#9ca3af', fontSize: 14 }}>{t('spots')}</Text>
               <Text style={{ color: '#f97316', fontSize: 14, fontWeight: '500' }}>
-                {spotsLeft}/{request.spotsTotal} {t('available')}
+                {spotsLeft}/{request.group_size} {t('available')}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ color: '#9ca3af', fontSize: 14 }}>{t('joinType')}</Text>
               <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                {request.joinType === 'open' ? t('openInstantJoin') : t('approvalRequired')}
+                {request.join_type === 'open' ? t('openInstantJoin') : t('approvalRequired')}
               </Text>
             </View>
           </View>
 
-          {/* Request description */}
-          {request.description && (
-            <View style={{ backgroundColor: '#171717', borderRadius: 12, padding: 14, marginTop: 20 }}>
-              <Text style={{ color: '#9ca3af', fontSize: 13 }}>{request.description}</Text>
-            </View>
-          )}
-
-          {/* Pending join requests — owner only */}
-          {isOwner && myPendingJoins.length > 0 && (
-            <View style={{ marginTop: 24 }}>
-              <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600', marginBottom: 12 }}>{t('pendingRequests')}</Text>
-              {myPendingJoins.map(join => (
-                <View key={join.id} style={{ backgroundColor: '#171717', borderRadius: 12, padding: 14, marginBottom: 10 }}>
-                  <TouchableOpacity
-                    onPress={() => router.push({ pathname: '/(screens)/user-profile', params: { userId: join.userId } })}
-                    style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
-                  >
-                    <View style={{
-                      width: 36, height: 36, borderRadius: 18,
-                      backgroundColor: '#262626', alignItems: 'center', justifyContent: 'center', marginRight: 10,
-                    }}>
-                      <Text style={{ color: '#fff', fontSize: 16 }}>{join.userName[0]}</Text>
-                    </View>
-                    <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600', flex: 1 }}>{join.userName}</Text>
-                    <Text style={{ color: '#4b5563', fontSize: 16 }}>›</Text>
-                  </TouchableOpacity>
-                  <Text style={{ color: '#9ca3af', fontSize: 13, fontStyle: 'italic', marginBottom: 12 }}>
-                    "{join.message}"
-                  </Text>
-                  <View style={{ flexDirection: 'row', gap: 10 }}>
-                    <TouchableOpacity
-                      onPress={() => approveJoin(join.id)}
-                      style={{ flex: 1, backgroundColor: '#16a34a', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
-                    >
-                      <Text style={{ color: '#fff', fontSize: 14, fontWeight: '600' }}>{t('approve')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => denyJoin(join.id)}
-                      style={{ flex: 1, backgroundColor: '#262626', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
-                    >
-                      <Text style={{ color: '#9ca3af', fontSize: 14, fontWeight: '600' }}>{t('deny')}</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-            </View>
-          )}
-
           {/* Join button — non-owner only */}
-          {!isOwner && (
+          {!isOwner && spotsLeft > 0 && (
             <TouchableOpacity
               onPress={handleJoin}
+              disabled={joinRequest.isPending}
               style={{
                 backgroundColor: '#f97316', borderRadius: 14,
                 paddingVertical: 16, alignItems: 'center', marginTop: 28,
+                opacity: joinRequest.isPending ? 0.5 : 1,
               }}
             >
               <Text style={{ color: '#fff', fontSize: 17, fontWeight: '700' }}>
-                {request.joinType === 'open' ? t('joinMeal') : t('requestToJoin')}
+                {joinRequest.isPending ? 'Joining...' : request.join_type === 'open' ? t('joinMeal') : t('requestToJoin')}
               </Text>
             </TouchableOpacity>
           )}
 
-          {/* Post-meal flow button (dev) */}
-          <TouchableOpacity
-            onPress={() => router.push({ pathname: '/(screens)/post-meal', params: { requestId: request.id } })}
-            style={{
-              borderWidth: 1, borderColor: '#374151', borderRadius: 14,
-              paddingVertical: 14, alignItems: 'center', marginTop: isOwner ? 28 : 10,
-            }}
-          >
-            <Text style={{ color: '#9ca3af', fontSize: 15 }}>{t('markMealCompleteDev')}</Text>
-          </TouchableOpacity>
+          {!isOwner && spotsLeft <= 0 && (
+            <View style={{
+              backgroundColor: '#262626', borderRadius: 14,
+              paddingVertical: 16, alignItems: 'center', marginTop: 28,
+            }}>
+              <Text style={{ color: '#6b7280', fontSize: 17, fontWeight: '600' }}>Full</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
 
@@ -203,7 +227,7 @@ export default function RequestDetailScreen() {
               {t('requestToJoinTitle')}
             </Text>
             <Text style={{ color: '#6b7280', fontSize: 13, marginBottom: 16 }}>
-              {t('tellThemAboutYou', { name: requester.name, cuisine: request.cuisine })}
+              {t('tellThemAboutYou', { name: requester?.name ?? '', cuisine: cuisineLabel })}
             </Text>
             <TextInput
               value={joinMessage}
@@ -219,9 +243,15 @@ export default function RequestDetailScreen() {
             />
             <TouchableOpacity
               onPress={handleSendJoinRequest}
-              style={{ backgroundColor: '#f97316', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 8 }}
+              disabled={joinRequest.isPending}
+              style={{
+                backgroundColor: '#f97316', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 8,
+                opacity: joinRequest.isPending ? 0.5 : 1,
+              }}
             >
-              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>{t('sendRequest')}</Text>
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>
+                {joinRequest.isPending ? 'Sending...' : t('sendRequest')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => { setShowJoinModal(false); setJoinMessage(''); }}
