@@ -17,7 +17,7 @@ export default function GenderScreen() {
   const handleContinue = async () => {
     if (!selected) return;
     await updateProfile({ gender: selected as 'male' | 'female' | 'non-binary' });
-    router.push('/(onboarding)/privacy');
+    router.push('/(onboarding)/city');
   };
 
   return (

@@ -1,19 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert, Platform, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuthStore } from '@/stores/auth';
+import { supabase } from '@/services/supabase';
 
 export default function BirthdateScreen() {
   const router = useRouter();
   const { updateProfile } = useAuthStore();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() - 18);
 
   const [date, setDate] = useState<Date>(maxDate);
   const [hasSelected, setHasSelected] = useState(false);
   const [confirmAge, setConfirmAge] = useState<number | null>(null);
+
+  // Get user email from auth session on mount
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) {
+        setUserEmail(data.user.email);
+      }
+    });
+  }, []);
 
   const handleDateChange = (_: unknown, selectedDate?: Date) => {
     if (selectedDate) {
@@ -44,7 +55,20 @@ export default function BirthdateScreen() {
   };
 
   const handleConfirm = async () => {
-    await updateProfile({ age: confirmAge! });
+    // Create/update user record with age and email (first profile update)
+    const profileData: any = { age: confirmAge! };
+    if (userEmail) {
+      profileData.email = userEmail;
+    }
+
+    const { error } = await updateProfile(profileData);
+    if (error) {
+      console.error('[Birthdate] Failed to save profile:', error);
+      Alert.alert('Error', `Failed to save your age: ${error.message}. Please try again.`);
+      return;
+    }
+
+    console.log('[Birthdate] Profile saved successfully:', profileData);
     setConfirmAge(null);
     router.push('/(onboarding)/gender');
   };

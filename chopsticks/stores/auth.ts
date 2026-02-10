@@ -1,6 +1,4 @@
 import { create } from 'zustand';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { firebaseAuth, isFirebaseMocked } from '@/services/firebase';
 import { supabase } from '@/services/supabase';
 import * as authApi from '@/services/api/auth';
 import { notificationService } from '@/services/notifications';
@@ -38,13 +36,10 @@ interface AuthState {
   isOnboarded: boolean;
   error: string | null;
 
-  // Firebase confirmation (for OTP flow)
-  firebaseConfirmation: FirebaseAuthTypes.ConfirmationResult | null;
-
   // Actions
   initialize: () => Promise<void>;
-  signInWithPhone: (phone: string) => Promise<{ error: Error | null }>;
-  verifyOtp: (code: string) => Promise<{ error: Error | null }>;
+  signInWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUpWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<{ error: Error | null }>;
   updatePreferences: (data: Partial<UserPreferences>) => Promise<{ error: Error | null }>;
@@ -60,46 +55,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
   isOnboarded: false,
   error: null,
-  firebaseConfirmation: null,
 
   /**
    * Initialize auth state on app launch
    */
   initialize: async () => {
-    // In Expo Go, Firebase native module is unavailable — auto-login with mock data
-    if (isFirebaseMocked) {
-      const now = new Date().toISOString();
-      set({
-        session: { user: { id: 'mock-user-id' } },
-        user: {
-          id: 'mock-user-id',
-          phone: '+84900000000',
-          name: 'Alex',
-          age: 26,
-          gender: 'Non-binary',
-          photo_url: null,
-          persona: 'traveler',
-          city: 'Ho Chi Minh City',
-          meal_count: 12,
-          bio: 'Food lover exploring HCMC one dish at a time',
-          language: 'en',
-          created_at: now,
-          updated_at: now,
-        },
-        preferences: {
-          user_id: 'mock-user-id',
-          cuisines: ['noodles_congee', 'seafood', 'international'],
-          budget_ranges: ['50k_150k', '150k_500k'],
-          created_at: now,
-          updated_at: now,
-        },
-        isOnboarded: false,
-        isLoading: false,
-      });
-      console.warn('[Auth] Mock mode — auto-logged in as Alex (onboarding pending).');
-      return;
-    }
-
     try {
       // Check for existing Supabase session
       const { data: { session }, error } = await supabase.auth.getSession();
@@ -114,10 +74,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // Fetch user profile
         const { user, preferences } = await authApi.getUserProfile(session.user.id);
 
-        // Check if onboarding is complete (has name, photo, persona, preferences)
+        // Check if onboarding is complete (photo_url is optional)
         const isOnboarded = !!(
           user?.name &&
-          user?.photo_url &&
           user?.persona &&
           preferences?.cuisines?.length &&
           preferences?.budget_ranges?.length
@@ -160,16 +119,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   /**
-   * Send OTP to phone number via Firebase
+   * Sign in with email and password
    */
-  signInWithPhone: async (phone: string) => {
+  signInWithEmail: async (email: string, password: string) => {
     try {
       set({ isLoading: true, error: null });
 
-      const confirmation = await firebaseAuth.signInWithPhoneNumber(phone);
+      const { user, session, error: authError } = await authApi.signInWithEmail(email, password);
+
+      if (authError || !session) {
+        throw authError || new Error('Failed to sign in');
+      }
+
+      // Fetch user profile
+      const { user: fullUser, preferences } = await authApi.getUserProfile(session.user.id);
+
+      // Check if onboarding is complete (photo_url is optional)
+      const isOnboarded = !!(
+        fullUser?.name &&
+        fullUser?.persona &&
+        preferences?.cuisines?.length &&
+        preferences?.budget_ranges?.length
+      );
 
       set({
-        firebaseConfirmation: confirmation,
+        session: { user: { id: session.user.id } },
+        user: fullUser,
+        preferences,
+        isOnboarded,
         isLoading: false,
       });
 
@@ -185,63 +162,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   /**
-   * Verify OTP code and exchange Firebase token for Supabase session
+   * Sign up with email and password
    */
-  verifyOtp: async (code: string) => {
-    const { firebaseConfirmation } = get();
-
-    if (!firebaseConfirmation) {
-      const error = new Error('No confirmation result. Please send OTP first.');
-      set({ error: error.message });
-      return { error };
-    }
-
+  signUpWithEmail: async (email: string, password: string) => {
     try {
       set({ isLoading: true, error: null });
 
-      // Confirm OTP with Firebase
-      await firebaseAuth.confirmCode(firebaseConfirmation, code);
+      const { user, session, error: authError } = await authApi.signUpWithEmail(email, password);
 
-      // Get Firebase ID token
-      const firebaseToken = await firebaseAuth.getIdToken(true);
-
-      if (!firebaseToken) {
-        throw new Error('Failed to get Firebase token');
+      if (authError || !session) {
+        throw authError || new Error('Failed to sign up');
       }
 
-      // Exchange Firebase token for Supabase session
-      const { user, session, error: exchangeError } = await authApi.exchangeFirebaseToken(
-        firebaseToken
-      );
-
-      if (exchangeError || !session) {
-        throw exchangeError || new Error('Failed to exchange token');
-      }
-
-      // Fetch user profile
+      // Fetch user profile (will be empty for new users)
       const { user: fullUser, preferences } = await authApi.getUserProfile(session.user.id);
-
-      // Check if onboarding is complete
-      const isOnboarded = !!(
-        fullUser?.name &&
-        fullUser?.photo_url &&
-        fullUser?.persona &&
-        preferences?.cuisines?.length &&
-        preferences?.budget_ranges?.length
-      );
 
       set({
         session: { user: { id: session.user.id } },
         user: fullUser,
         preferences,
-        isOnboarded,
-        firebaseConfirmation: null,
+        isOnboarded: false, // New users need to complete onboarding
         isLoading: false,
       });
 
       return { error: null };
     } catch (error) {
-      console.error('Verify OTP error:', error);
+      console.error('Sign up error:', error);
       set({
         isLoading: false,
         error: (error as Error).message,
@@ -251,7 +197,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   /**
-   * Sign out (both Firebase and Supabase)
+   * Sign out from Supabase
    */
   signOut: async () => {
     try {
@@ -261,7 +207,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         user: null,
         preferences: null,
         isOnboarded: false,
-        firebaseConfirmation: null,
       });
     } catch (error) {
       console.error('Sign out error:', error);
@@ -273,8 +218,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
    * Update user profile
    */
   updateProfile: async (data: Partial<User>) => {
-    const { user } = get();
-    if (!user) {
+    const { user, session } = get();
+
+    // Use session.user.id if user doesn't exist yet (during onboarding)
+    const userId = user?.id || session?.user?.id;
+
+    if (!userId) {
       return { error: new Error('No user logged in') };
     }
 
@@ -283,19 +232,35 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const filtered = Object.fromEntries(
         Object.entries(data).filter(([, v]) => v !== null)
       ) as Parameters<typeof authApi.upsertUser>[1];
-      const { error } = await authApi.upsertUser(user.id, filtered);
+      const { error } = await authApi.upsertUser(userId, filtered);
 
       if (error) {
         return { error };
       }
 
-      // Update local state
-      set({
-        user: {
-          ...user,
-          ...data,
-        } as User,
-      });
+      // Update local state - if user exists, merge data; otherwise create user object
+      if (user) {
+        set({
+          user: {
+            ...user,
+            ...data,
+          } as User,
+        });
+      } else {
+        // Create minimal user object during onboarding
+        set({
+          user: {
+            id: userId,
+            phone: '',
+            meal_count: 0,
+            language: 'vi',
+            city: 'hcmc',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            ...data,
+          } as User,
+        });
+      }
 
       return { error: null };
     } catch (error) {

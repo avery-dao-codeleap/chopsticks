@@ -12,7 +12,13 @@
     "db:generate": "pnpm --filter mobile db:generate",
     "db:push": "pnpm --filter mobile db:push"
   },
-  "keywords": ["food", "social", "street-food", "react-native", "expo"],
+  "keywords": [
+    "food",
+    "social",
+    "street-food",
+    "react-native",
+    "expo"
+  ],
   "author": "",
   "license": "MIT",
   "packageManager": "pnpm@10.28.1",

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/stores/auth';
 import { CUISINE_CATEGORIES, BUDGET_RANGES } from '@/lib/constants';
 
@@ -14,7 +15,8 @@ const BUDGET_OPTIONS = BUDGET_RANGES.map(br => ({
 export default function PreferencesScreen() {
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [selectedBudgets, setSelectedBudgets] = useState<string[]>([]);
-  const { updatePreferences, setOnboarded } = useAuthStore();
+  const router = useRouter();
+  const { updatePreferences } = useAuthStore();
 
   const toggle = (item: string, list: string[], setList: (v: string[]) => void) => {
     setList(list.includes(item) ? list.filter(i => i !== item) : [...list, item]);
@@ -25,7 +27,8 @@ export default function PreferencesScreen() {
       cuisines: selectedCuisines.length > 0 ? selectedCuisines : ['noodles_congee'],
       budget_ranges: selectedBudgets.length > 0 ? selectedBudgets : ['50k_150k'],
     });
-    setOnboarded(true);
+    // Go to intent screen instead of directly setting onboarded
+    router.push('/(onboarding)/intent');
   };
 
   return (

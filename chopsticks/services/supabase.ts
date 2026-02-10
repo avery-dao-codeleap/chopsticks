@@ -100,6 +100,118 @@ export type Database = {
         Insert: Partial<Database['public']['Tables']['meal_requests']['Row']>;
         Update: Partial<Database['public']['Tables']['meal_requests']['Row']>;
       };
+      restaurants: {
+        Row: {
+          id: string;
+          name: string;
+          address: string;
+          district: string;
+          city: string;
+          cuisine_type: string;
+          source: 'curated' | 'user_added';
+          created_at: string;
+        };
+        Insert: Partial<Database['public']['Tables']['restaurants']['Row']>;
+        Update: Partial<Database['public']['Tables']['restaurants']['Row']>;
+      };
+      request_participants: {
+        Row: {
+          id: string;
+          request_id: string;
+          user_id: string;
+          status: 'pending' | 'joined' | 'rejected';
+          joined_at: string;
+          created_at: string;
+        };
+        Insert: Partial<Database['public']['Tables']['request_participants']['Row']>;
+        Update: Partial<Database['public']['Tables']['request_participants']['Row']>;
+      };
+      chats: {
+        Row: {
+          id: string;
+          request_id: string;
+          expires_at: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database['public']['Tables']['chats']['Row']>;
+        Update: Partial<Database['public']['Tables']['chats']['Row']>;
+      };
+      chat_participants: {
+        Row: {
+          chat_id: string;
+          user_id: string;
+          joined_at: string;
+        };
+        Insert: {
+          chat_id: string;
+          user_id: string;
+          joined_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['chat_participants']['Row']>;
+      };
+      messages: {
+        Row: {
+          id: string;
+          chat_id: string;
+          sender_id: string;
+          content: string;
+          image_url: string | null;
+          flagged: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          chat_id: string;
+          sender_id: string;
+          content: string;
+          image_url?: string | null;
+          flagged?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['messages']['Row']>;
+      };
+      person_ratings: {
+        Row: {
+          id: string;
+          rater_id: string;
+          rated_id: string;
+          request_id: string;
+          showed_up: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          rater_id: string;
+          rated_id: string;
+          request_id: string;
+          showed_up: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['person_ratings']['Row']>;
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: string;
+          title: string;
+          body: string;
+          data: Record<string, unknown> | null;
+          read: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: string;
+          title: string;
+          body: string;
+          data?: Record<string, unknown> | null;
+          read?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['notifications']['Row']>;
+      };
     };
   };
 };

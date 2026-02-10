@@ -69,18 +69,57 @@ cat specs/mvp/tasks.md | grep -E "^\- \[X\]" | wc -l
 
 ## 🏗️ Development Workflow
 
+### ⚠️ **CRITICAL: Manual Approval Required**
+
+**BEFORE implementing ANY changes (features, fixes, refactors, new files):**
+
+1. **Explain what you plan to do** — Describe the changes, files affected, and approach
+2. **Wait for explicit approval** — User must approve before you proceed
+3. **No assumptions** — If anything is unclear, ask questions first
+
+**This applies to:**
+- ✅ Adding new features or components
+- ✅ Modifying existing code
+- ✅ Creating new files
+- ✅ Refactoring or restructuring
+- ✅ Installing dependencies
+- ✅ Database changes
+
+**Exceptions (can proceed without approval):**
+- ❌ Reading files for investigation
+- ❌ Searching/exploring codebase
+- ❌ Answering questions about code
+
+**Example workflow:**
+```
+User: "Add a share button to the request card"
+Claude: "I'll add a share button to RequestCard.tsx that will:
+  - Use React Native's Share API
+  - Share the request details and restaurant info
+  - Include haptic feedback on press
+  - Add an icon to the top-right of the card
+
+Should I proceed with this approach?"
+User: "Yes, go ahead"
+Claude: [proceeds with implementation]
+```
+
+---
+
 ### Phase Approach
 
-**Current Phase:** Phase 3 (Auth + Onboarding) — 16/19 tasks (84%)
+**Current Phase:** Phase 7 (Chat) — 0/15 tasks
 
 **Completed:**
 - ✅ Phase 1: Setup (7/7)
 - ✅ Phase 2: Foundation (36/36)
+- ✅ Phase 3: Auth + Onboarding (19/19)
+- ✅ Phase 4: Create Request (13/13)
+- ✅ Phase 5: Browse & Join (13/13)
 
 **Next:**
-- 🔄 Phase 3: Auth + Onboarding (3 tasks remaining)
-- ⏸️ Phase 4: Create Request (0/13)
-- ⏸️ Phase 5: Browse & Join (0/13)
+- 🔄 Phase 7: Chat (0/15)
+- ⏸️ Phase 6: Approve/Reject (0/11)
 
 ### Task Execution Order
 
@@ -88,6 +127,26 @@ cat specs/mvp/tasks.md | grep -E "^\- \[X\]" | wc -l
 2. Implement tasks in order (respect dependencies)
 3. Mark tasks complete in tasks.md with `[X]`
 4. Update Linear CSX-145 after completing a phase or milestone
+
+### **Documentation Updates**
+
+**CRITICAL:** When making product-level changes (not just bug fixes), **always update documentation** to keep it in scope:
+
+- ✅ **Update CLAUDE.md** if workflow, patterns, or conventions change
+- ✅ **Update specs/mvp/spec.md** if features or architecture change
+- ✅ **Update MEMORY.md** if you discover important patterns or gotchas
+- ✅ **Update tasks.md** to reflect any skipped, added, or modified tasks
+
+**Examples of product-level changes:**
+- Removing onboarding screens (update flow diagrams)
+- Changing navigation patterns (update routing docs)
+- Adding new API patterns (update Key Patterns section)
+- Skipping features (mark as skipped in tasks.md with reason)
+
+**Not needed for:**
+- Simple bug fixes
+- Code formatting
+- Minor UI tweaks
 
 ---
 
@@ -197,6 +256,29 @@ pnpm lint
 - **@tanstack/react-query**: v5 (server state)
 - **nativewind**: v4 (Tailwind CSS)
 - **react-native-reanimated**: v4 (requires worklets 0.7+)
+- **expo-haptics**: Haptic feedback
+- **@react-native-community/netinfo**: Offline detection
+
+### ⚠️ IMPORTANT: Always Check Dependencies First
+
+**BEFORE creating any new component or utility:**
+1. Check if the package is already installed: `grep "package-name" package.json`
+2. If NOT installed, install it FIRST: `pnpm add package-name`
+3. THEN create the component/utility that uses it
+4. This avoids multiple restart cycles
+
+**Common packages that need explicit installation:**
+- `expo-haptics` - Haptic feedback
+- `@react-native-community/netinfo` - Network detection
+- `expo-image-picker` - Image selection
+- `expo-camera` - Camera access
+- Any new native modules
+
+**After installing native packages:**
+```bash
+# Always restart Metro bundler with cache clear
+pnpm start --clear
+```
 
 ### Common Dependency Issues
 
@@ -229,12 +311,14 @@ cd ios && rm -rf Pods Podfile.lock && pod install
 ❌ Build features not in tasks.md
 ❌ Add abstractions before they're needed
 ❌ Create new Linear tracking issues (use CSX-145)
+❌ **NEVER infer or assume** — always ask the user if anything is unclear
 
 ### What TO Do
 
+✅ **Get approval before implementing** — Explain your plan and wait for user approval before writing code
 ✅ Follow tasks.md exactly
 ✅ Update CSX-145 after completing phases
-✅ Ask clarifying questions if spec is unclear
+✅ **Always ask questions** when requirements, design decisions, or implementation details are ambiguous — never guess
 ✅ Test manually after each phase
 ✅ Keep code simple and direct
 

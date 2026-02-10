@@ -1,55 +1,112 @@
-import { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { MOCK_NOTIFICATIONS, type MockNotification } from '@/lib/mockData';
-
-const TYPE_ICONS: Record<MockNotification['type'], string> = {
-  join_request: '🙋',
-  join_approved: '✅',
-  new_message: '💬',
-};
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Stack } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useI18n } from '@/lib/i18n';
+import { useNotifications, useMarkAsRead, useMarkAllAsRead, useDeleteNotification } from '@/hooks/queries/useNotifications';
+import { NotificationItem } from '@/components/ui/NotificationItem';
 
 export default function NotificationsScreen() {
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+  const { t } = useI18n();
+  const { data: notifications = [], isLoading } = useNotifications();
+  const markAsReadMutation = useMarkAsRead();
+  const markAllAsReadMutation = useMarkAllAsRead();
+  const deleteNotificationMutation = useDeleteNotification();
 
-  const markRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const handleNotificationPress = (notificationId: string, isRead: boolean) => {
+    if (!isRead) {
+      markAsReadMutation.mutate(notificationId);
+    }
+  };
+
+  const handleMarkAllAsRead = () => {
+    if (unreadCount > 0) {
+      markAllAsReadMutation.mutate();
+    }
+  };
+
+  const handleDelete = (notificationId: string) => {
+    deleteNotificationMutation.mutate(notificationId);
   };
 
   return (
-    <FlatList
-      data={notifications}
-      keyExtractor={n => n.id}
-      contentContainerStyle={{ padding: 16 }}
-      style={{ flex: 1, backgroundColor: '#0a0a0a' }}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() => markRead(item.id)}
-          activeOpacity={0.7}
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0a0a0a' }} edges={['left', 'right']}>
+      <Stack.Screen
+        options={{
+          headerTitle: t('notifications') || 'Notifications',
+          headerRight: () =>
+            unreadCount > 0 ? (
+              <TouchableOpacity
+                onPress={handleMarkAllAsRead}
+                disabled={markAllAsReadMutation.isPending}
+              >
+                <Text style={{ color: '#f97316', fontSize: 14, fontWeight: '600', marginRight: 16 }}>
+                  {t('markAllRead') || 'Mark all read'}
+                </Text>
+              </TouchableOpacity>
+            ) : null,
+        }}
+      />
+
+      {isLoading ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator size="large" color="#f97316" />
+        </View>
+      ) : notifications.length > 0 ? (
+        <>
+          {unreadCount > 0 && (
+            <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+              <Text style={{ color: '#9ca3af', fontSize: 13 }}>
+                {unreadCount} unread {unreadCount === 1 ? 'notification' : 'notifications'}
+              </Text>
+            </View>
+          )}
+          <FlatList
+            data={notifications}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 }}
+            renderItem={({ item }) => (
+              <NotificationItem
+                notification={item}
+                onPress={() => handleNotificationPress(item.id, item.read)}
+                onDelete={() => handleDelete(item.id)}
+              />
+            )}
+          />
+        </>
+      ) : (
+        <View
           style={{
-            backgroundColor: '#171717',
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 8,
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            borderLeftWidth: item.read ? 0 : 3,
-            borderLeftColor: '#f97316',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 32,
           }}
         >
-          <Text style={{ fontSize: 22, marginRight: 12, marginTop: 2 }}>{TYPE_ICONS[item.type]}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '600' }}>{item.title}</Text>
-            <Text style={{ color: '#9ca3af', fontSize: 13, marginTop: 2 }}>{item.body}</Text>
-            <Text style={{ color: '#4b5563', fontSize: 11, marginTop: 4 }}>{item.time}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-      ListEmptyComponent={
-        <View style={{ alignItems: 'center', paddingTop: 60 }}>
-          <Text style={{ fontSize: 40, marginBottom: 12 }}>🔔</Text>
-          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>No notifications</Text>
+          <Text style={{ fontSize: 48, marginBottom: 16 }}>🔔</Text>
+          <Text
+            style={{
+              color: '#fff',
+              fontSize: 20,
+              fontWeight: '600',
+              textAlign: 'center',
+            }}
+          >
+            {t('noNotifications') || 'No notifications'}
+          </Text>
+          <Text
+            style={{
+              color: '#6b7280',
+              textAlign: 'center',
+              marginTop: 8,
+              fontSize: 14,
+            }}
+          >
+            {t('notificationsWillAppearHere') || "You'll see updates about your meal requests here"}
+          </Text>
         </View>
-      }
-    />
+      )}
+    </SafeAreaView>
   );
 }

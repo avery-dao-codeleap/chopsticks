@@ -78,9 +78,9 @@ export default function RootLayout() {
     const inOnboardingGroup = segments[0] === '(onboarding)';
 
     if (!session) {
-      // Not logged in - go to auth
+      // Not logged in - go to welcome screen
       if (!inAuthGroup) {
-        router.replace('/(auth)/login');
+        router.replace('/(auth)/welcome');
       }
     } else if (!isOnboarded) {
       // Logged in but not onboarded

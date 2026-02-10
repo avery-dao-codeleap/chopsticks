@@ -29,6 +29,14 @@ export default function ScreensLayout() {
       <Stack.Screen name="edit-profile" options={{ headerTitle: 'Edit Profile' }} />
       <Stack.Screen name="my-requests" options={{ headerTitle: 'My Requests' }} />
       <Stack.Screen name="post-meal" options={{ headerTitle: 'Meal Complete' }} />
+      <Stack.Screen
+        name="rating-modal"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen name="pending-requests" options={{ headerTitle: 'Pending Requests' }} />
     </Stack>
   );
 }

@@ -218,26 +218,31 @@ All tables have RLS enabled.
 
 ---
 
-## 8. Onboarding Flow (9 Steps)
+## 8. Onboarding Flow (8 Steps)
 
 | Step | Screen | Fields | Validation |
 |------|--------|--------|------------|
 | 1 | Phone Verification | Phone number | Firebase Auth OTP |
-| 2 | Photo Upload | Photo | expo-face-detector (must detect face) |
-| 3 | Profile | Name, age, gender | Name: 1-50 chars, Age: 18-100 |
-| 4 | City Check | City | If not HCMC → show "Available in HCMC only" |
-| 5 | Persona | Select 1 of 5 | Local, New to city, Expat, Traveler, Student |
-| 6 | Cuisines | Select 1+ (see [data-model.md](./data-model.md#cuisine-types-reference)) | Multi-select chips |
-| 7 | Budget | Select 1+ of 4 | Multi-select buttons |
-| 8 | Bio | Text input (food-related) | Max 200 chars, prompt: "Tell us something food-related about yourself" |
-| 9 | Intent | "Do you know where to eat?" | Yes → Create flow, No → Browse flow |
+| 2 | Birthdate | Date picker | Age 18+ required |
+| 3 | Gender | Male/Female/Non-binary | Required selection |
+| 4 | City | District selection | If not HCMC → show "Available in HCMC only" |
+| 5 | Persona | Select 1 of 3 | Local, Traveler, Student |
+| 6 | Profile | Name, bio, photo (optional) | Name: 1-50 chars (required), Bio: max 200 chars (optional), Photo: optional for MVP |
+| 7 | Preferences | Cuisines (1+), Budget (1+) | Multi-select chips and buttons |
+| 8 | Intent | "Do you know where to eat?" | Yes → Create Request screen, No → Browse screen |
 
 **After onboarding:**
-- User taken directly to create request OR browse requests based on step 9
+- User taken directly to **Create Request screen** OR **Browse screen** based on step 8
+- Intent "Yes" now routes to create-request screen (not just tabs)
 
 **Removed steps:**
+- ❌ Privacy Settings (removed 2026-02-10 - not needed for MVP)
 - ❌ Dietary restrictions (cut)
 - ❌ Allergies (cut)
+
+**MVP Simplifications:**
+- Photo is now optional (can be added later in settings)
+- Face detection still available when photo is uploaded, but not enforced
 
 ---
 
