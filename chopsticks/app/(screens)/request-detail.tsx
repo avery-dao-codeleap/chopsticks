@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CUISINE_CATEGORIES, BUDGET_RANGES, HCMC_DISTRICTS } from '@/lib/constants';
-import { useRequest, useJoinRequest } from '@/hooks/queries/useRequests';
+import { useRequest, useJoinRequest, useCancelRequest, usePendingParticipants, useApproveParticipant, useRejectParticipant } from '@/hooks/queries/useRequests';
 import { useAuthStore } from '@/stores/auth';
 import { useI18n } from '@/lib/i18n';
 
@@ -30,9 +30,14 @@ export default function RequestDetailScreen() {
 
   const { data: request, isLoading } = useRequest(requestId);
   const joinRequest = useJoinRequest();
+  const cancelRequest = useCancelRequest();
+  const { data: pendingParticipants = [], isLoading: loadingPending } = usePendingParticipants(requestId);
+  const approveParticipant = useApproveParticipant();
+  const rejectParticipant = useRejectParticipant();
 
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [joinMessage, setJoinMessage] = useState('');
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   if (isLoading || !request) {
     return (
@@ -44,6 +49,8 @@ export default function RequestDetailScreen() {
 
   const { restaurants: restaurant, users: requester } = request;
   const isOwner = session?.user?.id === request.requester_id;
+  const userStatus = 'user_status' in request ? request.user_status : 'none';
+  const hasAlreadyJoined = userStatus === 'joined' || userStatus === 'pending';
   const spotsLeft = request.group_size - request.participant_count - 1; // -1 for the requester
   const cuisineEmoji = CUISINE_EMOJIS[request.cuisine] ?? '🍽️';
   const cuisineCat = CUISINE_CATEGORIES.find(c => c.id === request.cuisine);
@@ -68,8 +75,9 @@ export default function RequestDetailScreen() {
         Alert.alert(t('joinedTitle'), t('joinedBody', { name: restaurant.name }), [
           { text: 'OK', onPress: () => router.back() },
         ]);
-      } catch {
-        Alert.alert('Error', 'Failed to join. You may have already joined.');
+      } catch (error) {
+        console.error('Join request error:', error);
+        Alert.alert('Error', `Failed to join: ${error instanceof Error ? error.message : 'You may have already joined.'}`);
       }
     } else {
       setShowJoinModal(true);
@@ -92,8 +100,21 @@ export default function RequestDetailScreen() {
       setShowJoinModal(false);
       setJoinMessage('');
       Alert.alert(t('requestSent'), t('requestSentBody', { name: requester?.name ?? '' }));
-    } catch {
-      Alert.alert('Error', 'Failed to send request. You may have already requested.');
+    } catch (error) {
+      console.error('Send join request error:', error);
+      Alert.alert('Error', `Failed to send request: ${error instanceof Error ? error.message : 'You may have already requested.'}`);
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    try {
+      await cancelRequest.mutateAsync(request.id);
+      setShowCancelConfirm(false);
+      Alert.alert('Request Cancelled', 'Your meal request has been cancelled and removed.', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to cancel request. Please try again.');
     }
   };
 
@@ -109,10 +130,13 @@ export default function RequestDetailScreen() {
         <View style={{ padding: 20 }}>
           {/* Restaurant info */}
           <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>
-            {request.join_type === 'approval' ? districtLabel : restaurant.name}
+            {isOwner || userStatus === 'joined' ? restaurant.name : (request.join_type === 'approval' ? districtLabel : restaurant.name)}
           </Text>
           <Text style={{ color: '#9ca3af', fontSize: 14, marginTop: 4 }}>
-            {request.join_type === 'approval' ? `📍 Area only (full address shared after approval)` : restaurant.address}
+            {isOwner || userStatus === 'joined'
+              ? restaurant.address
+              : (request.join_type === 'approval' ? `📍 Area only (full address shared after approval)` : restaurant.address)
+            }
           </Text>
 
           <View style={{ height: 1, backgroundColor: '#262626', marginVertical: 20 }} />
@@ -156,6 +180,117 @@ export default function RequestDetailScreen() {
 
           <View style={{ height: 1, backgroundColor: '#262626', marginVertical: 20 }} />
 
+          {/* Pending participants — owner only, approval-type only */}
+          {isOwner && request.join_type === 'approval' && (
+            <>
+              <View style={{
+                backgroundColor: pendingParticipants.length > 0 ? '#171717' : '#0a0a0a',
+                borderRadius: 12,
+                padding: 14,
+                borderWidth: 1,
+                borderColor: pendingParticipants.length > 0 ? '#f97316' : '#262626',
+              }}>
+                <Text style={{
+                  color: pendingParticipants.length > 0 ? '#f97316' : '#6b7280',
+                  fontSize: 12,
+                  fontWeight: '600',
+                  marginBottom: pendingParticipants.length > 0 ? 12 : 0,
+                }}>
+                  {pendingParticipants.length > 0
+                    ? `🔔 ${pendingParticipants.length} Pending Request${pendingParticipants.length !== 1 ? 's' : ''}`
+                    : '⏳ No pending requests yet'
+                  }
+                </Text>
+                {pendingParticipants.length > 0 && pendingParticipants.map((participant) => (
+                  <View key={participant.id} style={{ marginBottom: 12 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                      <View style={{
+                        width: 40, height: 40, borderRadius: 20,
+                        backgroundColor: '#262626', alignItems: 'center', justifyContent: 'center', marginRight: 10,
+                      }}>
+                        <Text style={{ fontSize: 18, color: '#fff' }}>{participant.users.name?.[0] ?? '?'}</Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>
+                          {participant.users.name ?? 'Unknown'}{participant.users.age ? `, ${participant.users.age}` : ''}
+                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2, gap: 6 }}>
+                          {participant.users.persona && (
+                            <Text style={{ color: '#6b7280', fontSize: 11 }}>
+                              {participant.users.persona === 'local' ? '📍 Local' : `✈️ ${participant.users.persona.charAt(0).toUpperCase() + participant.users.persona.slice(1)}`}
+                            </Text>
+                          )}
+                          <Text style={{ color: '#6b7280', fontSize: 11 }}>🍜 {participant.users.meal_count ?? 0} meals</Text>
+                        </View>
+                      </View>
+                    </View>
+                    {participant.users.bio && (
+                      <Text style={{ color: '#9ca3af', fontSize: 12, fontStyle: 'italic', marginBottom: 8 }}>
+                        "{participant.users.bio}"
+                      </Text>
+                    )}
+                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                      <TouchableOpacity
+                        onPress={async () => {
+                          try {
+                            await approveParticipant.mutateAsync({ participantId: participant.id, requestId: request.id });
+                            Alert.alert('Approved', `${participant.users.name} has been added to your meal!`);
+                          } catch (error) {
+                            Alert.alert('Error', 'Failed to approve participant.');
+                          }
+                        }}
+                        disabled={approveParticipant.isPending}
+                        style={{
+                          flex: 1, backgroundColor: '#10b981', borderRadius: 8, paddingVertical: 8, alignItems: 'center',
+                          opacity: approveParticipant.isPending ? 0.5 : 1,
+                        }}
+                      >
+                        <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>
+                          {approveParticipant.isPending ? 'Approving...' : 'Approve'}
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={async () => {
+                          Alert.alert(
+                            'Reject Request',
+                            `Reject ${participant.users.name}'s request to join?`,
+                            [
+                              { text: 'Cancel', style: 'cancel' },
+                              {
+                                text: 'Reject',
+                                style: 'destructive',
+                                onPress: async () => {
+                                  try {
+                                    await rejectParticipant.mutateAsync({ participantId: participant.id, requestId: request.id });
+                                    Alert.alert('Rejected', 'Join request has been rejected.');
+                                  } catch (error) {
+                                    Alert.alert('Error', 'Failed to reject participant.');
+                                  }
+                                },
+                              },
+                            ]
+                          );
+                        }}
+                        disabled={rejectParticipant.isPending}
+                        style={{
+                          flex: 1, backgroundColor: '#262626', borderRadius: 8, paddingVertical: 8, alignItems: 'center',
+                          borderWidth: 1, borderColor: '#ef4444',
+                          opacity: rejectParticipant.isPending ? 0.5 : 1,
+                        }}
+                      >
+                        <Text style={{ color: '#ef4444', fontSize: 13, fontWeight: '600' }}>
+                          {rejectParticipant.isPending ? 'Rejecting...' : 'Reject'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+              <View style={{ height: 1, backgroundColor: '#262626', marginVertical: 20 }} />
+            </>
+          )}
+
+
           {/* Request description */}
           {request.description && (
             <>
@@ -192,7 +327,25 @@ export default function RequestDetailScreen() {
           </View>
 
           {/* Join button — non-owner only */}
-          {!isOwner && spotsLeft > 0 && (
+          {!isOwner && userStatus === 'pending' && (
+            <View style={{
+              backgroundColor: '#eab308', borderRadius: 14,
+              paddingVertical: 16, alignItems: 'center', marginTop: 28,
+            }}>
+              <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Request Pending</Text>
+            </View>
+          )}
+
+          {!isOwner && userStatus === 'joined' && (
+            <View style={{
+              backgroundColor: '#10b981', borderRadius: 14,
+              paddingVertical: 16, alignItems: 'center', marginTop: 28,
+            }}>
+              <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Already Joined</Text>
+            </View>
+          )}
+
+          {!isOwner && userStatus === 'none' && spotsLeft > 0 && (
             <TouchableOpacity
               onPress={handleJoin}
               disabled={joinRequest.isPending}
@@ -208,13 +361,26 @@ export default function RequestDetailScreen() {
             </TouchableOpacity>
           )}
 
-          {!isOwner && spotsLeft <= 0 && (
+          {!isOwner && spotsLeft <= 0 && userStatus === 'none' && (
             <View style={{
               backgroundColor: '#262626', borderRadius: 14,
               paddingVertical: 16, alignItems: 'center', marginTop: 28,
             }}>
               <Text style={{ color: '#6b7280', fontSize: 17, fontWeight: '600' }}>Full</Text>
             </View>
+          )}
+
+          {/* Cancel button — owner only */}
+          {isOwner && (
+            <TouchableOpacity
+              onPress={() => setShowCancelConfirm(true)}
+              style={{
+                backgroundColor: '#262626', borderRadius: 14, borderWidth: 1, borderColor: '#ef4444',
+                paddingVertical: 16, alignItems: 'center', marginTop: 28,
+              }}
+            >
+              <Text style={{ color: '#ef4444', fontSize: 17, fontWeight: '600' }}>Cancel Request</Text>
+            </TouchableOpacity>
           )}
         </View>
       </ScrollView>
@@ -258,6 +424,38 @@ export default function RequestDetailScreen() {
               style={{ paddingVertical: 12, alignItems: 'center' }}
             >
               <Text style={{ color: '#6b7280', fontSize: 15 }}>{t('cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Cancel confirmation modal */}
+      <Modal visible={showCancelConfirm} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: '#171717', borderRadius: 16, padding: 24, maxWidth: 340, width: '100%' }}>
+            <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700', marginBottom: 8 }}>
+              Cancel this request?
+            </Text>
+            <Text style={{ color: '#9ca3af', fontSize: 14, lineHeight: 20, marginBottom: 20 }}>
+              This will permanently cancel your meal request. {request.participant_count > 0 && 'All participants will be notified.'}
+            </Text>
+            <TouchableOpacity
+              onPress={handleCancelRequest}
+              disabled={cancelRequest.isPending}
+              style={{
+                backgroundColor: '#ef4444', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 10,
+                opacity: cancelRequest.isPending ? 0.5 : 1,
+              }}
+            >
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>
+                {cancelRequest.isPending ? 'Cancelling...' : 'Yes, Cancel Request'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowCancelConfirm(false)}
+              style={{ paddingVertical: 12, alignItems: 'center' }}
+            >
+              <Text style={{ color: '#9ca3af', fontSize: 15 }}>Keep Request</Text>
             </TouchableOpacity>
           </View>
         </View>

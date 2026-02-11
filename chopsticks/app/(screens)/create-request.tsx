@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CUISINE_CATEGORIES, BUDGET_RANGES, HCMC_DISTRICTS } from '@/lib/constants';
 import { useRestaurants, useAddRestaurant } from '@/hooks/queries/useRestaurants';
@@ -25,7 +25,7 @@ export default function CreateRequestScreen() {
 
   // Restaurant selection
   const [search, setSearch] = useState('');
-  const [cuisineFilter, setCuisineFilter] = useState<string | null>(null); // Filter for browsing restaurants
+  const [cuisineFilter, setCuisineFilter] = useState<string[]>([]); // Filter for browsing restaurants (multi-select)
   const { data: restaurants, isLoading: loadingRestaurants } = useRestaurants(search);
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantRow | null>(null);
 
@@ -43,6 +43,7 @@ export default function CreateRequestScreen() {
   const [groupSize, setGroupSize] = useState(2);
   const [joinType, setJoinType] = useState<'open' | 'approval'>('open');
   const [description, setDescription] = useState('');
+  const [showBudgetInfo, setShowBudgetInfo] = useState(false);
 
   const handleAsapToggle = (asap: boolean) => {
     setIsAsap(asap);
@@ -133,7 +134,13 @@ export default function CreateRequestScreen() {
           style={{ backgroundColor: '#171717', borderRadius: 12, padding: 14, marginBottom: 20, flexDirection: 'row', alignItems: 'center' }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>{selectedRestaurant.name}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontSize: 16 }}>{CUISINE_EMOJIS[selectedRestaurant.cuisine_type] || '🍽️'}</Text>
+              <Text style={{ color: '#9ca3af', fontSize: 12 }}>
+                {CUISINE_CATEGORIES.find(c => c.id === selectedRestaurant.cuisine_type)?.[language === 'vi' ? 'labelVi' : 'label'] || selectedRestaurant.cuisine_type}
+              </Text>
+              <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>{selectedRestaurant.name}</Text>
+            </View>
             <Text style={{ color: '#9ca3af', fontSize: 12, marginTop: 2 }}>{selectedRestaurant.address}</Text>
           </View>
           <Text style={{ color: '#f97316', fontSize: 13 }}>{t('change')}</Text>
@@ -228,77 +235,120 @@ export default function CreateRequestScreen() {
           />
 
           {/* Cuisine filter */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8, marginBottom: 8 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8, marginBottom: 8, gap: 6 }}>
             <TouchableOpacity
-              onPress={() => setCuisineFilter(null)}
+              onPress={() => setCuisineFilter([])}
               style={{
-                paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, marginRight: 6,
-                backgroundColor: cuisineFilter === null ? '#f97316' : '#171717',
-                borderWidth: 1, borderColor: cuisineFilter === null ? '#f97316' : '#262626',
+                paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+                backgroundColor: cuisineFilter.length === 0 ? '#f97316' : '#171717',
+                borderWidth: 1, borderColor: cuisineFilter.length === 0 ? '#f97316' : '#262626',
               }}
             >
-              <Text style={{ color: cuisineFilter === null ? '#fff' : '#9ca3af', fontSize: 12 }}>All</Text>
+              <Text style={{ color: cuisineFilter.length === 0 ? '#fff' : '#9ca3af', fontSize: 12 }}>All</Text>
             </TouchableOpacity>
             {CUISINE_CATEGORIES.map(c => (
               <TouchableOpacity
                 key={c.id}
-                onPress={() => setCuisineFilter(c.id)}
+                onPress={() => {
+                  setCuisineFilter(prev =>
+                    prev.includes(c.id) ? prev.filter(id => id !== c.id) : [...prev, c.id]
+                  );
+                }}
                 style={{
-                  paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, marginRight: 6,
-                  backgroundColor: cuisineFilter === c.id ? '#f97316' : '#171717',
-                  borderWidth: 1, borderColor: cuisineFilter === c.id ? '#f97316' : '#262626',
+                  paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+                  backgroundColor: cuisineFilter.includes(c.id) ? '#f97316' : '#171717',
+                  borderWidth: 1, borderColor: cuisineFilter.includes(c.id) ? '#f97316' : '#262626',
                   flexDirection: 'row', alignItems: 'center', gap: 4,
                 }}
               >
                 <Text style={{ fontSize: 12 }}>{CUISINE_EMOJIS[c.id] || '🍽️'}</Text>
-                <Text style={{ color: cuisineFilter === c.id ? '#fff' : '#9ca3af', fontSize: 11 }}>
+                <Text style={{ color: cuisineFilter.includes(c.id) ? '#fff' : '#9ca3af', fontSize: 11 }}>
                   {language === 'vi' ? c.labelVi : c.label}
                 </Text>
               </TouchableOpacity>
             ))}
-          </ScrollView>
+          </View>
 
           <View style={{ marginTop: 8 }}>
-            <TouchableOpacity
-              onPress={() => setShowManualEntry(true)}
-              style={{
-                backgroundColor: '#171717', borderRadius: 10, padding: 12, marginBottom: 6,
-                borderWidth: 1, borderColor: '#262626', borderStyle: 'dashed',
-              }}
-            >
-              <Text style={{ color: '#f97316', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>+ Add restaurant manually</Text>
-            </TouchableOpacity>
-            <View style={{ maxHeight: 300 }}>
-              <FlatList
-                data={(restaurants ?? [])
-                  .filter(r => !cuisineFilter || r.cuisine_type === cuisineFilter)}
-                keyExtractor={r => r.id}
-                keyboardShouldPersistTaps="handled"
-                nestedScrollEnabled
-                renderItem={({ item }) => (
+            {(() => {
+              const filteredRestaurants = (restaurants ?? []).filter(r =>
+                cuisineFilter.length === 0 || cuisineFilter.includes(r.cuisine_type)
+              );
+
+              if (filteredRestaurants.length === 0) {
+                return (
+                  <>
+                    <View style={{ padding: 20, alignItems: 'center' }}>
+                      <Text style={{ color: '#6b7280', fontSize: 13 }}>
+                        {search || cuisineFilter.length > 0 ? 'No restaurants found' : 'Start typing to search'}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => setShowManualEntry(true)}
+                      style={{
+                        backgroundColor: '#171717', borderRadius: 10, padding: 12, marginTop: 6,
+                        borderWidth: 1, borderColor: '#262626', borderStyle: 'dashed',
+                      }}
+                    >
+                      <Text style={{ color: '#f97316', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>+ Add restaurant manually</Text>
+                    </TouchableOpacity>
+                  </>
+                );
+              }
+
+              // When user is actively searching/filtering, show all results
+              // Otherwise limit to 5 to encourage search/filter usage
+              const isFiltering = search.trim().length > 0 || cuisineFilter.length > 0;
+              const displayRestaurants = isFiltering ? filteredRestaurants : filteredRestaurants.slice(0, 5);
+              const hasMore = !isFiltering && filteredRestaurants.length > 5;
+
+              return (
+                <>
+                  {displayRestaurants.map(item => (
+                    <TouchableOpacity
+                      key={item.id}
+                      onPress={() => { setSelectedRestaurant(item); setSearch(''); setCuisineFilter([]); }}
+                      style={{ backgroundColor: '#171717', borderRadius: 10, padding: 12, marginBottom: 6 }}
+                    >
+                      <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>{item.name}</Text>
+                      <Text style={{ color: '#6b7280', fontSize: 12, marginTop: 2 }}>
+                        {item.cuisine_type} · {item.district} · {item.address}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                  {hasMore && (
+                    <View style={{ padding: 12, alignItems: 'center', backgroundColor: '#171717', borderRadius: 10, marginBottom: 6 }}>
+                      <Text style={{ color: '#9ca3af', fontSize: 12, textAlign: 'center' }}>
+                        +{filteredRestaurants.length - 10} more. Use search or filter to find restaurants.
+                      </Text>
+                    </View>
+                  )}
                   <TouchableOpacity
-                    onPress={() => { setSelectedRestaurant(item); setSearch(''); setCuisineFilter(null); }}
-                    style={{ backgroundColor: '#171717', borderRadius: 10, padding: 12, marginBottom: 6 }}
+                    onPress={() => setShowManualEntry(true)}
+                    style={{
+                      backgroundColor: '#171717', borderRadius: 10, padding: 12, marginTop: 6,
+                      borderWidth: 1, borderColor: '#262626', borderStyle: 'dashed',
+                    }}
                   >
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>{item.name}</Text>
-                    <Text style={{ color: '#6b7280', fontSize: 12, marginTop: 2 }}>{item.cuisine_type} · {item.district} · {item.address}</Text>
+                    <Text style={{ color: '#f97316', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>+ Add restaurant manually</Text>
                   </TouchableOpacity>
-                )}
-                ListEmptyComponent={
-                  <View style={{ padding: 20, alignItems: 'center' }}>
-                    <Text style={{ color: '#6b7280', fontSize: 13 }}>
-                      {search || cuisineFilter ? 'No restaurants found' : 'Start typing to search'}
-                    </Text>
-                  </View>
-                }
-              />
-            </View>
+                </>
+              );
+            })()}
           </View>
         </View>
       )}
 
       {/* Budget range */}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 8 }}>{t('budget')}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 }}>
+        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Budget per person</Text>
+        <TouchableOpacity
+          onPress={() => setShowBudgetInfo(true)}
+          style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#262626', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Text style={{ color: '#9ca3af', fontSize: 12, fontWeight: '600' }}>i</Text>
+        </TouchableOpacity>
+      </View>
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20 }}>
         {BUDGET_RANGES.map(b => (
           <TouchableOpacity
@@ -438,6 +488,33 @@ export default function CreateRequestScreen() {
       </TouchableOpacity>
 
       <View style={{ height: 40 }} />
+
+      {/* Budget Info Modal */}
+      <Modal
+        visible={showBudgetInfo}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowBudgetInfo(false)}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setShowBudgetInfo(false)}
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 20 }}
+        >
+          <View style={{ backgroundColor: '#171717', borderRadius: 16, padding: 20, maxWidth: 320, width: '100%' }}>
+            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700', marginBottom: 12 }}>Budget per person</Text>
+            <Text style={{ color: '#9ca3af', fontSize: 14, lineHeight: 20, marginBottom: 16 }}>
+              Everyone pays for their own share unless communicated otherwise.
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowBudgetInfo(false)}
+              style={{ backgroundColor: '#f97316', borderRadius: 10, paddingVertical: 12, alignItems: 'center' }}
+            >
+              <Text style={{ color: '#fff', fontSize: 14, fontWeight: '600' }}>Got it</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </ScrollView>
   );
 }

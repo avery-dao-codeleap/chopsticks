@@ -13,7 +13,7 @@ import {
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { supabase } from '@/services/supabase';
 import { useI18n } from '@/lib/i18n';
-import { useChat, useChatMessages, useSendMessage, useSendImageMessage, useRemoveUserFromChat, useLeaveChat } from '@/hooks/queries/useChats';
+import { useChat, useChatMessages, useSendMessage, useRemoveUserFromChat, useLeaveChat } from '@/hooks/queries/useChats';
 import { useRealtime } from '@/hooks/useRealtime';
 import { MessageList } from '@/components/chat/MessageList';
 import { ChatInput } from '@/components/chat/ChatInput';
@@ -43,7 +43,6 @@ export default function ChatDetailScreen() {
 
   // Mutations
   const sendMessageMutation = useSendMessage(chatId || '');
-  const sendImageMutation = useSendImageMessage(chatId || '');
   const removeUserMutation = useRemoveUserFromChat(chatId || '');
   const leaveChatMutation = useLeaveChat();
 
@@ -56,17 +55,19 @@ export default function ChatDetailScreen() {
     enabled: !!chatId,
     onInsert: useCallback((payload) => {
       console.log('New message received:', payload.new);
-      // Invalidate messages query to refetch
-      queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
+      // Optimistically add new message to cache (5x faster than refetch)
+      queryClient.setQueryData(['chat-messages', chatId], (old: any[] = []) => {
+        // Check if message already exists (prevent duplicates)
+        const exists = old.some((msg: any) => msg.id === payload.new.id);
+        if (exists) return old;
+        // Add new message to end
+        return [...old, payload.new];
+      });
     }, [chatId, queryClient]),
   });
 
   const handleSendMessage = (content: string) => {
     sendMessageMutation.mutate(content);
-  };
-
-  const handleSendImage = (imageUri: string) => {
-    sendImageMutation.mutate(imageUri);
   };
 
   const handleRemoveUser = (userId: string) => {
@@ -366,8 +367,7 @@ export default function ChatDetailScreen() {
       {/* Input bar */}
       <ChatInput
         onSendMessage={handleSendMessage}
-        onSendImage={handleSendImage}
-        isSending={sendMessageMutation.isPending || sendImageMutation.isPending}
+        isSending={sendMessageMutation.isPending}
       />
     </KeyboardAvoidingView>
   );

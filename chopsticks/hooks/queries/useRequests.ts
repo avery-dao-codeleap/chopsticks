@@ -17,6 +17,22 @@ export function useRequests(filters?: {
       if (error) throw error;
       return data;
     },
+    refetchInterval: 2000, // Auto-refresh every 2 seconds for faster sync
+  });
+}
+
+/**
+ * Hook for fetching requests the user has joined or requested to join
+ */
+export function useMyParticipations() {
+  return useQuery({
+    queryKey: ['my-participations'],
+    queryFn: async () => {
+      const { data, error } = await requestsApi.getMyParticipations();
+      if (error) throw error;
+      return data;
+    },
+    refetchInterval: 2000, // Auto-refresh every 2 seconds for faster sync
   });
 }
 
@@ -33,6 +49,7 @@ export function useRequest(requestId: string | undefined) {
       return data;
     },
     enabled: !!requestId,
+    refetchInterval: 2000, // Auto-refresh every 2 seconds for faster sync
   });
 }
 
@@ -102,6 +119,7 @@ export function usePendingParticipants(requestId: string | undefined) {
       return data;
     },
     enabled: !!requestId,
+    refetchInterval: 2000, // Auto-refresh every 2 seconds for faster sync
   });
 }
 
@@ -127,6 +145,7 @@ export function useApproveParticipant() {
       queryClient.invalidateQueries({ queryKey: ['request', variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['requests'] });
       queryClient.invalidateQueries({ queryKey: ['chats'] });
+      queryClient.invalidateQueries({ queryKey: ['my-participations'] });
     },
   });
 }
@@ -151,6 +170,7 @@ export function useRejectParticipant() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['pending-participants', variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['request', variables.requestId] });
+      queryClient.invalidateQueries({ queryKey: ['my-participations'] });
     },
   });
 }

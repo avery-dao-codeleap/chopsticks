@@ -1,6 +1,6 @@
 # Claude Code Instructions — Chopsticks MVP
 
-> **Last Updated:** 2026-02-10
+> **Last Updated:** 2026-02-11
 > **Purpose:** Project-specific instructions to work efficiently on the Chopsticks MVP
 
 ---
@@ -9,9 +9,10 @@
 
 **Chopsticks** is a social dining app for Vietnam where strangers meet for meals at restaurants.
 
-- **Tech Stack:** React Native (Expo SDK 52+), Firebase Auth, Supabase, TypeScript
+- **Tech Stack:** React Native (Expo SDK 52+), Supabase (Auth + Database), TypeScript
 - **Target:** MVP with ~100 users in Ho Chi Minh City
 - **Success Metric:** >70% show-up rate
+- **Status:** 97% complete (145/149 tasks) — Phase 10 in progress
 
 ---
 
@@ -26,12 +27,12 @@ Chopsticks/
 │   │   └── _layout.tsx      # Root layout
 │   ├── components/          # Reusable UI components
 │   ├── hooks/               # React hooks
-│   ├── services/            # API clients (Supabase, Firebase)
+│   ├── services/            # API clients (Supabase)
 │   ├── stores/              # Zustand state management
 │   ├── lib/                 # Utils, types, constants
 │   └── supabase/            # Database migrations, Edge Functions
 ├── specs/mvp/               # All design documents
-│   ├── tasks.md             # 147 tasks (source of truth)
+│   ├── tasks.md             # 149 tasks (source of truth)
 │   ├── spec.md              # Technical specification
 │   ├── plan.md              # Implementation plan
 │   └── data-model.md        # Database schema
@@ -44,7 +45,7 @@ Chopsticks/
 
 ### **CRITICAL: Single Source of Truth**
 
-1. **tasks.md** → Local task list with checkboxes (147 tasks)
+1. **tasks.md** → Local task list with checkboxes (149 tasks)
 2. **Linear CSX-145** → Public MVP tracker that mirrors tasks.md
 
 ### ⚠️ **DO NOT CREATE NEW TRACKING ISSUES**
@@ -108,18 +109,28 @@ Claude: [proceeds with implementation]
 
 ### Phase Approach
 
-**Current Phase:** Phase 7 (Chat) — 0/15 tasks
+**Current Phase:** Phase 10 (Testing & Polish) — 8/14 tasks (57% complete)
 
-**Completed:**
+**Overall Progress:** 145/149 tasks (97%)
+
+**Completed Phases:**
 - ✅ Phase 1: Setup (7/7)
 - ✅ Phase 2: Foundation (36/36)
 - ✅ Phase 3: Auth + Onboarding (19/19)
 - ✅ Phase 4: Create Request (13/13)
 - ✅ Phase 5: Browse & Join (13/13)
+- ✅ Phase 6: Approve/Reject (11/11)
+- ✅ Phase 7: Chat (15/15)
+- ✅ Phase 8: Post-Meal Rating (12/12)
+- ✅ Phase 9: Notifications (11/11)
 
-**Next:**
-- 🔄 Phase 7: Chat (0/15)
-- ⏸️ Phase 6: Approve/Reject (0/11)
+**Remaining Tasks (Phase 10):**
+- [ ] T136: Review Vietnamese translations
+- [ ] T137: Test deep linking for notifications
+- [ ] T138: Optimize images and lazy loading
+- [ ] T140: Manual QA on iOS device
+- [ ] T141: Manual QA on Android device
+- [ ] T142: Run quickstart.md validation checklist
 
 ### Task Execution Order
 
@@ -148,6 +159,35 @@ Claude: [proceeds with implementation]
 - Code formatting
 - Minor UI tweaks
 
+#### **Testing & Iteration Workflow**
+
+**ALWAYS update documentation when making product decisions during testing:**
+
+1. **During Manual Testing:**
+   - Record UX issues, design changes, and feature modifications in specs/mvp/spec.md
+   - Update MEMORY.md with testing insights, gotchas, and lessons learned
+   - If a feature is modified/removed, update tasks.md and note the reason
+
+2. **After Each Testing Session:**
+   - Update specs to reflect any decisions made (e.g., "removed privacy screen", "changed time picker UX")
+   - Document the "why" behind changes for future reference
+   - Keep specs in sync with actual implementation
+
+3. **Linear Syncing:**
+   - After updating docs, **always sync with Linear CSX-145**
+   - Update CSX-145 description with current phase status and any notable changes
+   - Format: "Phase X: Y/Z tasks complete. Recent changes: [list key decisions]"
+
+**Example workflow:**
+```
+User tests feature → finds UX issue → we fix it
+→ Update spec.md with the change and rationale
+→ Update MEMORY.md if it's a pattern/gotcha
+→ Update Linear CSX-145 with progress
+```
+
+This ensures specs remain the **single source of truth** and don't drift from reality.
+
 ---
 
 ## 🛠️ Common Commands
@@ -157,13 +197,11 @@ Claude: [proceeds with implementation]
 # Install dependencies (from root)
 pnpm install
 
-# Setup Firebase (if needed)
-# Follow: specs/mvp/spec.md Section 3
-
 # Run Supabase migrations
+cd chopsticks
 npx supabase db push
 
-# Seed database
+# Seed database (optional)
 npx supabase db reset
 ```
 
@@ -226,22 +264,27 @@ pnpm lint
 
 ## 🔐 Authentication Flow (Important!)
 
-### Firebase + Supabase Pattern
+### Supabase Email/Password Auth
 
-1. **Firebase:** Phone OTP only (no user data stored)
-2. **Supabase:** All user data, profiles, preferences
-3. **Token Exchange:** Firebase ID token → Supabase JWT via Edge Function
+**Current Implementation:**
+1. **Supabase Auth:** Email/password authentication
+2. **User Data:** All profiles, preferences, and app data in Supabase
+3. **No Mock Mode:** Always connects to real Supabase database
 
 ### Key Files
-- `services/firebase.ts` — Firebase Auth client
 - `services/supabase.ts` — Supabase client
-- `services/api/auth.ts` — Auth API functions
+- `services/api/auth.ts` — Auth API functions (signInWithEmail, signUpWithEmail, upsertUser)
 - `stores/auth.ts` — Auth state (Zustand)
-- `hooks/useAuth.ts` — Clean auth hook for components
+- `app/(auth)/login.tsx` — Login/signup screen
 
-### Mock Mode
-- **Expo Go:** Firebase unavailable → auto-login as mock user
-- **Dev Client:** Full Firebase Auth works
+### Authentication States
+- **Not logged in:** Show login screen
+- **Logged in, not onboarded:** Show onboarding flow (birthdate → gender → city → persona → profile → preferences → intent)
+- **Logged in, onboarded:** Show main app (browse/create/chat/profile tabs)
+
+### Testing Auth
+- **All environments** (Expo Go, dev build, production) connect to real Supabase
+- Create test account: Email: `test@example.com`, Password: `password123` (min 10 chars)
 
 ---
 
@@ -250,8 +293,7 @@ pnpm lint
 ### Critical Packages
 - **expo**: SDK 52+
 - **expo-router**: v6+ (file-based routing)
-- **@supabase/supabase-js**: v2
-- **@react-native-firebase/auth**: v23+
+- **@supabase/supabase-js**: v2 (auth + database)
 - **zustand**: State management
 - **@tanstack/react-query**: v5 (server state)
 - **nativewind**: v4 (Tailwind CSS)
@@ -327,48 +369,64 @@ cd ios && rm -rf Pods Podfile.lock && pod install
 ## 📝 Helpful Specs
 
 ### Key Documents (specs/mvp/)
-- **tasks.md** — What to build (147 tasks)
+- **tasks.md** — What to build (149 tasks, 145 complete)
 - **spec.md** — How to build it (technical spec)
 - **plan.md** — Implementation strategy
 - **data-model.md** — Database schema + RLS policies
-- **research.md** — Technical decisions + rationale
+- **PERFORMANCE_AUDIT.md** — Performance analysis & optimizations
+- **SECURITY_AUDIT.md** — Security review & fixes
 
 ### Quick References
-- **Auth flow:** spec.md Section 3
-- **Onboarding steps:** spec.md Section 4
+- **Auth flow:** Email/password via Supabase Auth
+- **Onboarding steps:** Birthdate → Gender → City → Persona → Profile → Preferences → Intent
 - **Database schema:** data-model.md
 - **Constants:** lib/constants.ts (cuisines, budgets, districts)
 
 ---
 
-## 🧪 Testing Phase 3 (Current)
+## 🧪 Testing (MVP at 97%)
 
 ### End-to-End Test Flow
 
 1. **Launch app** → See login screen
-2. **Enter phone** → Send OTP via Firebase
-3. **Verify OTP** → Token exchange → Supabase session
-4. **Onboarding:**
-   - Birthdate → Gender → Privacy → City → Persona
-   - Profile (name, bio, photo with face detection)
+2. **Sign up/Sign in** → Email + password (min 10 chars)
+3. **Onboarding** (if new user):
+   - Birthdate → Gender → City → Persona
+   - Profile (name, bio, photo - optional)
    - Preferences (cuisines, budget)
    - Intent (knows where to eat?)
-5. **Land on app** → Browse or Create based on intent
+4. **Main app:**
+   - Browse requests → Join → Chat
+   - Create request → Approve joiners → Chat
+   - Rate participants after meal
+   - View/edit profile
 
-### Test in Mock Mode (Expo Go)
+### Test in Expo Go
 ```bash
 cd chopsticks
 pnpm start
 # Press 'i' for iOS or 'a' for Android
-# Auto-login as Alex (mock user)
-# Onboarding starts automatically
+# Sign up with email: test@example.com, password: password123
+# Complete onboarding flow
 ```
 
-### Test in Dev Client (Real Firebase)
+### Test on Physical Device (USB)
 ```bash
-npx expo run:ios
-# Use real phone number
-# Receive real OTP
+# iOS
+npx expo run:ios --device
+
+# Android
+npx expo run:android --device
+```
+
+### Test with EAS Build
+```bash
+# Development build (wireless install)
+eas build --profile development --platform ios
+
+# TestFlight (beta testing)
+eas build --profile production --platform ios
+eas submit --platform ios --profile production
 ```
 
 ---
@@ -452,7 +510,7 @@ eas build --profile production --platform ios
 ### Environment Variables
 - **Required:** See .env.example
 - **Supabase:** EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY
-- **Firebase:** FIREBASE_PROJECT_ID (set in app.json)
+- Set in chopsticks/.env (not committed to git)
 
 ---
 
@@ -469,10 +527,12 @@ eas build --profile production --platform ios
 
 - **Always update CSX-145 after completing a phase**
 - **Don't create new tracking issues** (use CSX-145)
+- **Update docs during testing** (CLAUDE.md, spec.md, MEMORY.md, tasks.md)
 - **Read existing code** before implementing similar features
-- **Test in Expo Go first** (faster iteration)
+- **Test on physical device** for final QA (USB or dev build)
 - **Follow tasks.md order** (dependencies matter)
 - **Keep it simple** (MVP philosophy)
+- **All environments connect to Supabase** (no mock mode)
 
 ---
 
@@ -480,8 +540,9 @@ eas build --profile production --platform ios
 
 - **Expo Docs:** https://docs.expo.dev
 - **Supabase Docs:** https://supabase.com/docs
-- **Firebase Auth Docs:** https://firebase.google.com/docs/auth
 - **React Native Docs:** https://reactnative.dev
+- **TanStack Query:** https://tanstack.com/query/latest
+- **NativeWind:** https://www.nativewind.dev
 
 ---
 

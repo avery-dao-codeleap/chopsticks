@@ -23,14 +23,23 @@ export interface UserWithPreferences extends UserProfile {
 
 /**
  * Get a user profile by ID with preferences
+ * Uses public_profiles view for other users (excludes phone, firebase_uid, expo_push_token)
+ * Uses users table for own profile (includes all fields)
  */
 export async function getUser(userId: string): Promise<{
   data: UserWithPreferences | null;
   error: Error | null;
 }> {
   try {
+    // Check if viewing own profile
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    const isOwnProfile = currentUser?.id === userId;
+
+    // Use users table for own profile, public_profiles view for others
+    const tableName = isOwnProfile ? 'users' : 'public_profiles';
+
     const { data, error } = await supabase
-      .from('users')
+      .from(tableName)
       .select('*, user_preferences(cuisines, budget_ranges)')
       .eq('id', userId)
       .maybeSingle();

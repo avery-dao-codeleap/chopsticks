@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useI18n } from '@/lib/i18n';
 import { useChats } from '@/hooks/queries/useChats';
-import { useRequests } from '@/hooks/queries/useRequests';
+import { useRequests, useMyParticipations } from '@/hooks/queries/useRequests';
 import { supabase } from '@/services/supabase';
 import { ChatListItem } from '@/components/chat/ChatListItem';
 
@@ -20,20 +20,32 @@ export default function ChatScreen() {
   });
 
   // Fetch chats and requests
-  const { data: chats = [], isLoading: chatsLoading } = useChats();
-  const { data: requests = [], isLoading: requestsLoading } = useRequests();
+  const { data: chats = [], isLoading: chatsLoading, refetch: refetchChats } = useChats();
+  const { data: requests = [], isLoading: requestsLoading, refetch: refetchRequests } = useRequests();
+  const { data: participations = [], isLoading: participationsLoading, refetch: refetchParticipations } = useMyParticipations();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([
+      activeTab === 'chats' ? refetchChats() : Promise.all([refetchRequests(), refetchParticipations()]),
+    ]);
+    setRefreshing(false);
+  };
 
   // Filter my requests (where I'm the creator)
-  const myRequests = requests.filter((r) => r.requester_id === currentUserId);
+  const createdRequests = requests.filter((r) => r.requester_id === currentUserId);
 
-  // Calculate pending joins (approval-type requests with pending participants)
-  const totalPending = myRequests.reduce((count, request) => {
-    if (request.join_type === 'approval') {
-      // Count pending participants for this request
-      // Note: This would need to be enhanced with a proper query to count pending participants
-      return count;
-    }
-    return count;
+  // Combine created and participated requests
+  const allMyRequests = [
+    ...createdRequests.map(r => ({ ...r, type: 'created' as const })),
+    ...participations.map(r => ({ ...r, type: 'participated' as const })),
+  ];
+
+  // Calculate total pending count (created requests with pending participants)
+  const totalPending = createdRequests.reduce((count, request) => {
+    return count + (request.pending_count || 0);
   }, 0);
 
   return (
@@ -84,6 +96,14 @@ export default function ChatScreen() {
             data={chats}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#f97316"
+                colors={['#f97316']}
+              />
+            }
             renderItem={({ item }) => (
               <ChatListItem
                 chatId={item.id}
@@ -147,20 +167,27 @@ export default function ChatScreen() {
             </TouchableOpacity>
           </View>
         )
-      ) : requestsLoading ? (
+      ) : requestsLoading || participationsLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color="#f97316" />
         </View>
-      ) : myRequests.length > 0 ? (
+      ) : allMyRequests.length > 0 ? (
         <FlatList
-          data={myRequests}
-          keyExtractor={(r) => r.id}
+          data={allMyRequests}
+          keyExtractor={(r) => r.id + r.type}
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#f97316"
+              colors={['#f97316']}
+            />
+          }
           renderItem={({ item }) => {
             // Calculate participants
-            const participants = item.participants || [];
-            const joinedCount = participants.filter((p) => p.status === 'joined').length;
-            const pendingCount = participants.filter((p) => p.status === 'pending').length;
+            const joinedCount = item.participant_count;
+            const pendingCount = item.pending_count || 0;
             const spotsLeft = item.group_size - joinedCount - 1; // -1 for creator
 
             // Get cuisine emoji (you'll need to map cuisine to emoji)
@@ -198,19 +225,20 @@ export default function ChatScreen() {
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>
-                    {item.restaurant?.name || 'Unknown Restaurant'}
+                    {item.restaurants?.name || 'Unknown Restaurant'}
                   </Text>
                   <Text style={{ color: '#9ca3af', fontSize: 12, marginTop: 2 }}>
                     {item.cuisine} · {new Date(item.time_window).toLocaleTimeString()} · {spotsLeft}{' '}
                     {t('spots')?.toLowerCase() || 'spots'}
                   </Text>
                   <Text style={{ color: '#6b7280', fontSize: 12, marginTop: 2 }}>
-                    {item.join_type === 'open'
-                      ? t('openJoinLabel') || 'Open Join'
-                      : t('approvalLabel') || 'Approval Required'}
+                    {item.type === 'created'
+                      ? (item.join_type === 'open' ? t('openJoinLabel') || 'Open Join' : t('approvalLabel') || 'Approval Required')
+                      : ('user_status' in item ? (item.user_status === 'pending' ? 'Pending approval' : 'Joined') : 'Joined')
+                    }
                   </Text>
                 </View>
-                {pendingCount > 0 && (
+                {item.type === 'created' && pendingCount > 0 && (
                   <View
                     style={{
                       backgroundColor: '#f97316',
@@ -224,6 +252,20 @@ export default function ChatScreen() {
                   >
                     <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>
                       {pendingCount}
+                    </Text>
+                  </View>
+                )}
+                {item.type === 'participated' && 'user_status' in item && (
+                  <View
+                    style={{
+                      backgroundColor: item.user_status === 'pending' ? '#eab308' : '#10b981',
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Text style={{ color: '#fff', fontSize: 11, fontWeight: '600' }}>
+                      {item.user_status === 'pending' ? 'Pending' : 'Joined'}
                     </Text>
                   </View>
                 )}

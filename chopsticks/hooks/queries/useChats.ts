@@ -101,9 +101,19 @@ export function useSendMessage(chatId: string) {
       console.error('Error sending message:', error);
       Alert.alert('Error', 'Failed to send message. Please try again.');
     },
-    onSuccess: () => {
-      // Refetch to get the real message from server
-      queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
+    onSuccess: (data) => {
+      // Remove temp message and replace with real one
+      queryClient.setQueryData(['chat-messages', chatId], (old: any[] = []) => {
+        // Remove temp message
+        const withoutTemp = old.filter(msg => !msg.id.startsWith('temp-'));
+        // Add real message if not already added by realtime
+        const exists = withoutTemp.some((msg: any) => msg.id === data?.id);
+        if (!exists && data) {
+          return [...withoutTemp, data];
+        }
+        return withoutTemp;
+      });
+      // Update chat list last message
       queryClient.invalidateQueries({ queryKey: ['chats'] });
     },
   });
@@ -121,8 +131,16 @@ export function useSendImageMessage(chatId: string) {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
+    onSuccess: (data) => {
+      // Add message directly to cache (realtime will also pick it up)
+      queryClient.setQueryData(['chat-messages', chatId], (old: any[] = []) => {
+        const exists = old?.some((msg: any) => msg.id === data?.id);
+        if (!exists && data) {
+          return [...(old || []), data];
+        }
+        return old || [];
+      });
+      // Update chat list last message
       queryClient.invalidateQueries({ queryKey: ['chats'] });
     },
     onError: (error) => {

@@ -106,6 +106,13 @@ export function MessageList({
           }
         />
       )}
+      // Performance optimizations
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={15}
+      windowSize={7}
+      initialNumToRender={20}
+      // Note: getItemLayout omitted because message heights vary (text vs images)
+      // This is acceptable as chat messages are typically short lists
     />
   );
 }

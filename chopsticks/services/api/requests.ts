@@ -42,6 +42,7 @@ export interface MealRequestWithDetails extends MealRequestRow {
     bio: string | null;
   };
   participant_count: number;
+  pending_count: number;
 }
 
 /**
@@ -110,17 +111,32 @@ export async function listRequests(filters?: {
     // Fetch participant counts for each request
     const requestIds = (data ?? []).map(r => r.id);
     let participantCounts: Record<string, number> = {};
+    let pendingCounts: Record<string, number> = {};
 
     if (requestIds.length > 0) {
-      const { data: participants } = await supabase
+      // Fetch joined participants
+      const { data: joinedParticipants } = await supabase
         .from('request_participants')
         .select('request_id')
         .in('request_id', requestIds)
         .eq('status', 'joined');
 
-      if (participants) {
-        for (const p of participants) {
+      if (joinedParticipants) {
+        for (const p of joinedParticipants) {
           participantCounts[p.request_id] = (participantCounts[p.request_id] ?? 0) + 1;
+        }
+      }
+
+      // Fetch pending participants
+      const { data: pendingParticipants } = await supabase
+        .from('request_participants')
+        .select('request_id')
+        .in('request_id', requestIds)
+        .eq('status', 'pending');
+
+      if (pendingParticipants) {
+        for (const p of pendingParticipants) {
+          pendingCounts[p.request_id] = (pendingCounts[p.request_id] ?? 0) + 1;
         }
       }
     }
@@ -128,6 +144,7 @@ export async function listRequests(filters?: {
     const enriched = (data ?? []).map(r => ({
       ...r,
       participant_count: participantCounts[r.id] ?? 0,
+      pending_count: pendingCounts[r.id] ?? 0,
     }));
 
     return { data: enriched as MealRequestWithDetails[], error: null };
@@ -159,20 +176,134 @@ export async function getRequest(requestId: string): Promise<{
       return { data: null, error: new Error(error.message) };
     }
 
-    // Get participant count
-    const { count } = await supabase
+    // Get participant count (joined)
+    const { count: joinedCount } = await supabase
       .from('request_participants')
       .select('*', { count: 'exact', head: true })
       .eq('request_id', requestId)
       .eq('status', 'joined');
 
+    // Get pending participant count
+    const { count: pendingCount } = await supabase
+      .from('request_participants')
+      .select('*', { count: 'exact', head: true })
+      .eq('request_id', requestId)
+      .eq('status', 'pending');
+
+    // Check current user's participation status
+    const { data: { user } } = await supabase.auth.getUser();
+    let userStatus = 'none';
+    if (user) {
+      const { data: participation } = await supabase
+        .from('request_participants')
+        .select('status')
+        .eq('request_id', requestId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      userStatus = participation?.status || 'none';
+    }
+
     return {
-      data: { ...data, participant_count: count ?? 0 } as MealRequestWithDetails,
+      data: {
+        ...data,
+        participant_count: joinedCount ?? 0,
+        pending_count: pendingCount ?? 0,
+        user_status: userStatus,
+      } as MealRequestWithDetails & { user_status: string },
       error: null,
     };
   } catch (error) {
     console.error('Get request error:', error);
     return { data: null, error: error as Error };
+  }
+}
+
+/**
+ * Get requests the current user has joined or requested to join
+ */
+export async function getMyParticipations(): Promise<{
+  data: (MealRequestWithDetails & { user_status: string })[];
+  error: Error | null;
+}> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { data: [], error: new Error('Not authenticated') };
+    }
+
+    // Get request IDs where user is a participant
+    const { data: participations, error: partError } = await supabase
+      .from('request_participants')
+      .select('request_id, status')
+      .eq('user_id', user.id)
+      .in('status', ['pending', 'joined']);
+
+    if (partError) {
+      return { data: [], error: new Error(partError.message) };
+    }
+
+    if (!participations || participations.length === 0) {
+      return { data: [], error: null };
+    }
+
+    const requestIds = participations.map(p => p.request_id);
+
+    // Fetch the actual requests
+    const { data, error } = await supabase
+      .from('meal_requests')
+      .select(`
+        *,
+        restaurants!inner(name, address, district, cuisine_type),
+        users!meal_requests_requester_id_fkey(id, name, age, persona, photo_url, meal_count, bio)
+      `)
+      .in('id', requestIds)
+      .order('time_window', { ascending: true });
+
+    if (error) {
+      return { data: [], error: new Error(error.message) };
+    }
+
+    // Enrich with participant counts and user's status
+    const enriched = (data ?? []).map(r => {
+      const participation = participations.find(p => p.request_id === r.id);
+      return {
+        ...r,
+        participant_count: 0,
+        pending_count: 0,
+        user_status: participation?.status || 'none',
+      };
+    });
+
+    return { data: enriched, error: null };
+  } catch (error) {
+    console.error('Get my participations error:', error);
+    return { data: [], error: error as Error };
+  }
+}
+
+/**
+ * Check if user has already joined or requested to join a specific request
+ */
+export async function checkUserParticipation(
+  requestId: string,
+  userId: string
+): Promise<{ status: 'none' | 'pending' | 'joined' | 'rejected'; error: Error | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('request_participants')
+      .select('status')
+      .eq('request_id', requestId)
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error) {
+      return { status: 'none', error: new Error(error.message) };
+    }
+
+    return { status: data?.status || 'none', error: null };
+  } catch (error) {
+    console.error('Check user participation error:', error);
+    return { status: 'none', error: error as Error };
   }
 }
 
@@ -237,7 +368,7 @@ export async function getPendingParticipants(requestId: string): Promise<{
     id: string;
     user_id: string;
     status: string;
-    created_at: string;
+    joined_at: string;
     users: {
       id: string;
       name: string | null;
@@ -258,7 +389,7 @@ export async function getPendingParticipants(requestId: string): Promise<{
         id,
         user_id,
         status,
-        created_at,
+        joined_at,
         users!request_participants_user_id_fkey(
           id,
           name,
@@ -272,7 +403,7 @@ export async function getPendingParticipants(requestId: string): Promise<{
       `)
       .eq('request_id', requestId)
       .eq('status', 'pending')
-      .order('created_at', { ascending: true });
+      .order('joined_at', { ascending: true });
 
     if (error) {
       return { data: [], error: new Error(error.message) };
@@ -287,7 +418,7 @@ export async function getPendingParticipants(requestId: string): Promise<{
 
 /**
  * Approve a participant (change status from 'pending' to 'joined')
- * Also adds them to the chat
+ * Chat participant is added automatically by database trigger
  */
 export async function approveParticipant(
   participantId: string,
@@ -295,6 +426,10 @@ export async function approveParticipant(
 ): Promise<{ error: Error | null }> {
   try {
     // Update participant status to 'joined'
+    // The auto_create_chat_for_request trigger will automatically:
+    // 1. Create chat if it doesn't exist
+    // 2. Add requester to chat_participants
+    // 3. Add this participant to chat_participants
     const { error: updateError } = await supabase
       .from('request_participants')
       .update({
@@ -305,53 +440,6 @@ export async function approveParticipant(
 
     if (updateError) {
       return { error: new Error(updateError.message) };
-    }
-
-    // Get the user_id from the participant
-    const { data: participant } = await supabase
-      .from('request_participants')
-      .select('user_id')
-      .eq('id', participantId)
-      .single();
-
-    if (!participant) {
-      return { error: new Error('Participant not found') };
-    }
-
-    // Get or create chat for this request
-    let { data: chat } = await supabase
-      .from('chats')
-      .select('id')
-      .eq('request_id', requestId)
-      .single();
-
-    // If chat doesn't exist, create it
-    if (!chat) {
-      const { data: newChat, error: chatError } = await supabase
-        .from('chats')
-        .insert({ request_id: requestId })
-        .select()
-        .single();
-
-      if (chatError) {
-        console.error('Error creating chat:', chatError);
-        return { error: new Error(chatError.message) };
-      }
-
-      chat = newChat;
-    }
-
-    // Add user to chat_participants
-    const { error: chatParticipantError } = await supabase
-      .from('chat_participants')
-      .insert({
-        chat_id: chat.id,
-        user_id: participant.user_id,
-      });
-
-    if (chatParticipantError) {
-      console.error('Error adding to chat:', chatParticipantError);
-      // Don't return error - approval succeeded even if chat join failed
     }
 
     return { error: null };

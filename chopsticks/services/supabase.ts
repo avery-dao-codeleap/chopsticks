@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isFirebaseMocked } from './firebase';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
@@ -15,23 +16,21 @@ if (!isFirebaseMocked) {
   }
 }
 
-// In-memory fallback when SecureStore native module is unavailable
-const memStore = new Map<string, string>();
-
+// Storage adapter: SecureStore when available, AsyncStorage as persistent fallback
 const ExpoSecureStoreAdapter = {
   getItem: async (key: string) => {
     if (Platform.OS === 'web') return localStorage.getItem(key);
-    if (!SecureStore) return memStore.get(key) ?? null;
+    if (!SecureStore) return await AsyncStorage.getItem(key);
     return await SecureStore.getItemAsync(key);
   },
   setItem: async (key: string, value: string) => {
     if (Platform.OS === 'web') { localStorage.setItem(key, value); return; }
-    if (!SecureStore) { memStore.set(key, value); return; }
+    if (!SecureStore) { await AsyncStorage.setItem(key, value); return; }
     await SecureStore.setItemAsync(key, value);
   },
   removeItem: async (key: string) => {
     if (Platform.OS === 'web') { localStorage.removeItem(key); return; }
-    if (!SecureStore) { memStore.delete(key); return; }
+    if (!SecureStore) { await AsyncStorage.removeItem(key); return; }
     await SecureStore.deleteItemAsync(key);
   },
 };

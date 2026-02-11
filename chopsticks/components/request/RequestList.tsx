@@ -49,6 +49,16 @@ export function RequestList({
           <Text style={{ color: '#6b7280', marginTop: 4, textAlign: 'center' }}>{emptySubtitle}</Text>
         </View>
       }
+      // Performance optimizations
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      initialNumToRender={10}
+      getItemLayout={(data, index) => ({
+        length: 140, // Approximate RequestCard height (adjust if needed)
+        offset: 140 * index,
+        index,
+      })}
     />
   );
 }

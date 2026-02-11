@@ -542,7 +542,15 @@ eas update --branch production --message "Fix chat layout"
 
 ## 17. Out of Scope (Post-MVP)
 
-- Gender filter RLS
+### Safety & Privacy Features
+
+- **Gender-based request filtering** - Female and non-binary users can only see requests created by female/non-binary users (safety feature)
+- **Age-based filtering** - Limit who can join requests based on age range (e.g., 18-25, 26-35, 36+)
+- **"Who can join" request settings** - Creator can specify: everyone, same gender only, age range, etc.
+- Gender filter RLS (backend implementation)
+
+### Product Features
+
 - Dietary restrictions
 - Local Guide badges
 - Restaurant reviews with photos
@@ -551,6 +559,9 @@ eas update --branch production --message "Fix chat layout"
 - System suggestions / matching algorithm
 - Direct messages
 - Typing indicators
+
+### Operations & Infrastructure
+
 - Advanced reporting UI
 - In-app notification settings
 - Takeover logic when creator cancels
@@ -561,7 +572,56 @@ eas update --branch production --message "Fix chat layout"
 
 ---
 
-## 18. File Structure
+## 18. Product Decisions & Changelog
+
+### 2026-02-11 - Testing & Bug Fixes (Phase 10)
+
+**Chat Auto-Creation Issue Fixed:**
+- **Problem:** Chats weren't appearing after users joined requests
+- **Root Cause:** Trigger `auto_create_chat_for_request` was only applied recently (migration 010), leaving 1 request without a chat
+- **Solution:**
+  - Created migration 011 to backfill missing chats for requests with joined participants
+  - Added unique constraint on `chats.request_id` (one chat per request)
+  - Retroactively added requester + participants to chat_participants
+- **Result:** All 4 chats now appear correctly in app
+
+**Image Messaging Disabled for MVP:**
+- **Decision:** Removed image sending feature from chat to simplify MVP scope
+- **Changes:**
+  - Added `image_url` column to `messages` table (migration 012) for future use
+  - Removed camera button from `ChatInput` component
+  - Removed `useSendImageMessage` hook and related code
+  - Text messaging remains fully functional
+- **Rationale:** Keep MVP simple, focus on core text-based chat functionality
+- **Post-MVP:** Image messaging can be re-enabled by passing `onSendImage` prop to ChatInput
+
+**Database Migrations Applied:**
+- 011_backfill_missing_chats.sql - Retroactively create chats for old joins
+- 012_add_image_url_to_messages.sql - Add image_url column for future use
+
+### 2026-02-10 - UX Improvements & Simplifications
+
+**Onboarding Flow Changes:**
+- **Removed privacy screen** - Simplified flow from gender → city directly
+- **Photo now optional** - Users can skip photo in onboarding and add later in settings
+- **Intent routing** - "Yes, I know!" button now routes directly to create-request screen
+
+**Time Picker Redesign:**
+- Changed from slider to modal picker with day/hour/minute/period columns
+- Added constraints: 1hr minimum, 24hr maximum from now
+- Improved UX with clearer time selection
+
+**Profile Screen Fallback:**
+- Added fallback to auth store data if Supabase user lookup fails
+- Prevents blank profile screens during network issues
+
+### Previous Changes (Pre-2026-02-10)
+
+See git history and MEMORY.md for earlier product decisions.
+
+---
+
+## 19. File Structure
 
 See [PRD.md](./PRD.md) Section 6.2 for detailed project structure.
 
@@ -586,7 +646,7 @@ chopsticks/
 
 ---
 
-## 19. Success Metrics (MVP Validation)
+## 20. Success Metrics (MVP Validation)
 
 **Primary:**
 - **Show-up rate:** >70% → MVP validated
@@ -605,5 +665,5 @@ chopsticks/
 ---
 
 *Document Version: 3.0 (Lean MVP)*
-*Last Updated: 2026-01-31*
+*Last Updated: 2026-02-11*
 *See also: [PRD.md](./PRD.md), [data-model.md](./specs/mvp/data-model.md), [product-marketing-context.md](./specs/mvp/product-marketing-context.md)*
