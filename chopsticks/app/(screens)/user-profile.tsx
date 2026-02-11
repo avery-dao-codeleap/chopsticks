@@ -1,39 +1,8 @@
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Linking, Alert } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { CUISINE_CATEGORIES, PERSONA_TYPES } from '@/lib/constants';
 import { useUser } from '@/hooks/queries/useUser';
 import { useI18n } from '@/lib/i18n';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-
-export default function UserProfileScreen() {
-  const { userId } = useLocalSearchParams<{ userId: string }>();
-  const { t, language } = useI18n();
-  const { data: user, isLoading } = useUser(userId);
-
-  const handleReportUser = async () => {
-    if (!user) return;
-
-    const subject = `Report User: ${user.name} (${user.id})`;
-    const body = `I would like to report the following user:\n\nUser ID: ${user.id}\nName: ${user.name}\nReason: [Please describe the issue]\n\nAdditional details:\n`;
-
-    const mailto = `mailto:support@chopsticks.app?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-    try {
-      const supported = await Linking.canOpenURL(mailto);
-      if (supported) {
-        await Linking.openURL(mailto);
-      } else {
-        Alert.alert(
-          'Email Not Available',
-          'Please email support@chopsticks.app to report this user.',
-          [{ text: 'OK' }]
-        );
-      }
-    } catch (error) {
-      console.error('Error opening email:', error);
-      Alert.alert('Error', 'Could not open email app.');
-    }
-  };
 
   if (isLoading || !user) {
     return (
@@ -100,7 +69,7 @@ export default function UserProfileScreen() {
 
       {/* Favorite Cuisines */}
       {user.user_preferences?.cuisines && user.user_preferences.cuisines.length > 0 && (
-        <View style={{ width: '100%', marginTop: 24 }}>
+        <View style={{ width: '100%', marginTop: 24, marginBottom: 40 }}>
           <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 10 }}>{t('favoriteCuisines')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {user.user_preferences.cuisines.map(id => {
@@ -114,28 +83,6 @@ export default function UserProfileScreen() {
           </View>
         </View>
       )}
-
-      {/* Report Button */}
-      <TouchableOpacity
-        onPress={handleReportUser}
-        style={{
-          marginTop: 32,
-          marginBottom: 40,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingVertical: 12,
-          paddingHorizontal: 20,
-          borderRadius: 8,
-          backgroundColor: '#dc262620',
-          borderWidth: 1,
-          borderColor: '#dc2626',
-        }}
-      >
-        <FontAwesome name="flag" size={16} color="#dc2626" />
-        <Text style={{ color: '#dc2626', fontSize: 14, fontWeight: '600', marginLeft: 8 }}>
-          {t('reportUser') || 'Report User'}
-        </Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
