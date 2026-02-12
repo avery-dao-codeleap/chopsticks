@@ -18,6 +18,7 @@ import { useRealtime } from '@/hooks/useRealtime';
 import { MessageList } from '@/components/chat/MessageList';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { useQueryClient } from '@tanstack/react-query';
+import { getMealStatus } from '@/lib/mealStatus';
 
 export default function ChatDetailScreen() {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
@@ -139,6 +140,14 @@ export default function ChatDetailScreen() {
   const restaurant = chat.meal_requests?.restaurants;
   const participants = chat.participants || [];
   const isCreator = chat.meal_requests?.requester_id === currentUserId;
+
+  // Calculate meal status to determine if chat is archived
+  const mealCompletedAt = (chat.meal_requests as any)?.meal_completed_at || null;
+  const mealStatus = getMealStatus(
+    chat.meal_requests?.time_window || '',
+    mealCompletedAt,
+    isCreator
+  );
 
   return (
     <KeyboardAvoidingView

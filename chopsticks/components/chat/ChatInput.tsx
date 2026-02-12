@@ -8,6 +8,8 @@ interface ChatInputProps {
   onSendImage?: (imageUri: string) => void;
   isSending?: boolean;
   placeholder?: string;
+  disabled?: boolean;
+  disabledMessage?: string;
 }
 
 export function ChatInput({
@@ -15,12 +17,14 @@ export function ChatInput({
   onSendImage,
   isSending = false,
   placeholder,
+  disabled = false,
+  disabledMessage = 'This chat is archived',
 }: ChatInputProps) {
   const { t } = useI18n();
   const [text, setText] = useState('');
 
   const handleSend = () => {
-    if (!text.trim() || isSending) return;
+    if (!text.trim() || isSending || disabled) return;
     onSendMessage(text.trim());
     setText('');
   };
@@ -47,6 +51,26 @@ export function ChatInput({
       onSendImage(result.assets[0].uri);
     }
   };
+
+  // Show disabled state for archived chats
+  if (disabled) {
+    return (
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          borderTopWidth: 1,
+          borderTopColor: '#262626',
+          backgroundColor: '#171717',
+          alignItems: 'center',
+        }}
+      >
+        <Text style={{ color: '#6b7280', fontSize: 14 }}>
+          📦 {disabledMessage}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View
