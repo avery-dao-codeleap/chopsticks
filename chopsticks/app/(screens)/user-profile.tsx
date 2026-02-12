@@ -4,6 +4,11 @@ import { CUISINE_CATEGORIES, PERSONA_TYPES } from '@/lib/constants';
 import { useUser } from '@/hooks/queries/useUser';
 import { useI18n } from '@/lib/i18n';
 
+export default function UserProfileScreen() {
+  const { userId } = useLocalSearchParams();
+  const { language, t } = useI18n();
+  const { data: user, isLoading } = useUser(userId as string);
+
   if (isLoading || !user) {
     return (
       <View style={{ flex: 1, backgroundColor: '#0a0a0a', justifyContent: 'center', alignItems: 'center' }}>

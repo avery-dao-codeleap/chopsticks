@@ -41,7 +41,7 @@ export default function CreateRequestScreen() {
   const [isAsap, setIsAsap] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<Date | null>(null);
   const [groupSize, setGroupSize] = useState(2);
-  const [joinType, setJoinType] = useState<'open' | 'approval'>('open');
+  const [joinType, setJoinType] = useState<'open' | 'approval' | null>(null);
   const [description, setDescription] = useState('');
   const [showBudgetInfo, setShowBudgetInfo] = useState(false);
 
@@ -50,6 +50,9 @@ export default function CreateRequestScreen() {
     if (asap) {
       setJoinType('open');
       setSelectedSlot(null);
+    } else {
+      // Reset to unselected when ASAP is toggled off
+      setJoinType(null);
     }
   };
 
@@ -93,6 +96,10 @@ export default function CreateRequestScreen() {
       Alert.alert(t('missingInfo'), t('missingTime'));
       return;
     }
+    if (!joinType) {
+      Alert.alert(t('missingInfo'), 'Please select whether this is an open join or requires approval.');
+      return;
+    }
     if (!session?.user?.id) {
       Alert.alert(t('missingInfo'), 'You must be logged in.');
       return;
@@ -110,7 +117,7 @@ export default function CreateRequestScreen() {
         budget_range: selectedBudget,
         time_window: timeWindow,
         group_size: groupSize,
-        join_type: joinType,
+        join_type: joinType!, // Safe to use ! because we validated it's not null above
         description: description.trim() || undefined,
       });
 
@@ -122,7 +129,7 @@ export default function CreateRequestScreen() {
     }
   };
 
-  const isFormValid = selectedRestaurant && selectedBudget && (isAsap || selectedSlot);
+  const isFormValid = selectedRestaurant && selectedBudget && (isAsap || selectedSlot) && joinType;
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#0a0a0a' }} contentContainerStyle={{ padding: 20 }}>
