@@ -46,8 +46,9 @@ export function RequestCard({ request, onPress, language = 'en' }: RequestCardPr
 
   return (
     <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.8}
+      onPress={isFull ? undefined : onPress}
+      activeOpacity={isFull ? 1 : 0.8}
+      disabled={isFull}
       style={{
         backgroundColor: '#171717',
         borderRadius: 12,

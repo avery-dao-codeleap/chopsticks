@@ -21,6 +21,7 @@ export function useChats() {
       if (error) throw error;
       return data || [];
     },
+    refetchInterval: 2000, // Auto-refresh every 2 seconds for real-time updates
   });
 }
 

@@ -26,7 +26,7 @@ function formatTime(date: Date): string {
 
 function validateTime(date: Date): { valid: boolean; message?: string } {
   const now = new Date();
-  const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+  const oneHourFromNow = new Date(now.getTime() + 65 * 60 * 1000);
   const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
   if (date < oneHourFromNow) {
@@ -71,9 +71,9 @@ export function TimePicker({ value, onChange, isAsap, onToggleAsap }: TimePicker
       setSelectedMinute(value.getMinutes().toString().padStart(2, '0'));
       setSelectedPeriod(isPM ? 'PM' : 'AM');
     } else {
-      // Smart default: round to next 15-min interval, at least 1 hour from now
+      // Smart default: round to next 15-min interval, at least 1 hour 5 min from now
       const now = new Date();
-      const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+      const oneHourFromNow = new Date(now.getTime() + 65 * 60 * 1000);
 
       // Round up to next 15-min mark
       const minutes = oneHourFromNow.getMinutes();
