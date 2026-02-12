@@ -107,6 +107,25 @@ export function useCancelRequest() {
 }
 
 /**
+ * Hook for cancelling a join request (when user is pending)
+ */
+export function useCancelJoinRequest() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (requestId: string) => {
+      const { error } = await requestsApi.cancelJoinRequest(requestId);
+      if (error) throw error;
+    },
+    onSuccess: (_, requestId) => {
+      queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+      queryClient.invalidateQueries({ queryKey: ['requests'] });
+      queryClient.invalidateQueries({ queryKey: ['my-participations'] });
+    },
+  });
+}
+
+/**
  * Hook for fetching pending participants for a request
  */
 export function usePendingParticipants(requestId: string | undefined) {

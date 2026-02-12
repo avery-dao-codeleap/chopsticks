@@ -26,6 +26,7 @@ interface RequestCardProps {
 
 export function RequestCard({ request, onPress, language = 'en' }: RequestCardProps) {
   const spotsLeft = request.group_size - request.participant_count - 1; // -1 for the requester
+  const isFull = spotsLeft <= 0;
   const emoji = CUISINE_EMOJIS[request.cuisine] ?? '🍽️';
   const cuisineCat = CUISINE_CATEGORIES.find(c => c.id === request.cuisine);
   const cuisineLabel = cuisineCat
@@ -54,6 +55,7 @@ export function RequestCard({ request, onPress, language = 'en' }: RequestCardPr
         marginBottom: 10,
         flexDirection: 'row',
         alignItems: 'center',
+        opacity: isFull ? 0.6 : 1,
       }}
     >
       <View style={{
@@ -83,7 +85,18 @@ export function RequestCard({ request, onPress, language = 'en' }: RequestCardPr
           by {request.users?.name ?? 'Unknown'} · {request.join_type === 'open' ? 'Open join' : 'Approval needed'}
         </Text>
       </View>
-      <Text style={{ color: '#4b5563', fontSize: 18 }}>›</Text>
+      {isFull ? (
+        <View style={{
+          backgroundColor: '#ef4444',
+          paddingHorizontal: 10,
+          paddingVertical: 6,
+          borderRadius: 6,
+        }}>
+          <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>🔒 FULL</Text>
+        </View>
+      ) : (
+        <Text style={{ color: '#4b5563', fontSize: 18 }}>›</Text>
+      )}
     </TouchableOpacity>
   );
 }

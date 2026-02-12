@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CUISINE_CATEGORIES, BUDGET_RANGES, HCMC_DISTRICTS } from '@/lib/constants';
-import { useRequest, useJoinRequest, useCancelRequest, usePendingParticipants, useApproveParticipant, useRejectParticipant } from '@/hooks/queries/useRequests';
+import { useRequest, useJoinRequest, useCancelRequest, useCancelJoinRequest, usePendingParticipants, useApproveParticipant, useRejectParticipant } from '@/hooks/queries/useRequests';
 import { useAuthStore } from '@/stores/auth';
 import { useI18n } from '@/lib/i18n';
 
@@ -31,6 +31,7 @@ export default function RequestDetailScreen() {
   const { data: request, isLoading } = useRequest(requestId);
   const joinRequest = useJoinRequest();
   const cancelRequest = useCancelRequest();
+  const cancelJoinRequest = useCancelJoinRequest();
   const { data: pendingParticipants = [], isLoading: loadingPending } = usePendingParticipants(requestId);
   const approveParticipant = useApproveParticipant();
   const rejectParticipant = useRejectParticipant();
@@ -66,19 +67,37 @@ export default function RequestDetailScreen() {
     if (!session?.user?.id) return;
 
     if (request.join_type === 'open') {
-      try {
-        await joinRequest.mutateAsync({
-          requestId: request.id,
-          userId: session.user.id,
-          joinType: 'open',
-        });
-        Alert.alert(t('joinedTitle'), t('joinedBody', { name: restaurant.name }), [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
-      } catch (error) {
-        console.error('Join request error:', error);
-        Alert.alert('Error', `Failed to join: ${error instanceof Error ? error.message : 'You may have already joined.'}`);
-      }
+      // Show confirmation dialog for open join (CSX-181)
+      Alert.alert(
+        'Join this meal?',
+        `Join ${restaurant.name} at ${new Date(request.time_window).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit'
+        })}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Yes, Join',
+            onPress: async () => {
+              try {
+                await joinRequest.mutateAsync({
+                  requestId: request.id,
+                  userId: session.user.id,
+                  joinType: 'open',
+                });
+                Alert.alert(t('joinedTitle'), t('joinedBody', { name: restaurant.name }), [
+                  { text: 'OK', onPress: () => router.back() },
+                ]);
+              } catch (error) {
+                console.error('Join request error:', error);
+                Alert.alert('Error', `Failed to join: ${error instanceof Error ? error.message : 'You may have already joined.'}`);
+              }
+            },
+          },
+        ]
+      );
     } else {
       setShowJoinModal(true);
     }
@@ -116,6 +135,30 @@ export default function RequestDetailScreen() {
     } catch (error) {
       Alert.alert('Error', 'Failed to cancel request. Please try again.');
     }
+  };
+
+  const handleCancelJoinRequest = async () => {
+    Alert.alert(
+      'Cancel your request?',
+      `Cancel your request to join ${restaurant.name}?`,
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await cancelJoinRequest.mutateAsync(request.id);
+              Alert.alert('Request Cancelled', 'Your join request has been cancelled.', [
+                { text: 'OK', onPress: () => router.back() },
+              ]);
+            } catch (error) {
+              Alert.alert('Error', 'Failed to cancel request. Please try again.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -328,12 +371,30 @@ export default function RequestDetailScreen() {
 
           {/* Join button — non-owner only */}
           {!isOwner && userStatus === 'pending' && (
-            <View style={{
-              backgroundColor: '#eab308', borderRadius: 14,
-              paddingVertical: 16, alignItems: 'center', marginTop: 28,
-            }}>
-              <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Request Pending</Text>
-            </View>
+            <>
+              <View style={{
+                backgroundColor: '#eab308', borderRadius: 14,
+                paddingVertical: 16, alignItems: 'center', marginTop: 28,
+              }}>
+                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>⏳ Request Pending</Text>
+                <Text style={{ color: '#fff', fontSize: 13, marginTop: 4, opacity: 0.9 }}>
+                  Waiting for {requester?.name ?? 'creator'} to approve
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={handleCancelJoinRequest}
+                disabled={cancelJoinRequest.isPending}
+                style={{
+                  backgroundColor: '#262626', borderRadius: 14, borderWidth: 1, borderColor: '#ef4444',
+                  paddingVertical: 14, alignItems: 'center', marginTop: 12,
+                  opacity: cancelJoinRequest.isPending ? 0.5 : 1,
+                }}
+              >
+                <Text style={{ color: '#ef4444', fontSize: 15, fontWeight: '600' }}>
+                  {cancelJoinRequest.isPending ? 'Cancelling...' : 'Cancel Request'}
+                </Text>
+              </TouchableOpacity>
+            </>
           )}
 
           {!isOwner && userStatus === 'joined' && (

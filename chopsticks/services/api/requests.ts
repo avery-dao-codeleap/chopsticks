@@ -361,6 +361,36 @@ export async function cancelRequest(requestId: string): Promise<{
 }
 
 /**
+ * Cancel a join request (for users who requested to join but are still pending)
+ */
+export async function cancelJoinRequest(requestId: string): Promise<{
+  error: Error | null;
+}> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { error: new Error('Not authenticated') };
+    }
+
+    const { error } = await supabase
+      .from('request_participants')
+      .delete()
+      .eq('request_id', requestId)
+      .eq('user_id', user.id)
+      .eq('status', 'pending');
+
+    if (error) {
+      return { error: new Error(error.message) };
+    }
+
+    return { error: null };
+  } catch (error) {
+    console.error('Cancel join request error:', error);
+    return { error: error as Error };
+  }
+}
+
+/**
  * Get pending participants for a request (approval-type only)
  */
 export async function getPendingParticipants(requestId: string): Promise<{
