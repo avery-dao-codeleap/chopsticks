@@ -5,6 +5,7 @@ import { CUISINE_CATEGORIES, BUDGET_RANGES, HCMC_DISTRICTS } from '@/lib/constan
 import { useRequest, useJoinRequest, useCancelRequest, useCancelJoinRequest, usePendingParticipants, useApproveParticipant, useRejectParticipant } from '@/hooks/queries/useRequests';
 import { useAuthStore } from '@/stores/auth';
 import { useI18n } from '@/lib/i18n';
+import { getMealStatus } from '@/lib/mealStatus';
 
 const CUISINE_EMOJIS: Record<string, string> = {
   noodles_congee: '🍜', rice: '🍚', hotpot_grill: '🍲', seafood: '🦐',
@@ -62,6 +63,10 @@ export default function RequestDetailScreen() {
   // Map district ID to display name for approval requests
   const district = HCMC_DISTRICTS.find(d => d.id === restaurant.district);
   const districtLabel = district ? (language === 'vi' ? district.nameVi : district.name) : restaurant.district;
+
+  // Calculate meal status (active, completed, archived)
+  const mealCompletedAt = 'meal_completed_at' in request ? (request as any).meal_completed_at : null;
+  const mealStatus = getMealStatus(request.time_window, mealCompletedAt, isOwner);
 
   const handleJoin = async () => {
     if (!session?.user?.id) return;

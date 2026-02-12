@@ -193,3 +193,23 @@ export function useRejectParticipant() {
     },
   });
 }
+
+/**
+ * Hook for marking a meal as completed (creator only)
+ */
+export function useMarkMealCompleted() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (requestId: string) => {
+      const { error } = await requestsApi.markMealCompleted(requestId);
+      if (error) throw error;
+    },
+    onSuccess: (_, requestId) => {
+      queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+      queryClient.invalidateQueries({ queryKey: ['requests'] });
+      queryClient.invalidateQueries({ queryKey: ['chats'] });
+      queryClient.invalidateQueries({ queryKey: ['my-participations'] });
+    },
+  });
+}

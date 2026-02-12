@@ -110,6 +110,8 @@ export default function ChatScreen() {
                 restaurantName={item.restaurant?.name || 'Unknown Restaurant'}
                 restaurantDistrict={item.restaurant?.district || 'Unknown'}
                 participantCount={item.participant_count}
+                timeWindow={item.meal_request?.time_window || ''}
+                mealCompletedAt={(item.meal_request as any)?.meal_completed_at || null}
                 lastMessage={item.last_message}
                 currentUserId={currentUserId}
                 onPress={() =>

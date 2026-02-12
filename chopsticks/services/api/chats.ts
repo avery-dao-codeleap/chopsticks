@@ -24,6 +24,7 @@ export async function listChats() {
           meal_requests!inner (
             id,
             time_window,
+            meal_completed_at,
             restaurants!inner (
               id,
               name,
@@ -77,7 +78,14 @@ export async function listChats() {
       })
     );
 
-    return { data: chatsWithDetails, error: null };
+    // Sort by last message time (most recent first)
+    const sortedChats = chatsWithDetails.sort((a, b) => {
+      const aTime = a.last_message?.created_at || a.created_at;
+      const bTime = b.last_message?.created_at || b.created_at;
+      return new Date(bTime).getTime() - new Date(aTime).getTime();
+    });
+
+    return { data: sortedChats, error: null };
   } catch (error) {
     console.error('Error in listChats:', error);
     return { data: null, error: error as Error };

@@ -1,11 +1,14 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { format, isToday, isYesterday } from 'date-fns';
+import { getMealStatus } from '@/lib/mealStatus';
 
 interface ChatListItemProps {
   chatId: string;
   restaurantName: string;
   restaurantDistrict: string;
   participantCount: number;
+  timeWindow: string;
+  mealCompletedAt: string | null;
   lastMessage?: {
     content: string;
     created_at: string;
@@ -19,10 +22,15 @@ export function ChatListItem({
   restaurantName,
   restaurantDistrict,
   participantCount,
+  timeWindow,
+  mealCompletedAt,
   lastMessage,
   currentUserId,
   onPress,
 }: ChatListItemProps) {
+  const mealStatus = getMealStatus(timeWindow, mealCompletedAt, false);
+  const isArchived = mealStatus.status === 'archived';
+
   const formatMessageTime = (timestamp: string) => {
     try {
       const date = new Date(timestamp);
@@ -50,10 +58,11 @@ export function ChatListItem({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#171717',
+        backgroundColor: isArchived ? '#18181b' : '#171717',
         borderRadius: 14,
         padding: 14,
         marginBottom: 8,
+        opacity: isArchived ? 0.6 : 1,
       }}
     >
       {/* Avatar */}
@@ -80,20 +89,35 @@ export function ChatListItem({
             alignItems: 'center',
           }}
         >
-          <Text
-            style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}
-            numberOfLines={1}
-          >
-            {restaurantName}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <Text
+              style={{ color: isArchived ? '#9ca3af' : '#fff', fontSize: 15, fontWeight: '600' }}
+              numberOfLines={1}
+            >
+              {restaurantName}
+            </Text>
+            {mealStatus.status !== 'active' && (
+              <View style={{
+                backgroundColor: mealStatus.color,
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderRadius: 4,
+                marginLeft: 8,
+              }}>
+                <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700' }}>
+                  {mealStatus.label.toUpperCase()}
+                </Text>
+              </View>
+            )}
+          </View>
           {lastMessage && (
-            <Text style={{ color: '#4b5563', fontSize: 11 }}>
+            <Text style={{ color: '#4b5563', fontSize: 11, marginLeft: 8 }}>
               {formatMessageTime(lastMessage.created_at)}
             </Text>
           )}
         </View>
 
-        <Text style={{ color: '#f97316', fontSize: 12, marginTop: 2 }}>
+        <Text style={{ color: isArchived ? '#6b7280' : '#f97316', fontSize: 12, marginTop: 2 }}>
           📍 {restaurantDistrict}
         </Text>
 

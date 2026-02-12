@@ -501,3 +501,27 @@ export async function rejectParticipant(
     return { error: error as Error };
   }
 }
+
+/**
+ * Mark meal as completed (creator only)
+ * Sets meal_completed_at timestamp
+ */
+export async function markMealCompleted(
+  requestId: string
+): Promise<{ error: Error | null }> {
+  try {
+    const { error } = await supabase
+      .from('meal_requests')
+      .update({ meal_completed_at: new Date().toISOString() })
+      .eq('id', requestId);
+
+    if (error) {
+      return { error: new Error(error.message) };
+    }
+
+    return { error: null };
+  } catch (error) {
+    console.error('Mark meal completed error:', error);
+    return { error: error as Error };
+  }
+}
