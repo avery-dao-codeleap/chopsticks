@@ -6,6 +6,7 @@ import { useRequest, useJoinRequest, useCancelRequest, useCancelJoinRequest, use
 import { useAuthStore } from '@/stores/auth';
 import { useI18n } from '@/lib/i18n';
 import { getMealStatus } from '@/lib/mealStatus';
+import { supabase } from '@/lib/services/supabase';
 
 const CUISINE_EMOJIS: Record<string, string> = {
   noodles_congee: '🍜', rice: '🍚', hotpot_grill: '🍲', seafood: '🦐',
@@ -17,8 +18,26 @@ const CUISINE_EMOJIS: Record<string, string> = {
 function formatTimeWindow(iso: string): string {
   const date = new Date(iso);
   const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   const isToday = date.toDateString() === now.toDateString();
-  const dayStr = isToday ? 'Today' : 'Tomorrow';
+  const isTomorrow = date.toDateString() === tomorrow.toDateString();
+
+  let dayStr: string;
+  if (isToday) {
+    dayStr = 'Today';
+  } else if (isTomorrow) {
+    dayStr = 'Tomorrow';
+  } else {
+    // Show full date (e.g., "Feb 12" or "Feb 12, 2026" if different year)
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    if (date.getFullYear() !== now.getFullYear()) {
+      options.year = 'numeric';
+    }
+    dayStr = date.toLocaleDateString('en-US', options);
+  }
+
   const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   return `${dayStr}, ${timeStr}`;
 }
@@ -33,6 +52,7 @@ export default function RequestDetailScreen() {
   const joinRequest = useJoinRequest();
   const cancelRequest = useCancelRequest();
   const cancelJoinRequest = useCancelJoinRequest();
+  const leaveRequest = useLeaveRequest();
   const { data: pendingParticipants = [], isLoading: loadingPending } = usePendingParticipants(requestId);
   const approveParticipant = useApproveParticipant();
   const rejectParticipant = useRejectParticipant();
@@ -67,6 +87,13 @@ export default function RequestDetailScreen() {
   // Calculate meal status (active, completed, archived)
   const mealCompletedAt = 'meal_completed_at' in request ? (request as any).meal_completed_at : null;
   const mealStatus = getMealStatus(request.time_window, mealCompletedAt, isOwner);
+
+  // Determine current user's participation status
+  const participants = (request as any).request_participants || [];
+  const myParticipation = participants.find((p: any) => p.user_id === session?.user?.id);
+  const userStatus: 'none' | 'pending' | 'joined' = myParticipation
+    ? (myParticipation.status === 'joined' ? 'joined' : 'pending')
+    : 'none';
 
   const handleJoin = async () => {
     if (!session?.user?.id) return;
@@ -174,6 +201,26 @@ export default function RequestDetailScreen() {
           <Text style={{ fontSize: 56 }}>{cuisineEmoji}</Text>
           <Text style={{ color: '#6b7280', fontSize: 13, marginTop: 8 }}>{cuisineLabel} · {budgetLabel}</Text>
         </View>
+
+        {/* Meal status banner */}
+        {mealStatus.status !== 'active' && (
+          <View style={{
+            backgroundColor: mealStatus.color + '20',
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}>
+            <Text style={{ fontSize: 14 }}>
+              {mealStatus.status === 'completed' ? '✓' : '📁'}
+            </Text>
+            <Text style={{ color: mealStatus.color, fontSize: 14, fontWeight: '600' }}>
+              {mealStatus.status === 'completed' ? 'Meal Completed' : 'Archived'}
+            </Text>
+          </View>
+        )}
 
         <View style={{ padding: 20 }}>
           {/* Restaurant info */}

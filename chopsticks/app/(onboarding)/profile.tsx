@@ -3,10 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet,
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/lib/stores/auth';
 import { processProfilePhoto, uploadImageToSupabase } from '@/lib/imageUtils';
-import { supabase } from '@/services/supabase';
-import { isFirebaseMocked } from '@/services/firebase';
+import { supabase } from '@/lib/services/supabase';
+import { isFirebaseMocked } from '@/lib/services/firebase';
 
 export default function ProfileSetupScreen() {
   const [name, setName] = useState('');

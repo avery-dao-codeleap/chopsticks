@@ -1,4 +1,4 @@
-import { useLanguageStore } from '@/stores/language';
+import { useLanguageStore } from '@/lib/stores/language';
 import { CUISINE_CATEGORIES } from './constants';
 
 export type Lang = 'en' | 'vi';
@@ -29,6 +29,10 @@ interface Translations {
   missingRestaurantCuisine: string; missingTime: string; requestCreated: string; mealIsLive: string;
   noMyRequests: string; createYourFirstRequest: string;
   chats: string; pastVisits: string; noPastVisits: string;
+  preferences: string; deleteAccount: string; noMessagesYet: string; startConversation: string;
+  welcomeTagline: string; welcomeVision: string; welcomeFeature1: string; welcomeFeature2: string; welcomeFeature3: string; getStarted: string; welcomeFooter: string;
+  leaveChat: string; notifications: string; markAllRead: string; noNotifications: string; notificationsWillAppearHere: string;
+  noPendingRequests: string; noPendingRequestsDescription: string;
 }
 
 const en: Translations = {
@@ -65,6 +69,12 @@ const en: Translations = {
   requestCreated: 'Request Created!', mealIsLive: 'Your meal at {{name}} is now live.',
   noMyRequests: 'No requests yet', createYourFirstRequest: 'Create your first meal request to get started',
   chats: 'Chats', pastVisits: 'Past Visits', noPastVisits: 'No past visits yet',
+  preferences: 'Food Preferences', deleteAccount: 'Delete Account', noMessagesYet: 'No messages yet', startConversation: 'Start the conversation!',
+  welcomeTagline: 'Meet strangers over great food', welcomeVision: 'Chopsticks connects you with new people for meals at restaurants in Ho Chi Minh City.',
+  welcomeFeature1: 'Find meals near you', welcomeFeature2: 'Meet interesting people', welcomeFeature3: 'Discover new restaurants',
+  getStarted: 'Get Started', welcomeFooter: 'By continuing, you agree to our Terms of Service',
+  leaveChat: 'Leave Chat', notifications: 'Notifications', markAllRead: 'Mark all read', noNotifications: 'No notifications yet', notificationsWillAppearHere: "You'll see updates about your meals here",
+  noPendingRequests: 'No pending requests', noPendingRequestsDescription: "When someone requests to join your meal, they'll appear here",
 };
 
 const vi: Translations = {
@@ -101,6 +111,12 @@ const vi: Translations = {
   requestCreated: 'Yêu cầu đã được tạo!', mealIsLive: 'Bữa ăn của bạn tại {{name}} đã được tạo.',
   noMyRequests: 'Chưa có yêu cầu nào', createYourFirstRequest: 'Tạo yêu cầu ăn uống đầu tiên của bạn',
   chats: 'Chat', pastVisits: 'Các nơi đã thăm', noPastVisits: 'Chưa có nơi nào đã thăm',
+  preferences: 'Sở thích ẩm thực', deleteAccount: 'Xóa tài khoản', noMessagesYet: 'Chưa có tin nhắn nào', startConversation: 'Bắt đầu cuộc trò chuyện!',
+  welcomeTagline: 'Gặp gỡ bạn mới qua bữa ăn ngon', welcomeVision: 'Chopsticks kết nối bạn với những người mới cho bữa ăn tại các nhà hàng ở Thành phố Hồ Chí Minh.',
+  welcomeFeature1: 'Tìm bữa ăn gần bạn', welcomeFeature2: 'Gặp gỡ người thú vị', welcomeFeature3: 'Khám phá nhà hàng mới',
+  getStarted: 'Bắt đầu', welcomeFooter: 'Tiếp tục có nghĩa là bạn đồng ý với Điều khoản dịch vụ',
+  leaveChat: 'Rời chat', notifications: 'Thông báo', markAllRead: 'Đánh dấu tất cả đã đọc', noNotifications: 'Chưa có thông báo', notificationsWillAppearHere: 'Bạn sẽ thấy cập nhật về bữa ăn ở đây',
+  noPendingRequests: 'Không có yêu cầu chờ', noPendingRequestsDescription: 'Khi ai đó yêu cầu tham gia bữa ăn của bạn, họ sẽ xuất hiện ở đây',
 };
 
 const translations: Record<Lang, Translations> = { en, vi };

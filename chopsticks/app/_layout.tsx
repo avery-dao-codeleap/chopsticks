@@ -3,11 +3,13 @@ import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import 'react-native-reanimated';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { Subscription } from 'expo-notifications';
 
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/lib/stores/auth';
+import { notificationService } from '@/lib/services/notifications';
 import '../global.css';
 
 export { ErrorBoundary } from 'expo-router';
@@ -52,11 +54,48 @@ export default function RootLayout() {
   const { initialize, isLoading: authLoading, session, isOnboarded } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+  const notificationListenerRef = useRef<Subscription | null>(null);
+  const responseListenerRef = useRef<Subscription | null>(null);
 
   // Initialize auth on mount
   useEffect(() => {
     initialize();
   }, []);
+
+  // Set up push notification listeners
+  useEffect(() => {
+    if (!session || !isOnboarded) return;
+
+    // Foreground: invalidate notifications query so badge updates
+    notificationListenerRef.current = notificationService.addNotificationReceivedListener(() => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unreadCount'] });
+    });
+
+    // User tapped a notification — deep link to the right screen
+    responseListenerRef.current = notificationService.addNotificationResponseReceivedListener(
+      (response) => {
+        const data = response.notification.request.content.data as Record<string, string> | undefined;
+        if (!data) return;
+
+        if (data.chatId) {
+          // new_message → open chat (chat-detail expects chatId param)
+          router.push(`/(screens)/chat-detail?chatId=${data.chatId}`);
+        } else if (data.type === 'join_request' && data.requestId) {
+          // Someone wants to join your request
+          router.push(`/(screens)/pending-requests?requestId=${data.requestId}`);
+        } else if (data.type === 'join_approved' && data.requestId) {
+          // Your join was approved
+          router.push(`/(screens)/request-detail?requestId=${data.requestId}`);
+        }
+      },
+    );
+
+    return () => {
+      notificationListenerRef.current?.remove();
+      responseListenerRef.current?.remove();
+    };
+  }, [session, isOnboarded]);
 
   // Handle font loading errors
   useEffect(() => {

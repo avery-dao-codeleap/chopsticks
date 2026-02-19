@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { usePendingRatings, useSubmitRatings } from '@/hooks/queries/useRatings';
-import { RatingCard } from '@/components/ui/RatingCard';
-import { RatingSubmission } from '@/services/api/ratings';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { usePendingRatings, useSubmitRatings } from '@/lib/hooks/queries/useRatings';
+import { RatingCard } from '@/lib/components/ui/RatingCard';
+import { RatingSubmission } from '@/lib/services/api/ratings';
 
 export default function RatingModal() {
   const router = useRouter();
-  const { data: pendingRatings, isLoading } = usePendingRatings();
+  const { requestId } = useLocalSearchParams<{ requestId?: string }>();
+  const { data: allPendingRatings, isLoading } = usePendingRatings();
   const submitRatingsMutation = useSubmitRatings();
 
   const [ratings, setRatings] = React.useState<Map<string, RatingSubmission>>(new Map());
+  const [showThanks, setShowThanks] = React.useState(false);
+  const [submittedCount, setSubmittedCount] = React.useState(0);
+  const [showedUpCount, setShowedUpCount] = React.useState(0);
+
+  // Filter by requestId if provided
+  const pendingRatings = useMemo(() => {
+    if (!allPendingRatings) return [];
+    if (!requestId) return allPendingRatings;
+    return allPendingRatings.filter(r => r.request_id === requestId);
+  }, [allPendingRatings, requestId]);
 
   const handleRate = (rated_id: string, request_id: string, showed_up: boolean) => {
     setRatings(prev => {
@@ -31,12 +42,11 @@ export default function RatingModal() {
     }
 
     try {
-      await submitRatingsMutation.mutateAsync(Array.from(ratings.values()));
-      Alert.alert(
-        'Ratings Submitted',
-        'Thank you for rating your meal companions!',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
+      const ratingsArray = Array.from(ratings.values());
+      await submitRatingsMutation.mutateAsync(ratingsArray);
+      setSubmittedCount(ratingsArray.length);
+      setShowedUpCount(ratingsArray.filter(r => r.showed_up).length);
+      setShowThanks(true);
     } catch (error) {
       Alert.alert('Error', 'Failed to submit ratings. Please try again.');
       console.error('Rating submission error:', error);
@@ -56,60 +66,98 @@ export default function RatingModal() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator size="large" color="#FF6B35" />
+      <View style={{ flex: 1, backgroundColor: '#0a0a0a', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color="#f97316" />
+      </View>
+    );
+  }
+
+  // Thanks / celebration screen after submitting
+  if (showThanks) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0a0a0a', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <Text style={{ fontSize: 64, marginBottom: 16 }}>🙏</Text>
+        <Text style={{ color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 8 }}>
+          Thanks!
+        </Text>
+        <Text style={{ color: '#9ca3af', fontSize: 15, textAlign: 'center', marginBottom: 28 }}>
+          Your ratings help build a trustworthy community.
+        </Text>
+
+        {/* Stats */}
+        <View style={{ flexDirection: 'row', gap: 16, marginBottom: 32 }}>
+          <View style={{
+            backgroundColor: '#171717', borderRadius: 16, padding: 20, alignItems: 'center', minWidth: 100,
+          }}>
+            <Text style={{ fontSize: 28 }}>✅</Text>
+            <Text style={{ color: '#fff', fontSize: 24, fontWeight: '700', marginTop: 4 }}>{showedUpCount}</Text>
+            <Text style={{ color: '#6b7280', fontSize: 12 }}>Showed up</Text>
+          </View>
+          <View style={{
+            backgroundColor: '#171717', borderRadius: 16, padding: 20, alignItems: 'center', minWidth: 100,
+          }}>
+            <Text style={{ fontSize: 28 }}>📝</Text>
+            <Text style={{ color: '#fff', fontSize: 24, fontWeight: '700', marginTop: 4 }}>{submittedCount}</Text>
+            <Text style={{ color: '#6b7280', fontSize: 12 }}>Rated</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ backgroundColor: '#f97316', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14 }}
+        >
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Done</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   if (!pendingRatings || pendingRatings.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center p-6">
-        <Text className="text-xl font-semibold text-gray-900 mb-2">
+      <View style={{ flex: 1, backgroundColor: '#0a0a0a', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <Text style={{ fontSize: 48, marginBottom: 16 }}>✓</Text>
+        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '600', marginBottom: 8 }}>
           No Ratings Pending
         </Text>
-        <Text className="text-gray-600 text-center mb-6">
+        <Text style={{ color: '#6b7280', textAlign: 'center', marginBottom: 24 }}>
           You're all caught up! Ratings will appear here after your meals.
         </Text>
         <TouchableOpacity
           onPress={() => router.back()}
-          className="bg-orange-500 px-6 py-3 rounded-lg"
+          style={{ backgroundColor: '#f97316', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 }}
         >
-          <Text className="text-white font-semibold">Close</Text>
+          <Text style={{ color: '#fff', fontWeight: '600' }}>Close</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={{ flex: 1, backgroundColor: '#0a0a0a' }}>
       {/* Header */}
-      <View className="bg-white border-b border-gray-200 pt-12 pb-4 px-6">
-        <View className="flex-row items-center justify-between">
+      <View style={{ backgroundColor: '#171717', borderBottomWidth: 1, borderBottomColor: '#262626', paddingTop: 16, paddingBottom: 16, paddingHorizontal: 20 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text className="text-2xl font-bold text-gray-900">
-              Rate Your Meals
+            <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>
+              Rate Your Meal
             </Text>
-            <Text className="text-sm text-gray-600 mt-1">
+            <Text style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>
               {pendingRatings.length} {pendingRatings.length === 1 ? 'person' : 'people'} to rate
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={handleSkip}
-            className="px-4 py-2"
-          >
-            <Text className="text-gray-600">Skip</Text>
+          <TouchableOpacity onPress={handleSkip} style={{ paddingHorizontal: 12, paddingVertical: 8 }}>
+            <Text style={{ color: '#6b7280', fontSize: 15 }}>Skip</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Ratings List */}
       <ScrollView
-        className="flex-1 px-6 pt-4"
+        style={{ flex: 1, paddingHorizontal: 20, paddingTop: 16 }}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        <Text className="text-sm text-gray-600 mb-4">
-          Help us improve the community by rating whether your meal companions showed up:
+        <Text style={{ color: '#9ca3af', fontSize: 13, marginBottom: 16 }}>
+          Did your meal companions show up?
         </Text>
 
         {pendingRatings.map((rating) => (
@@ -123,20 +171,23 @@ export default function RatingModal() {
       </ScrollView>
 
       {/* Submit Button */}
-      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-6">
+      <View style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        backgroundColor: '#171717', borderTopWidth: 1, borderTopColor: '#262626',
+        padding: 20, paddingBottom: 36,
+      }}>
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={submitRatingsMutation.isPending || ratings.size === 0}
-          className={`py-4 rounded-lg ${
-            submitRatingsMutation.isPending || ratings.size === 0
-              ? 'bg-gray-300'
-              : 'bg-orange-500'
-          }`}
+          style={{
+            backgroundColor: submitRatingsMutation.isPending || ratings.size === 0 ? '#262626' : '#f97316',
+            paddingVertical: 16, borderRadius: 14, alignItems: 'center',
+          }}
         >
           {submitRatingsMutation.isPending ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text className="text-white text-center font-semibold text-lg">
+            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '700', textAlign: 'center' }}>
               Submit {ratings.size > 0 ? `${ratings.size} ` : ''}Rating{ratings.size !== 1 ? 's' : ''}
             </Text>
           )}

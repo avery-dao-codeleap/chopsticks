@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/lib/stores/auth';
 
 const GENDERS = [
   { id: 'female', label: 'Female', emoji: '👩' },

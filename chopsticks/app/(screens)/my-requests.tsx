@@ -1,6 +1,6 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useRequestsStore } from '@/stores/requests';
+import { useRequestsStore } from '@/lib/stores/requests';
 import { useI18n } from '@/lib/i18n';
 
 export default function MyRequestsScreen() {

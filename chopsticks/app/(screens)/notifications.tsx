@@ -2,8 +2,8 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react
 import { Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useI18n } from '@/lib/i18n';
-import { useNotifications, useMarkAsRead, useMarkAllAsRead, useDeleteNotification } from '@/hooks/queries/useNotifications';
-import { NotificationItem } from '@/components/ui/NotificationItem';
+import { useNotifications, useMarkAsRead, useMarkAllAsRead, useDeleteNotification } from '@/lib/hooks/queries/useNotifications';
+import { NotificationItem } from '@/lib/components/ui/NotificationItem';
 
 export default function NotificationsScreen() {
   const { t } = useI18n();

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/lib/stores/auth';
 import { CUISINE_CATEGORIES, BUDGET_RANGES } from '@/lib/constants';
 
 const BUDGET_OPTIONS = BUDGET_RANGES.map(br => ({

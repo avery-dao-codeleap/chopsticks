@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CUISINE_CATEGORIES, BUDGET_RANGES, HCMC_DISTRICTS } from '@/lib/constants';
-import { useRestaurants, useAddRestaurant } from '@/hooks/queries/useRestaurants';
-import { useCreateRequest } from '@/hooks/queries/useRequests';
-import { useAuthStore } from '@/stores/auth';
+import { useRestaurants, useAddRestaurant } from '@/lib/hooks/queries/useRestaurants';
+import { useCreateRequest } from '@/lib/hooks/queries/useRequests';
+import { useAuthStore } from '@/lib/stores/auth';
 import { useI18n } from '@/lib/i18n';
-import { TimePicker } from '@/components/forms/TimePicker';
-import type { RestaurantRow } from '@/services/api/restaurants';
+import { TimePicker } from '@/lib/components/forms/TimePicker';
+import type { RestaurantRow } from '@/lib/services/api/restaurants';
 
 const CUISINE_EMOJIS: Record<string, string> = {
   noodles_congee: '🍜', rice: '🍚', hotpot_grill: '🍲', seafood: '🦐',
@@ -16,12 +16,17 @@ const CUISINE_EMOJIS: Record<string, string> = {
   veggie: '🥦', others: '🍽️',
 };
 
+type Step = 1 | 2 | 3;
+
 export default function CreateRequestScreen() {
   const router = useRouter();
   const { t, language } = useI18n();
   const session = useAuthStore(state => state.session);
   const createRequest = useCreateRequest();
   const addRestaurant = useAddRestaurant();
+
+  // Step state
+  const [step, setStep] = useState<Step>(1);
 
   // Restaurant selection
   const [search, setSearch] = useState('');
@@ -51,7 +56,6 @@ export default function CreateRequestScreen() {
       setJoinType('open');
       setSelectedSlot(null);
     } else {
-      // Reset to unselected when ASAP is toggled off
       setJoinType(null);
     }
   };
@@ -76,7 +80,7 @@ export default function CreateRequestScreen() {
         setManualName('');
         setManualAddress('');
         setManualDistrict(null);
-        setSelectedCuisineId(null); // Reset after adding restaurant
+        setSelectedCuisineId(null);
       }
     } catch {
       Alert.alert(t('missingInfo'), 'Failed to add restaurant. Please try again.');
@@ -84,52 +88,31 @@ export default function CreateRequestScreen() {
   };
 
   const handleCreate = async () => {
-    if (!selectedRestaurant) {
-      Alert.alert(t('missingInfo'), 'Please select a restaurant.');
-      return;
-    }
-    if (!selectedBudget) {
-      Alert.alert(t('missingInfo'), 'Please select a budget range.');
-      return;
-    }
-    if (!isAsap && !selectedSlot) {
-      Alert.alert(t('missingInfo'), t('missingTime'));
-      return;
-    }
-    if (!joinType) {
-      Alert.alert(t('missingInfo'), 'Please select whether this is an open join or requires approval.');
-      return;
-    }
-    if (!session?.user?.id) {
-      Alert.alert(t('missingInfo'), 'You must be logged in.');
-      return;
-    }
+    if (!selectedRestaurant || !selectedBudget || !joinType || !session?.user?.id) return;
+    if (!isAsap && !selectedSlot) return;
 
     const timeWindow = isAsap
-      ? new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString() // 4h from now for ASAP
+      ? new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString()
       : selectedSlot!.toISOString();
 
     try {
       await createRequest.mutateAsync({
         requester_id: session.user.id,
         restaurant_id: selectedRestaurant.id,
-        cuisine: selectedRestaurant.cuisine_type, // Use restaurant's cuisine type
+        cuisine: selectedRestaurant.cuisine_type,
         budget_range: selectedBudget,
         time_window: timeWindow,
         group_size: groupSize,
-        join_type: joinType!, // Safe to use ! because we validated it's not null above
+        join_type: joinType!,
         description: description.trim() || undefined,
       });
-
-      Alert.alert(t('requestCreated'), t('mealIsLive', { name: selectedRestaurant.name }), [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      setStep(3); // Go to celebration
     } catch {
       Alert.alert('Error', 'Failed to create request. Please try again.');
     }
   };
 
-  const isFormValid = selectedRestaurant && selectedBudget && (isAsap || selectedSlot) && joinType;
+  const isStep2Valid = selectedBudget && (isAsap || selectedSlot) && joinType;
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#0a0a0a' }} contentContainerStyle={{ padding: 20 }}>
@@ -344,7 +327,6 @@ export default function CreateRequestScreen() {
             })()}
           </View>
         </View>
-      )}
 
       {/* Budget range */}
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 }}>
@@ -391,108 +373,29 @@ export default function CreateRequestScreen() {
       <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 8 }}>{t('groupSize')}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
         <TouchableOpacity
-          onPress={() => setGroupSize(Math.max(2, groupSize - 1))}
-          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#262626', alignItems: 'center', justifyContent: 'center' }}
+          onPress={() => router.back()}
+          style={{ backgroundColor: '#f97316', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14, width: '100%', alignItems: 'center' }}
         >
-          <Text style={{ color: '#fff', fontSize: 20 }}>−</Text>
-        </TouchableOpacity>
-        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700', marginHorizontal: 24 }}>{groupSize}</Text>
-        <TouchableOpacity
-          onPress={() => setGroupSize(Math.min(4, groupSize + 1))}
-          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#262626', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Text style={{ color: '#fff', fontSize: 20 }}>+</Text>
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Back to Browse</Text>
         </TouchableOpacity>
       </View>
-      <Text style={{ color: '#6b7280', fontSize: 12, marginBottom: 20 }}>
-        {groupSize === 2 ? t('onePlusConnection') : t('upToPeople', { count: groupSize })}
-      </Text>
+    );
+  }
 
-      {/* Join type */}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 8 }}>{t('whoCanJoin')}</Text>
-      {isAsap ? (
-        <View style={{
-          padding: 14, borderRadius: 12,
-          backgroundColor: '#f9731620', borderWidth: 1.5, borderColor: '#f97316', marginBottom: 8,
-        }}>
-          <Text style={{ color: '#f97316', fontSize: 14, fontWeight: '600' }}>{t('openJoinLabel')}</Text>
-          <Text style={{ color: '#6b7280', fontSize: 11, marginTop: 4 }}>{t('anyoneCanJoin')}</Text>
+  return (
+    <View style={{ flex: 1, backgroundColor: '#0a0a0a' }}>
+      {/* Progress bar */}
+      <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {/* Step 1 indicator */}
+          <View style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: '#f97316' }} />
+          {/* Step 2 indicator */}
+          <View style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: step >= 2 ? '#f97316' : '#262626' }} />
         </View>
-      ) : (
-        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 8 }}>
-          <TouchableOpacity
-            onPress={() => setJoinType('open')}
-            style={{
-              flex: 1, padding: 14, borderRadius: 12,
-              backgroundColor: joinType === 'open' ? '#f9731620' : '#171717',
-              borderWidth: 1.5, borderColor: joinType === 'open' ? '#f97316' : '#262626',
-            }}
-          >
-            <Text style={{ color: joinType === 'open' ? '#f97316' : '#9ca3af', fontSize: 14, fontWeight: '600' }}>{t('openJoinLabel')}</Text>
-            <Text style={{ color: '#6b7280', fontSize: 11, marginTop: 4 }}>{t('anyoneCanJoin')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setJoinType('approval')}
-            style={{
-              flex: 1, padding: 14, borderRadius: 12,
-              backgroundColor: joinType === 'approval' ? '#f9731620' : '#171717',
-              borderWidth: 1.5, borderColor: joinType === 'approval' ? '#f97316' : '#262626',
-            }}
-          >
-            <Text style={{ color: joinType === 'approval' ? '#f97316' : '#9ca3af', fontSize: 14, fontWeight: '600' }}>{t('approvalLabel')}</Text>
-            <Text style={{ color: '#6b7280', fontSize: 11, marginTop: 4 }}>{t('youApproveEach')}</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Location sharing info */}
-      {(joinType === 'open' || isAsap) && (
-        <View style={{ backgroundColor: '#171717', borderRadius: 8, padding: 10, marginBottom: 20 }}>
-          <Text style={{ color: '#6b7280', fontSize: 12 }}>{t('locationShared')}</Text>
-        </View>
-      )}
-      {joinType === 'approval' && !isAsap && (
-        <View style={{ backgroundColor: '#171717', borderRadius: 8, padding: 10, marginBottom: 20 }}>
-          <Text style={{ color: '#6b7280', fontSize: 12 }}>{t('locationApproval')}</Text>
-        </View>
-      )}
-
-      {/* Description/Message */}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 8 }}>{t('description')}</Text>
-      <TextInput
-        value={description}
-        onChangeText={setDescription}
-        placeholder={t('descriptionPlaceholder')}
-        placeholderTextColor="#6b7280"
-        multiline
-        numberOfLines={3}
-        style={{
-          backgroundColor: '#171717',
-          borderRadius: 12,
-          padding: 14,
-          color: '#fff',
-          fontSize: 15,
-          borderWidth: 1,
-          borderColor: '#262626',
-          minHeight: 80,
-          textAlignVertical: 'top',
-          marginBottom: 20,
-        }}
-      />
-
-      {/* Create button */}
-      <TouchableOpacity
-        onPress={handleCreate}
-        disabled={!isFormValid || createRequest.isPending}
-        style={{
-          backgroundColor: '#f97316', borderRadius: 14, paddingVertical: 16, alignItems: 'center',
-          opacity: isFormValid && !createRequest.isPending ? 1 : 0.5,
-        }}
-      >
-        <Text style={{ color: '#fff', fontSize: 17, fontWeight: '700' }}>
-          {createRequest.isPending ? 'Creating...' : t('createRequest')}
+        <Text style={{ color: '#6b7280', fontSize: 12, marginTop: 8 }}>
+          Step {step} of 2 — {step === 1 ? 'Pick Restaurant' : 'Meal Details'}
         </Text>
-      </TouchableOpacity>
+      </View>
 
       <View style={{ height: 40 }} />
 

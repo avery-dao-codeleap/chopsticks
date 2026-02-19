@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { supabase } from '@/services/supabase';
+import { supabase } from '@/lib/services/supabase';
 import { useI18n } from '@/lib/i18n';
 import { useChat, useChatMessages, useSendMessage, useRemoveUserFromChat, useLeaveChat } from '@/hooks/queries/useChats';
 import { useRealtime } from '@/hooks/useRealtime';
@@ -28,7 +28,6 @@ export default function ChatDetailScreen() {
 
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [showParticipants, setShowParticipants] = useState(false);
-  const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
   // Get current user
@@ -137,14 +136,16 @@ export default function ChatDetailScreen() {
     );
   }
 
-  const restaurant = chat.meal_requests?.restaurants;
+  // API now extracts single objects from arrays
+  const mealRequest = chat.meal_requests;
+  const restaurant = mealRequest?.restaurants;
   const participants = chat.participants || [];
-  const isCreator = chat.meal_requests?.requester_id === currentUserId;
+  const isCreator = mealRequest?.requester_id === currentUserId;
 
   // Calculate meal status to determine if chat is archived
-  const mealCompletedAt = (chat.meal_requests as any)?.meal_completed_at || null;
+  const mealCompletedAt = (mealRequest as any)?.meal_completed_at || null;
   const mealStatus = getMealStatus(
-    chat.meal_requests?.time_window || '',
+    mealRequest?.time_window || '',
     mealCompletedAt,
     isCreator
   );
@@ -295,74 +296,38 @@ export default function ChatDetailScreen() {
         </View>
       </Modal>
 
-      {/* Request Info Modal */}
-      <Modal visible={showRequestInfo} animationType="slide" transparent>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' }}>
-          <View style={{ backgroundColor: '#171717', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>{t('mealDetails') || 'Meal Details'}</Text>
-              <TouchableOpacity onPress={() => setShowRequestInfo(false)}>
-                <Text style={{ color: '#f97316', fontSize: 16 }}>{t('done') || 'Done'}</Text>
-              </TouchableOpacity>
-            </View>
-            {restaurant && (
-              <>
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 4 }}>
-                  {restaurant.name}
-                </Text>
-                <Text style={{ color: '#9ca3af', fontSize: 13, marginBottom: 16 }}>
-                  {restaurant.address}
-                </Text>
-                <View style={{ gap: 12, marginBottom: 20 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ color: '#6b7280', fontSize: 14 }}>{t('time') || 'Time'}</Text>
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                      {new Date(chat.meal_requests?.time_window || '').toLocaleTimeString()}
-                    </Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ color: '#6b7280', fontSize: 14 }}>{t('budget') || 'Budget'}</Text>
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                      {chat.meal_requests?.budget_range}
-                    </Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ color: '#6b7280', fontSize: 14 }}>{t('cuisine') || 'Cuisine'}</Text>
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                      {chat.meal_requests?.cuisine}
-                    </Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ color: '#6b7280', fontSize: 14 }}>{t('groupSize') || 'Group Size'}</Text>
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                      {chat.meal_requests?.group_size} people
-                    </Text>
-                  </View>
-                </View>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
-
-      {/* Restaurant banner */}
+      {/* Restaurant info bar — navigates to full request detail */}
       {restaurant && (
         <TouchableOpacity
-          onPress={() => setShowRequestInfo(true)}
+          onPress={() => {
+            if (chat.request_id) {
+              router.push({ pathname: '/(screens)/request-detail', params: { requestId: chat.request_id } });
+            }
+          }}
           style={{
-            backgroundColor: '#171717',
+            backgroundColor: '#f9731615',
             paddingHorizontal: 16,
             paddingVertical: 10,
             borderBottomWidth: 1,
-            borderBottomColor: '#262626',
+            borderBottomColor: '#f9731630',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
           }}
         >
-          <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '500' }}>
-            📍 {restaurant.name}
-          </Text>
-          <Text style={{ color: '#6b7280', fontSize: 11, marginTop: 2 }}>
-            {t('tapForDetails') || 'Tap for details'}
-          </Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#f97316', fontSize: 14, fontWeight: '600' }}>
+              📍 {restaurant.name}
+            </Text>
+            <Text style={{ color: '#d97706', fontSize: 12, marginTop: 2 }}>
+              {mealRequest?.time_window
+                ? new Date(mealRequest.time_window).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+                : ''
+              }
+              {restaurant.district ? ` · ${restaurant.district}` : ''}
+            </Text>
+          </View>
+          <Text style={{ color: '#f97316', fontSize: 16 }}>›</Text>
         </TouchableOpacity>
       )}
 

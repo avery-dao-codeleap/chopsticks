@@ -1,12 +1,21 @@
-import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '@/stores/auth';
-import { useLanguageStore } from '@/stores/language';
+import { useAuthStore } from '@/lib/stores/auth';
+import { useLanguageStore } from '@/lib/stores/language';
 import { useI18n } from '@/lib/i18n';
-import { useUser, useUpdateUser } from '@/hooks/queries/useUser';
-import { supabase } from '@/services/supabase';
+import { useUser, useUpdateUser } from '@/lib/hooks/queries/useUser';
+import { supabase } from '@/lib/services/supabase';
+import { notificationService } from '@/lib/services/notifications';
+import { CUISINE_CATEGORIES } from '@/lib/constants';
+
+const CUISINE_EMOJIS: Record<string, string> = {
+  noodles_congee: '🍜', rice: '🍚', hotpot_grill: '🍲', seafood: '🦐',
+  bread: '🥖', vietnamese_cakes: '🍰', snack: '🍿', dessert: '🍨',
+  drinks: '🧋', fast_food: '🍔', international: '🌍', healthy: '🥗',
+  veggie: '🥦', others: '🍽️',
+};
 
 function StatCard({ value, label, emoji }: { value: number; label: string; emoji: string }) {
   return (
@@ -46,6 +55,8 @@ export default function ProfileScreen() {
   const updateUserMutation = useUpdateUser();
   const authUser = useAuthStore(state => state.user);
 
+  const [notifStatus, setNotifStatus] = useState<'loading' | 'granted' | 'denied' | 'undetermined'>('loading');
+
   // Get current user ID
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -55,6 +66,40 @@ export default function ProfileScreen() {
       }
     });
   }, []);
+
+  // Check notification permission status
+  useEffect(() => {
+    let Notifications: typeof import('expo-notifications') | null = null;
+    try { Notifications = require('expo-notifications'); } catch { /* unavailable */ }
+    if (!Notifications) { console.log('[Profile] Notifications module not available'); setNotifStatus('denied'); return; }
+    Notifications.getPermissionsAsync().then(({ status }) => {
+      console.log('[Profile] Current notification status:', status);
+      setNotifStatus(status as any);
+    });
+  }, []);
+
+  const handleEnableNotifications = useCallback(async () => {
+    console.log('[Profile] handleEnableNotifications, current status:', notifStatus);
+    if (notifStatus === 'granted') {
+      Alert.alert('Notifications', 'Notifications are already enabled!');
+      return;
+    }
+    // Always try to register — requestPermissions will show the OS prompt if needed
+    const token = await notificationService.registerForPushNotifications();
+    console.log('[Profile] registration result, token:', token);
+    if (token && currentUserId) {
+      await notificationService.savePushToken(currentUserId, token);
+      setNotifStatus('granted');
+      Alert.alert('Notifications Enabled', 'You will now receive push notifications.');
+    } else {
+      // Permission was denied — guide to Settings
+      setNotifStatus('denied');
+      Alert.alert('Notifications Blocked', 'Please enable notifications in your device Settings.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Open Settings', onPress: () => Linking.openSettings() },
+      ]);
+    }
+  }, [notifStatus, currentUserId]);
 
   const handleLanguageChange = async (newLanguage: 'en' | 'vi') => {
     setLanguage(newLanguage);
@@ -108,7 +153,7 @@ export default function ProfileScreen() {
   }
 
   // Use Supabase data if available, otherwise fallback to auth store
-  const displayUser = user || authUser;
+  const displayUser = user || authUser!;
 
   const personaEmoji = displayUser.persona === 'local' ? '📍' : displayUser.persona === 'traveler' ? '✈️' : '🎓';
   const personaLabel = displayUser.persona === 'local' ? 'Local' : displayUser.persona === 'traveler' ? 'Traveler' : displayUser.persona || '';
@@ -169,6 +214,27 @@ export default function ProfileScreen() {
           >
             <Text style={{ color: '#fff', fontSize: 14 }}>{t('editProfile') || 'Edit Profile'}</Text>
           </TouchableOpacity>
+
+          {/* Cuisine tags */}
+          {(displayUser as any).user_preferences?.cuisines?.length > 0 && (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: 14, paddingHorizontal: 16 }}>
+              {(displayUser as any).user_preferences.cuisines.map((cuisineId: string) => {
+                const cat = CUISINE_CATEGORIES.find(c => c.id === cuisineId);
+                if (!cat) return null;
+                return (
+                  <View key={cuisineId} style={{
+                    backgroundColor: '#262626', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12,
+                    flexDirection: 'row', alignItems: 'center', gap: 4,
+                  }}>
+                    <Text style={{ fontSize: 13 }}>{CUISINE_EMOJIS[cuisineId] || '🍽️'}</Text>
+                    <Text style={{ color: '#9ca3af', fontSize: 12 }}>
+                      {language === 'vi' ? cat.labelVi : cat.label}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          )}
         </View>
 
         {/* Stats */}
@@ -202,6 +268,12 @@ export default function ProfileScreen() {
                 {language === 'en' ? 'English' : 'Tiếng Việt'}
               </Text>
             </TouchableOpacity>
+            <SettingsItem
+              icon="🔔"
+              label="Notifications"
+              onPress={handleEnableNotifications}
+              rightText={notifStatus === 'loading' ? '...' : notifStatus === 'granted' ? 'Enabled' : 'Disabled'}
+            />
             <SettingsItem
               icon="🗑️"
               label={t('deleteAccount') || 'Delete Account'}

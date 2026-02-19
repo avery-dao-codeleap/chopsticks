@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useI18n } from '@/lib/i18n';
-import { usePendingParticipants, useApproveParticipant, useRejectParticipant } from '@/hooks/queries/useRequests';
+import { usePendingParticipants, useApproveParticipant, useRejectParticipant } from '@/lib/hooks/queries/useRequests';
 
 export default function PendingRequestsScreen() {
   const { requestId } = useLocalSearchParams<{ requestId: string }>();

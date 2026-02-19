@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, Alert, Platform, Modal } from 'react-nati
 import { SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useAuthStore } from '@/stores/auth';
-import { supabase } from '@/services/supabase';
+import { useAuthStore } from '@/lib/stores/auth';
+import { supabase } from '@/lib/services/supabase';
 
 export default function BirthdateScreen() {
   const router = useRouter();

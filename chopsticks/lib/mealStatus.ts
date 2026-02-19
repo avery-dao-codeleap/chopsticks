@@ -10,7 +10,7 @@ export interface MealStatusInfo {
   label: string;
   color: string;
   canSendMessages: boolean;
-  canMarkComplete: boolean; // Only for creator, when ended but not completed
+  canMarkComplete: boolean; // Creator can mark complete at any time
 }
 
 /**
@@ -54,17 +54,16 @@ export function getMealStatus(
       label: 'Active',
       color: '#f97316', // Orange
       canSendMessages: true,
-      canMarkComplete: false,
+      canMarkComplete: isCreator, // Creator can mark complete at any time
     };
   }
 
   // Ended but not completed: after time_window, before archive, not marked complete
-  // This is when creator should see "Mark as Completed" button
   return {
     status: 'active', // Still active for messaging
     label: 'Ended',
     color: '#eab308', // Yellow
     canSendMessages: true,
-    canMarkComplete: isCreator, // Only creator can mark complete
+    canMarkComplete: isCreator, // Creator can mark complete
   };
 }

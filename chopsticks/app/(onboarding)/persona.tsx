@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/lib/stores/auth';
 import { PERSONA_TYPES } from '@/lib/constants';
 
 const PERSONA_DISPLAY = [

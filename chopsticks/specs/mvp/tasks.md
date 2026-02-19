@@ -19,13 +19,15 @@
 All paths relative to `chopsticks/` (the Expo app root):
 
 - **Screens**: `app/`
-- **Components**: `components/`
-- **Hooks**: `hooks/`
-- **Services**: `services/`
-- **Stores**: `stores/`
-- **Utils**: `lib/`
+- **Components**: `lib/components/`
+- **Hooks**: `lib/hooks/`
+- **Services**: `lib/services/`
+- **Stores**: `lib/stores/`
+- **Utils/Types/Colors**: `lib/`
 - **Backend**: `supabase/`
-- **Translations**: `locales/`
+- **Translations**: `lib/locales/`
+
+> **Note (2026-02-19)**: All shared code was reorganized under `lib/` for cleaner imports via `@/lib/...`
 
 ---
 
@@ -258,8 +260,8 @@ All paths relative to `chopsticks/` (the Expo app root):
 
 #### Push Notifications Integration
 
-- [ ] T088 [US4] Register push token on login in `hooks/useAuth.ts` (Deferred - Phase 10)
-- [ ] T089 [US4] Implement push notification handling for deep links in `app/_layout.tsx` (Deferred - Phase 10)
+- [X] T088 [US4] Register push token on login in `hooks/useAuth.ts` — token saved on initialize() + signIn()
+- [X] T089 [US4] Implement push notification handling for deep links in `app/_layout.tsx` — listeners + routing for new_message, join_request, join_approved
 
 #### Notifications Screen
 
@@ -280,9 +282,9 @@ All paths relative to `chopsticks/` (the Expo app root):
 
 #### Edge Function for Notifications
 
-- [ ] T098 [US4] Create database trigger or Edge Function to send push on join request (Deferred - will implement in Phase 10 with push notifications)
+- [X] T098 [US4] Create database trigger + Edge Function to send push on join request, join approved, new message, request canceled — migration 021
 
-**Checkpoint**: Creators can manage join requests (8/11 tasks complete - push notifications deferred to Phase 10)
+**Checkpoint**: Creators can manage join requests (11/11 tasks complete)
 
 ---
 

@@ -2,8 +2,10 @@ import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, useRouter } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
-import { RatingPrompt } from '@/components/ui/RatingPrompt';
-import { OfflineBanner } from '@/components/ui/OfflineBanner';
+import { RatingPrompt } from '@/lib/components/ui/RatingPrompt';
+import { OfflineBanner } from '@/lib/components/ui/OfflineBanner';
+import { useUnreadDot, markChatTabSeen } from '@/lib/hooks/queries/useChats';
+import { useQueryClient } from '@tanstack/react-query';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -14,6 +16,14 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const router = useRouter();
+  const { data: hasUnread } = useUnreadDot();
+  const queryClient = useQueryClient();
+
+  const handleChatTabPress = () => {
+    markChatTabSeen().then(() => {
+      queryClient.invalidateQueries({ queryKey: ['unread-dot'] });
+    });
+  };
 
   return (
     <>
@@ -63,8 +73,28 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: 'Chat',
-          tabBarIcon: ({ color }) => <TabBarIcon name="comments" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <View>
+              <TabBarIcon name="comments" color={color} />
+              {hasUnread && (
+                <View style={{
+                  position: 'absolute',
+                  top: -2,
+                  right: -6,
+                  width: 10,
+                  height: 10,
+                  borderRadius: 5,
+                  backgroundColor: '#ef4444',
+                  borderWidth: 2,
+                  borderColor: '#171717',
+                }} />
+              )}
+            </View>
+          ),
           headerTitle: 'Messages',
+        }}
+        listeners={{
+          tabPress: handleChatTabPress,
         }}
       />
       <Tabs.Screen

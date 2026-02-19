@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, Stack } from 'expo-router';
-import { useUser, useUpdatePreferences } from '@/hooks/queries/useUser';
+import { useUser, useUpdatePreferences } from '@/lib/hooks/queries/useUser';
 import { CUISINE_CATEGORIES, BUDGET_RANGES } from '@/lib/constants';
-import { supabase } from '@/services/supabase';
+import { supabase } from '@/lib/services/supabase';
 import { useI18n } from '@/lib/i18n';
 
 const BUDGET_OPTIONS = BUDGET_RANGES.map(br => ({

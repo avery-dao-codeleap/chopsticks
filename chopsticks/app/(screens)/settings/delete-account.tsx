@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, Stack } from 'expo-router';
-import { useDeleteAccount } from '@/hooks/queries/useUser';
-import { supabase } from '@/services/supabase';
+import { useDeleteAccount } from '@/lib/hooks/queries/useUser';
+import { supabase } from '@/lib/services/supabase';
 import { useI18n } from '@/lib/i18n';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/lib/stores/auth';
 
 export default function DeleteAccountScreen() {
   const router = useRouter();
