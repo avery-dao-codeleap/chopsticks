@@ -69,8 +69,6 @@ export async function upsertUser(userId: string, data: {
   email?: string;
 }): Promise<{ error: Error | null }> {
   try {
-    console.log('[upsertUser] Attempting upsert for user:', userId, 'with data:', data);
-
     // Use upsert to INSERT if not exists, UPDATE if exists
     const { error } = await supabase
       .from('users')
@@ -87,7 +85,6 @@ export async function upsertUser(userId: string, data: {
       return { error: new Error(error.message) };
     }
 
-    console.log('[upsertUser] Success!');
     return { error: null };
   } catch (error) {
     console.error('[upsertUser] Caught exception:', error);

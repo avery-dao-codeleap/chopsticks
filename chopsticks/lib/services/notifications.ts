@@ -18,7 +18,7 @@ try {
     }),
   });
 } catch {
-  console.warn('[Notifications] Native module unavailable.');
+  // Native module unavailable (e.g. Expo Go)
 }
 
 export interface NotificationService {
@@ -31,21 +31,14 @@ export interface NotificationService {
 
 class NotificationManager implements NotificationService {
   async requestPermissions(): Promise<boolean> {
-    console.log('[Notifications] requestPermissions called', {
-      hasNotifications: !!Notifications,
-      hasDevice: !!Device,
-      isDevice: Device?.isDevice,
-    });
     if (!Notifications) return false;
 
     // Skip Device.isDevice check — it can return false in Expo Go
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    console.log('[Notifications] existing permission status:', existingStatus);
     let finalStatus = existingStatus;
 
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
-      console.log('[Notifications] requested permission, got:', status);
       finalStatus = status;
     }
 
@@ -53,21 +46,15 @@ class NotificationManager implements NotificationService {
   }
 
   async registerForPushNotifications(): Promise<string | null> {
-    if (!Notifications) {
-      console.warn('[Notifications] Module not loaded, cannot register');
-      return null;
-    }
+    if (!Notifications) return null;
     try {
       const hasPermission = await this.requestPermissions();
-      console.log('[Notifications] hasPermission:', hasPermission);
       if (!hasPermission) return null;
 
       const projectId = process.env.EXPO_PUBLIC_PROJECT_ID;
-      console.log('[Notifications] Getting push token with projectId:', projectId);
       const tokenData = await Notifications.getExpoPushTokenAsync({
         projectId,
       });
-      console.log('[Notifications] Got push token:', tokenData.data);
 
       if (Platform.OS === 'android') {
         const N = Notifications as typeof import('expo-notifications');

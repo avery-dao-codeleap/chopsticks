@@ -47,9 +47,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "your-apple-id@example.com",
-        "ascAppId": "replace-with-app-store-connect-id",
-        "appleTeamId": "replace-with-team-id"
+        "appleId": "avery.dao@codeleap.de",
+        "ascAppId": "6759548483",
+        "appleTeamId": "H494LS9L37"
       },
       "android": {
         "serviceAccountKeyPath": "./service-account-key.json",

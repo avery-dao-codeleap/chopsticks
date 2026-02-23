@@ -6,7 +6,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useUser, useUpdateUser } from '@/lib/hooks/queries/useUser';
 import { processProfilePhoto, uploadImageToSupabase } from '@/lib/imageUtils';
 import { supabase } from '@/lib/services/supabase';
-import { isFirebaseMocked } from '@/lib/services/firebase';
 import { useI18n } from '@/lib/i18n';
 
 export default function EditProfileScreen() {
@@ -75,20 +74,13 @@ export default function EditProfileScreen() {
       // Upload photo to Supabase Storage if changed
       let photoUrl = profileImage;
 
-      if (profileImage && profileImage.startsWith('file://')) {
-        if (isFirebaseMocked) {
-          // Dev bypass: In Expo Go, skip upload and use mock URL
-          photoUrl = 'https://api.dicebear.com/7.x/avataaars/png?seed=' + name.trim();
-          console.log('[Dev] Skipping upload in mock mode, using placeholder:', photoUrl);
-        } else if (currentUserId) {
-          // Real upload for dev client/production
-          photoUrl = await uploadImageToSupabase(
-            profileImage,
-            'profile-photos',
-            `${currentUserId}/avatar`,
-            supabase
-          );
-        }
+      if (profileImage && profileImage.startsWith('file://') && currentUserId) {
+        photoUrl = await uploadImageToSupabase(
+          profileImage,
+          'profile-photos',
+          `${currentUserId}/avatar`,
+          supabase
+        );
       }
 
       await updateUserMutation.mutateAsync({

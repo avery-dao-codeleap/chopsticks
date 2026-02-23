@@ -6,14 +6,12 @@ import { isFirebaseMocked } from './firebase';
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Skip native module entirely in Expo Go — require() itself can throw uncatchably
+// Try to load SecureStore (available in dev builds & production, not Expo Go)
 let SecureStore: typeof import('expo-secure-store') | null = null;
-if (!isFirebaseMocked) {
-  try {
-    SecureStore = require('expo-secure-store');
-  } catch {
-    SecureStore = null;
-  }
+try {
+  SecureStore = require('expo-secure-store');
+} catch {
+  SecureStore = null;
 }
 
 // Storage adapter: SecureStore when available, AsyncStorage as persistent fallback

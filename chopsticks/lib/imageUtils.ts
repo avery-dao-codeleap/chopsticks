@@ -5,7 +5,7 @@ let ImageManipulator: any = null;
 try {
   ImageManipulator = require('expo-image-manipulator');
 } catch {
-  console.warn('[ImageUtils] expo-image-manipulator not available (Expo Go mode)');
+  // Not available in Expo Go
 }
 
 // Face detection requires native module, only available in dev client builds
@@ -13,7 +13,7 @@ let FaceDetector: any = null;
 try {
   FaceDetector = require('expo-face-detector');
 } catch {
-  console.warn('[ImageUtils] expo-face-detector not available (Expo Go mode)');
+  // Not available in Expo Go
 }
 
 export interface ImageCompressionResult {
@@ -40,7 +40,6 @@ export async function compressImage(
 ): Promise<ImageCompressionResult> {
   // Skip compression in Expo Go (module not available)
   if (!ImageManipulator) {
-    console.log('[ImageUtils] Skipping compression in Expo Go mode');
     return { uri, width: maxSize, height: maxSize };
   }
 
@@ -69,8 +68,7 @@ export async function compressImage(
 export async function detectFace(uri: string): Promise<FaceDetectionResult> {
   // In Expo Go or if module unavailable, skip face detection
   if (!FaceDetector) {
-    console.warn('[ImageUtils] Face detection skipped (module unavailable)');
-    return { hasFace: true, faceCount: 1 }; // Allow upload in development
+    return { hasFace: true, faceCount: 1 }; // Allow upload when module unavailable
   }
 
   try {

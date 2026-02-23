@@ -82,20 +82,13 @@ export function useRealtime(options: UseRealtimeOptions) {
           onDelete(payload);
         }
       })
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          console.log(`✓ Subscribed to ${channelName}`);
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn(`Realtime subscription error for ${channelName} — will retry automatically`);
-        }
-      });
+      .subscribe();
 
     channelRef.current = channel;
 
     // Cleanup on unmount
     return () => {
       if (channelRef.current) {
-        console.log(`Unsubscribing from ${channelName}`);
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }

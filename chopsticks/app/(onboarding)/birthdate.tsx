@@ -68,7 +68,6 @@ export default function BirthdateScreen() {
       return;
     }
 
-    console.log('[Birthdate] Profile saved successfully:', profileData);
     setConfirmAge(null);
     router.push('/(onboarding)/gender');
   };

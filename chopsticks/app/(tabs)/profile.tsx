@@ -61,7 +61,6 @@ export default function ProfileScreen() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
-        console.log('[Profile] Current user ID:', data.user.id);
         setCurrentUserId(data.user.id);
       }
     });
@@ -71,22 +70,19 @@ export default function ProfileScreen() {
   useEffect(() => {
     let Notifications: typeof import('expo-notifications') | null = null;
     try { Notifications = require('expo-notifications'); } catch { /* unavailable */ }
-    if (!Notifications) { console.log('[Profile] Notifications module not available'); setNotifStatus('denied'); return; }
+    if (!Notifications) { setNotifStatus('denied'); return; }
     Notifications.getPermissionsAsync().then(({ status }) => {
-      console.log('[Profile] Current notification status:', status);
       setNotifStatus(status as any);
     });
   }, []);
 
   const handleEnableNotifications = useCallback(async () => {
-    console.log('[Profile] handleEnableNotifications, current status:', notifStatus);
     if (notifStatus === 'granted') {
       Alert.alert('Notifications', 'Notifications are already enabled!');
       return;
     }
     // Always try to register — requestPermissions will show the OS prompt if needed
     const token = await notificationService.registerForPushNotifications();
-    console.log('[Profile] registration result, token:', token);
     if (token && currentUserId) {
       await notificationService.savePushToken(currentUserId, token);
       setNotifStatus('granted');
