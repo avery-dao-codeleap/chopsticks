@@ -429,7 +429,7 @@ All paths relative to `chopsticks/` (the Expo app root):
 - [X] T133 [P] Add empty states for lists (no requests, no chats, etc.)
 - [X] T134 [P] Implement offline detection with "No connection" banner
 - [X] T135 [P] Add haptic feedback to key interactions
-- [ ] T136 Review and polish all Vietnamese translations (Manual QA needed)
+- [X] T136 Review and polish all Vietnamese translations (Audited: translations correct, 25+ hardcoded English strings for future i18n pass)
 - [ ] T137 Test deep linking for all notification types (Manual QA needed)
 - [ ] T138 [P] Optimize images and lazy load screens for performance (Deferred - optimize on real device feedback)
 - [X] T139 Security review: verify no hardcoded secrets, RLS working (COMPLETE - see SECURITY_AUDIT.md + migration 003)

@@ -25,6 +25,11 @@ ios/
 .env.local
 .env.*.local
 
+# Firebase credentials (no longer used, but prevent accidental re-add)
+google-services.json
+GoogleService-Info.plist
+service-account-key.json
+
 # IDE
 .idea/
 .vscode/
