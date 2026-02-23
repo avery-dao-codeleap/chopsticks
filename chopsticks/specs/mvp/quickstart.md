@@ -47,11 +47,6 @@ cp .env.example .env.local
 # Supabase (from supabase.com dashboard)
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-
-# Firebase (from firebase console)
-EXPO_PUBLIC_FIREBASE_API_KEY=your-api-key
-EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-EXPO_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
 ```
 
 ---
@@ -82,36 +77,21 @@ supabase db seed
 ### Deploy Edge Functions (for production testing)
 
 ```bash
-supabase functions deploy exchange-firebase-token
-supabase functions deploy suggest-people
 supabase functions deploy handle-request-cancel
 supabase functions deploy delete-account
 ```
 
----
+### Configure Email Authentication
 
-## 4. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Create project or select existing
-3. Enable **Phone Authentication**:
-   - Authentication → Sign-in method → Phone → Enable
-4. Add iOS app (Bundle ID: `com.chopsticks.app`)
-5. Add Android app (Package: `com.chopsticks.app`)
-6. Download config files:
-   - `GoogleService-Info.plist` → `/ios/`
-   - `google-services.json` → `/android/`
-
-### Test Phone Numbers (Development)
-
-Firebase allows test phone numbers that skip actual SMS:
-
-1. Authentication → Sign-in method → Phone → Phone numbers for testing
-2. Add: `+84 900 000 001` with code `123456`
+1. Go to Supabase Dashboard → Authentication → Providers
+2. Enable **Email** provider (enabled by default)
+3. Configure email templates (optional):
+   - Authentication → Email Templates
+   - Customize confirmation and password reset emails
 
 ---
 
-## 5. Run the App
+## 4. Run the App
 
 ### iOS Simulator
 
@@ -138,7 +118,7 @@ pnpm start
 
 ---
 
-## 6. Development Workflow
+## 5. Development Workflow
 
 ### Start All Services
 
@@ -174,7 +154,7 @@ pnpm expo prebuild --clean
 
 ---
 
-## 7. Project Structure Overview
+## 6. Project Structure Overview
 
 ```
 chopsticks/
@@ -193,14 +173,14 @@ chopsticks/
 ├── locales/                # Translation files (en.json, vi.json)
 ├── supabase/               # Backend
 │   ├── migrations/         # SQL migrations
-│   ├── functions/          # Edge Functions (3 for MVP)
+│   ├── functions/          # Edge Functions (2 for MVP)
 │   └── seed.sql            # Restaurant seed data
 └── assets/                 # Images, fonts
 ```
 
 ---
 
-## 8. Testing on Device
+## 7. Testing on Device
 
 ### Build Development Client
 
@@ -225,7 +205,7 @@ eas build --profile preview --platform all
 
 ---
 
-## 9. Common Issues
+## 8. Common Issues
 
 ### "Metro bundler failed to start"
 
@@ -244,11 +224,11 @@ supabase status
 supabase stop && supabase start
 ```
 
-### "Firebase auth not working"
+### "Supabase auth not working"
 
-- Verify test phone number is configured
-- Check Firebase config files are in correct locations
-- Ensure Bundle ID/Package name matches Firebase project
+- Verify email provider is enabled in Supabase Dashboard
+- Check EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are correct
+- Ensure email confirmation is disabled for development (or check email inbox)
 
 ### "Expo Go limitations"
 
@@ -260,13 +240,13 @@ Build a dev client: `eas build --profile development`
 
 ---
 
-## 10. Validation Checklist
+## 9. Validation Checklist
 
 Before considering setup complete, verify:
 
 - [ ] App launches without errors on iOS simulator
 - [ ] App launches without errors on Android emulator
-- [ ] Can sign in with test phone number
+- [ ] Can sign up and sign in with email/password
 - [ ] Supabase queries return data
 - [ ] TypeScript compiles: `pnpm typecheck`
 

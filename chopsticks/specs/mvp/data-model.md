@@ -13,23 +13,23 @@ This document defines the complete database schema for Chopsticks MVP, including
 │      USER       │       │    USER_PREFERENCES  │       │   RESTAURANT    │
 ├─────────────────┤       ├──────────────────────┤       ├─────────────────┤
 │ id (PK)         │──────<│ user_id (PK, FK)     │       │ id (PK)         │
-│ firebase_uid    │       │ cuisines[]           │       │ name            │
-│ phone           │       │ budget_ranges[]      │       │ address         │
-│ name            │       └──────────────────────┘       │ district        │
-│ photo_url       │                                      │ city            │
-│ age             │                                      │ cuisine_type    │
-│ gender          │       ┌──────────────────────┐       │ location        │
-│ city            │       │    MEAL_REQUEST      │       │ source          │
-│ persona         │       ├──────────────────────┤       └─────────────────┘
-│ bio             │       │ id (PK)              │              │
-│ meal_count      │──────<│ requester_id (FK)    │>─────────────┘
-│ language        │       │ restaurant_id (FK)   │
-│ expo_push_token │       │ cuisine              │
-│ last_active_at  │       │ budget_range         │
-│ deleted_at      │       │ time_window          │
-│ banned_at       │       │ group_size           │
-│ created_at      │       │ join_type            │
-└─────────────────┘       │ status               │
+│ email           │       │ cuisines[]           │       │ name            │
+│ name            │       │ budget_ranges[]      │       │ address         │
+│ photo_url       │       └──────────────────────┘       │ district        │
+│ age             │                                      │ city            │
+│ gender          │                                      │ cuisine_type    │
+│ city            │       ┌──────────────────────┐       │ location        │
+│ persona         │       │    MEAL_REQUEST      │       │ source          │
+│ bio             │       ├──────────────────────┤       └─────────────────┘
+│ meal_count      │──────<│ id (PK)              │              │
+│ language        │       │ requester_id (FK)    │>─────────────┘
+│ expo_push_token │       │ restaurant_id (FK)   │
+│ last_active_at  │       │ cuisine              │
+│ deleted_at      │       │ budget_range         │
+│ banned_at       │       │ time_window          │
+│ created_at      │       │ group_size           │
+└─────────────────┘       │ join_type            │
+        │                 │ status               │
         │                 │ created_at           │
         │                 └──────────────────────┘
         │                          │
@@ -82,9 +82,8 @@ Primary user account table.
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
-| `id` | UUID | PK, DEFAULT uuid_generate_v4() | Primary key |
-| `firebase_uid` | TEXT | UNIQUE, NOT NULL | Firebase Auth UID |
-| `phone` | TEXT | UNIQUE, NOT NULL | Phone number (E.164 format) |
+| `id` | UUID | PK, DEFAULT uuid_generate_v4() | Primary key (matches Supabase auth.users.id) |
+| `email` | TEXT | UNIQUE, NOT NULL | Email address |
 | `name` | TEXT | NOT NULL, LENGTH 1-50 | Display name |
 | `photo_url` | TEXT | NOT NULL | Supabase Storage URL |
 | `age` | INTEGER | NOT NULL, CHECK >= 18 | User age |
@@ -102,7 +101,7 @@ Primary user account table.
 
 **Indexes**:
 - `idx_users_city` ON (city) WHERE deleted_at IS NULL AND banned_at IS NULL
-- `idx_users_firebase_uid` ON (firebase_uid)
+- `idx_users_email` ON (email)
 - `idx_users_last_active` ON (last_active_at) WHERE deleted_at IS NULL
 
 ---
@@ -296,13 +295,13 @@ All tables have RLS enabled. Key policies:
 
 ### USER
 
-**IMPORTANT (Constitution II)**: The `phone` column contains PII and MUST NOT be exposed in API responses. Use the `public_profiles` view for all client queries.
+**IMPORTANT (Constitution II)**: The `email` column contains PII and MUST NOT be exposed in API responses. Use the `public_profiles` view for all client queries.
 
 ```sql
 -- Create view that excludes sensitive columns
 CREATE VIEW public_profiles AS
 SELECT
-  id, firebase_uid, name, photo_url, age, gender, city, persona,
+  id, name, photo_url, age, gender, city, persona,
   bio, meal_count, language, last_active_at, created_at
 FROM users
 WHERE deleted_at IS NULL AND banned_at IS NULL;

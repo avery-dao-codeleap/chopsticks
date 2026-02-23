@@ -6,12 +6,12 @@
 
 Chopsticks is a mobile-first social dining app for Vietnam. Users create meal requests at restaurants, others join, and they share meals together. The MVP targets a pilot of ~100 users in Ho Chi Minh City with ~50 requests/day.
 
-**Technical Approach**: React Native (Expo SDK 52+) frontend with Supabase backend (Postgres + Edge Functions + Realtime). Firebase Auth handles phone OTP; tokens are exchanged for Supabase JWTs. List-based browsing (no map for MVP), Expo Push for notifications.
+**Technical Approach**: React Native (Expo SDK 52+) frontend with Supabase backend (Postgres + Edge Functions + Realtime + Auth). Supabase Auth handles email/password authentication. List-based browsing (no map for MVP), Expo Push for notifications.
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x (strict mode)
-**Primary Dependencies**: Expo SDK 52+, React Native 0.73+, Supabase JS v2, Firebase Auth, TanStack Query v5, Zustand v4, NativeWind v4, react-i18next
+**Primary Dependencies**: Expo SDK 52+, React Native 0.73+, Supabase JS v2, TanStack Query v5, Zustand v4, NativeWind v4, react-i18next
 **Storage**: Supabase Postgres (managed), Supabase Storage (images), expo-secure-store (tokens)
 **Testing**: Manual QA on physical devices (unit/E2E tests deferred post-MVP)
 **Target Platform**: iOS 15+, Android 10+
@@ -30,7 +30,7 @@ Chopsticks is a mobile-first social dining app for Vietnam. Users create meal re
 | II. Security & Privacy by Design | PASS | RLS policies defined for all tables, expo-secure-store for tokens, banned user handling |
 | III. Performance is UX | PASS | Performance targets specified in NFRs, graceful degradation defined |
 | IV. Expo-Managed Simplicity | PASS | All dependencies are Expo-compatible, no native modules required |
-| V. Supabase as Single Backend | PASS | All backend in Supabase; Firebase Auth exception documented |
+| V. Supabase as Single Backend | PASS | All backend in Supabase including authentication |
 
 **Gate Result**: PASSED - No violations requiring justification.
 
@@ -122,7 +122,6 @@ chopsticks/
 ├── supabase/                     # Supabase project
 │   ├── migrations/               # SQL migrations
 │   ├── functions/                # Edge Functions
-│   │   ├── exchange-firebase-token/
 │   │   ├── handle-request-cancel/
 │   │   └── delete-account/
 │   └── seed.sql                  # Initial restaurant data (~50-100)

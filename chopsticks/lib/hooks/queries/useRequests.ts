@@ -160,6 +160,16 @@ export function useApproveParticipant() {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
+      // Optimistically decrement pending_count in cache
+      queryClient.setQueryData(['request', variables.requestId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pending_count: Math.max(0, (old.pending_count ?? 0) - 1),
+        };
+      });
+
+      // Then invalidate to ensure data consistency
       queryClient.invalidateQueries({ queryKey: ['pending-participants', variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['request', variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['requests'] });
@@ -187,6 +197,16 @@ export function useRejectParticipant() {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
+      // Optimistically decrement pending_count in cache
+      queryClient.setQueryData(['request', variables.requestId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pending_count: Math.max(0, (old.pending_count ?? 0) - 1),
+        };
+      });
+
+      // Then invalidate to ensure data consistency
       queryClient.invalidateQueries({ queryKey: ['pending-participants', variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['request', variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['my-participations'] });

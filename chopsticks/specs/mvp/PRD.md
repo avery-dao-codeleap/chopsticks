@@ -57,7 +57,7 @@ Displayed on public profiles. Used for filtering join requests.
 
 ### 3.1 Onboarding
 **Flow:**
-1. Phone verification (Firebase Auth → Supabase JWT)
+1. Email/password registration (Supabase Auth)
 2. Photo upload (face detection required via `expo-face-detector`)
 3. Name, age, gender
 4. City check → "Currently available in HCMC only" (block if not HCMC)
@@ -147,7 +147,7 @@ Displayed on public profiles. Used for filtering join requests.
 ### 3.6 Safety Features (MVP)
 
 **Built-in:**
-- Real phone number required
+- Email verification required
 - Face detection on photo upload
 - All meals at public restaurants
 - Show-up ratings create accountability
@@ -213,7 +213,7 @@ Displayed on public profiles. Used for filtering join requests.
 ## 5. Design Requirements
 
 ### 5.1 Screens (MVP)
-1. **Onboarding** - 9 steps (phone → photo → profile → persona → cuisines → budget → bio → intent question)
+1. **Onboarding** - 9 steps (email/password → photo → profile → persona → cuisines → budget → bio → intent question)
 2. **Browse Requests** (List View) - Filter bar, request cards, create button
 3. **Request Detail** - Restaurant info (or hidden if approval), creator profile, time, spots, join/request button
 4. **Create Request** - Restaurant picker, cuisine/budget/time/size selectors, join type toggle
@@ -237,7 +237,7 @@ Displayed on public profiles. Used for filtering join requests.
 
 ## 6. Technical Approach
 
-React Native (Expo) mobile app, iOS + Android. Backend: Supabase (database, realtime chat, auth). Phone verification via Firebase. Bilingual from day one.
+React Native (Expo) mobile app, iOS + Android. Backend: Supabase (database, realtime chat, auth). Email/password authentication via Supabase Auth. Bilingual from day one.
 
 Full technical spec: [spec.md](./spec.md) · Database schema: [data-model.md](./data-model.md)
 
@@ -303,7 +303,7 @@ Full technical spec: [spec.md](./spec.md) · Database schema: [data-model.md](./
 ## 11. MVP Scope Summary
 
 ### In Scope
-✅ Phone auth + onboarding (9 steps)
+✅ Email/password auth + onboarding (9 steps)
 ✅ Create request (curated list OR manual entry)
 ✅ Browse requests (list view with filters)
 ✅ Join (open OR approval)

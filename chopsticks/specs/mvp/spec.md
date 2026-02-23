@@ -14,7 +14,7 @@
 | State Management | Zustand (global UI state) + TanStack Query v5 (server state) | Simple, performant |
 | i18n | react-i18next with JSON translation files | Vietnamese + English |
 | Backend / DB | Supabase (Postgres + Edge Functions + Realtime + Storage) | Single backend service |
-| Auth | Firebase Auth (phone OTP) → Supabase JWT exchange | Reliable SMS delivery |
+| Auth | Supabase Auth (email/password) | Built-in authentication |
 | Real-time Chat | Supabase Realtime (Postgres Changes) | No typing indicators for MVP |
 | Push Notifications | Expo Push Notifications | 3 notification types only |
 | Image Storage | Supabase Storage (public bucket) | 1MB max per image |
@@ -33,31 +33,26 @@
 ## 2. Authentication Flow
 
 ```
-1. User enters phone number
+1. User enters email and password
    ↓
-2. Firebase Auth sends SMS OTP
+2. Client calls supabase.auth.signInWithPassword() or supabase.auth.signUp()
    ↓
-3. User enters OTP → Firebase verifies → returns Firebase ID token
+3. Supabase Auth verifies credentials
    ↓
-4. Client calls Supabase Edge Function: exchange-firebase-token
+4. Supabase returns JWT access token and refresh token
    ↓
-5. Edge Function:
-   - Verifies Firebase token
-   - Creates/finds Supabase user (by firebase_uid)
-   - Returns Supabase JWT
+5. Client stores tokens in expo-secure-store
    ↓
-6. Client stores Supabase JWT in expo-secure-store
-   ↓
-7. All subsequent requests use Supabase JWT
+6. All subsequent requests use Supabase JWT
 ```
 
 **Token refresh:**
-- Firebase SDK auto-refreshes token
-- Client re-exchanges with Supabase Edge Function
-- New Supabase JWT stored
+- Supabase SDK auto-refreshes tokens
+- New JWT stored automatically
+- Session persists across app restarts
 
-**Why Firebase for phone auth?**
-Supabase phone auth uses Twilio (additional config). Firebase phone auth is battle-tested and handles carrier edge cases better.
+**Email/Password Authentication:**
+Supabase Auth provides built-in email/password authentication with automatic token management, eliminating the need for external auth providers.
 
 ---
 
@@ -69,7 +64,7 @@ Full schema: [specs/mvp/data-model.md](./specs/mvp/data-model.md)
 
 | Table | Purpose | Key Fields |
 |-------|---------|------------|
-| `users` | User profiles | firebase_uid, phone, name, age, gender, persona, meal_count, bio |
+| `users` | User profiles | id (Supabase user.id), email, name, age, gender, persona, meal_count, bio |
 | `user_preferences` | Cuisine + budget preferences | cuisines[], budget_ranges[] |
 | `restaurants` | Curated + user-added restaurants | name, address, district, city |
 | `meal_requests` | Active meal requests | requester_id, restaurant_id, cuisine, budget_range, time_window, group_size, join_type |
@@ -125,7 +120,6 @@ All tables have RLS enabled.
 
 | Function | Trigger | Purpose |
 |----------|---------|---------|
-| `exchange-firebase-token` | HTTP POST | Verify Firebase token, upsert Supabase user, return Supabase JWT |
 | `handle-request-cancel` | HTTP POST | Notify participants, mark chat as expiring in 24h |
 | `delete-account` | HTTP POST | Anonymize user data, remove from chats, delete profile |
 
@@ -222,7 +216,7 @@ All tables have RLS enabled.
 
 | Step | Screen | Fields | Validation |
 |------|--------|--------|------------|
-| 1 | Phone Verification | Phone number | Firebase Auth OTP |
+| 1 | Email/Password | Email, password | Supabase Auth validation |
 | 2 | Birthdate | Date picker | Age 18+ required |
 | 3 | Gender | Male/Female/Non-binary | Required selection |
 | 4 | City | District selection | If not HCMC → show "Available in HCMC only" |
@@ -514,9 +508,8 @@ eas update --branch production --message "Fix chat layout"
 ## 15. Security Checklist
 
 - [ ] RLS enabled on all tables
-- [ ] Firebase token verification in Edge Function
 - [ ] Supabase JWT stored in expo-secure-store (not AsyncStorage)
-- [ ] Phone verification required
+- [ ] Email/password authentication required
 - [ ] Face detection on profile photos
 - [ ] Message content filtering (basic blocklist)
 - [ ] Report button functional
