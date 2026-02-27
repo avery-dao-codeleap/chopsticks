@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add a curated restaurant lists tab — browse editorial lists, mark "been there", save favorites — plus move Profile to a header avatar and switch the bottom nav to icons-only.
+**Goal:** Add a curated restaurant lists tab — browse editorial lists, tap into a rich restaurant detail screen, write persona-tagged reviews, mark "been there", save favorites — plus move Profile to a header avatar and switch the bottom nav to icons-only.
 
-**Architecture:** 4 new DB tables (`lists`, `list_restaurants`, `user_favorites`, `user_visits`) + RLS policies via a single migration. New API service + TanStack Query hooks following the existing pattern. Two new screens (`lists.tsx` tab + `list-detail.tsx`). Navigation updated in `_layout.tsx`.
+**Architecture:** 5 new DB tables (`lists`, `list_restaurants`, `user_favorites`, `user_visits`, `reviews`) + RLS policies via a single migration. New API service + TanStack Query hooks following the existing pattern. Three new screens (`lists.tsx` tab + `list-detail.tsx` + `restaurant-detail.tsx`). Navigation updated in `_layout.tsx`. No external APIs — restaurant content is seeded manually.
 
 **Tech Stack:** Expo Router (file-based routing), Supabase (postgres + RLS), TanStack Query v5, `@expo/vector-icons/FontAwesome`, React Native dark theme (`#0a0a0a` bg, `#171717` card, `#f97316` orange accent).
 
@@ -1012,6 +1012,455 @@ git commit -m "[Curated Lists] Task 8: Dynamic header title on list detail + ful
 
 ---
 
+---
+
+## Task 9: Reviews — DB + API + Hooks
+
+**Files:**
+- Modify: `supabase/migrations/027_curated_lists.sql` — add `reviews` table
+- Modify: `lib/services/api/lists.ts` — add review functions
+- Modify: `lib/hooks/queries/useLists.ts` — add review hooks
+
+**Step 1: Add `reviews` table to migration 027**
+
+Append to `supabase/migrations/027_curated_lists.sql`:
+
+```sql
+-- reviews table
+CREATE TABLE reviews (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  restaurant_id uuid NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
+  rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  text text NOT NULL CHECK (char_length(text) >= 20 AND char_length(text) <= 500),
+  persona text, -- snapshot of user's persona at time of writing
+  is_visible boolean NOT NULL DEFAULT true,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(user_id, restaurant_id) -- one review per user per restaurant
+);
+
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+
+-- Public read (visible reviews only)
+CREATE POLICY "Reviews are public"
+  ON reviews FOR SELECT
+  USING (is_visible = true);
+
+-- Users manage own reviews
+CREATE POLICY "Users manage own reviews"
+  ON reviews FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+```
+
+Run `npx supabase db push` to apply.
+
+**Step 2: Add review functions to `lib/services/api/lists.ts`**
+
+```typescript
+export interface ReviewRow {
+  id: string;
+  user_id: string;
+  restaurant_id: string;
+  rating: number;
+  text: string;
+  persona: string | null;
+  created_at: string;
+  users: {
+    name: string | null;
+    photo_url: string | null;
+    persona: string | null;
+  };
+}
+
+export async function getReviews(restaurantId: string, personaFilter?: string): Promise<{
+  data: ReviewRow[] | null;
+  error: Error | null;
+}> {
+  try {
+    let query = supabase
+      .from('reviews')
+      .select(`
+        id, user_id, restaurant_id, rating, text, persona, created_at,
+        users ( name, photo_url, persona )
+      `)
+      .eq('restaurant_id', restaurantId)
+      .eq('is_visible', true)
+      .order('created_at', { ascending: false });
+
+    if (personaFilter && personaFilter !== 'all') {
+      query = query.eq('persona', personaFilter);
+    }
+
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+    return { data: data as ReviewRow[], error: null };
+  } catch (error) {
+    console.error('getReviews error:', error);
+    return { data: null, error: error as Error };
+  }
+}
+
+export async function submitReview(input: {
+  restaurantId: string;
+  userId: string;
+  rating: number;
+  text: string;
+  persona: string | null;
+}): Promise<{ error: Error | null }> {
+  try {
+    const { error } = await supabase
+      .from('reviews')
+      .upsert({
+        user_id: input.userId,
+        restaurant_id: input.restaurantId,
+        rating: input.rating,
+        text: input.text,
+        persona: input.persona,
+      }, { onConflict: 'user_id,restaurant_id' });
+    if (error) throw new Error(error.message);
+    return { error: null };
+  } catch (error) {
+    console.error('submitReview error:', error);
+    return { error: error as Error };
+  }
+}
+```
+
+**Step 3: Add review hooks to `lib/hooks/queries/useLists.ts`**
+
+```typescript
+export function useReviews(restaurantId: string | undefined, personaFilter?: string) {
+  return useQuery({
+    queryKey: ['reviews', restaurantId, personaFilter],
+    queryFn: async () => {
+      if (!restaurantId) return [];
+      const { data, error } = await listsApi.getReviews(restaurantId, personaFilter);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!restaurantId,
+  });
+}
+
+export function useSubmitReview() {
+  const queryClient = useQueryClient();
+  const user = useAuthStore(s => s.user);
+
+  return useMutation({
+    mutationFn: async (input: { restaurantId: string; rating: number; text: string }) => {
+      if (!user?.id) throw new Error('Not authenticated');
+      const { error } = await listsApi.submitReview({
+        restaurantId: input.restaurantId,
+        userId: user.id,
+        rating: input.rating,
+        text: input.text,
+        persona: user.persona ?? null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', variables.restaurantId] });
+    },
+  });
+}
+```
+
+**Step 4: Commit**
+
+```bash
+git add supabase/migrations/027_curated_lists.sql lib/services/api/lists.ts lib/hooks/queries/useLists.ts
+git commit -m "[Curated Lists] Task 9: Reviews — DB table, API, hooks"
+```
+
+---
+
+## Task 10: Restaurant Detail Screen
+
+**Files:**
+- Create: `app/(screens)/restaurant-detail.tsx`
+- Modify: `app/(screens)/list-detail.tsx` — make restaurant rows tappable → restaurant detail
+
+**Step 1: Create `app/(screens)/restaurant-detail.tsx`**
+
+```typescript
+// app/(screens)/restaurant-detail.tsx
+import { useState } from 'react';
+import {
+  View, Text, ScrollView, TouchableOpacity,
+  TextInput, Alert, ActivityIndicator
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import {
+  useUserFavorites, useUserVisits,
+  useToggleFavorite, useToggleVisit,
+  useReviews, useSubmitReview,
+} from '@/lib/hooks/queries/useLists';
+import { mediumHaptic } from '@/lib/haptics';
+
+const PERSONAS = ['all', 'local', 'new_to_city', 'expat', 'traveler', 'student'];
+const PERSONA_LABELS: Record<string, string> = {
+  all: 'All',
+  local: '🏠 Local',
+  new_to_city: '🆕 New Here',
+  expat: '🌍 Expat',
+  traveler: '✈️ Traveler',
+  student: '🎓 Student',
+};
+
+function StarRow({ rating, onRate }: { rating: number; onRate?: (r: number) => void }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 4 }}>
+      {[1, 2, 3, 4, 5].map(n => (
+        <TouchableOpacity key={n} onPress={() => onRate?.(n)} disabled={!onRate}>
+          <FontAwesome
+            name={n <= rating ? 'star' : 'star-o'}
+            size={onRate ? 28 : 16}
+            color={n <= rating ? '#f97316' : '#6b7280'}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+
+export default function RestaurantDetailScreen() {
+  const { restaurantId, restaurantName, district } =
+    useLocalSearchParams<{ restaurantId: string; restaurantName: string; district: string }>();
+
+  const [personaFilter, setPersonaFilter] = useState('all');
+  const [showWriteReview, setShowWriteReview] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+
+  const { data: favorites = [] } = useUserFavorites();
+  const { data: visits = [] } = useUserVisits();
+  const toggleFavorite = useToggleFavorite();
+  const toggleVisit = useToggleVisit();
+  const { data: reviews = [], isLoading: reviewsLoading } = useReviews(restaurantId, personaFilter);
+  const submitReview = useSubmitReview();
+
+  const isFavorited = favorites.includes(restaurantId);
+  const isVisited = visits.includes(restaurantId);
+
+  const handleSubmitReview = () => {
+    if (reviewRating === 0) { Alert.alert('Rating required', 'Please select a star rating.'); return; }
+    if (reviewText.trim().length < 20) { Alert.alert('Too short', 'Review must be at least 20 characters.'); return; }
+
+    submitReview.mutate(
+      { restaurantId, rating: reviewRating, text: reviewText.trim() },
+      {
+        onSuccess: () => {
+          setShowWriteReview(false);
+          setReviewRating(0);
+          setReviewText('');
+        },
+        onError: () => Alert.alert('Error', 'Failed to submit review. Please try again.'),
+      }
+    );
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0a0a0a' }} edges={['left', 'right']}>
+      <Stack.Screen options={{ title: restaurantName ?? 'Restaurant' }} />
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+
+        {/* Header card */}
+        <View style={{ backgroundColor: '#171717', margin: 16, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#262626' }}>
+          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>{restaurantName}</Text>
+          <Text style={{ color: '#6b7280', fontSize: 14, marginTop: 4 }}>{district}</Text>
+
+          {/* Action row */}
+          <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
+            <TouchableOpacity
+              onPress={() => { mediumHaptic(); toggleVisit.mutate(restaurantId); }}
+              style={{
+                flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+                backgroundColor: isVisited ? '#16a34a' : '#262626',
+                paddingVertical: 10, borderRadius: 10, gap: 6,
+              }}
+            >
+              <FontAwesome name={isVisited ? 'check' : 'map-marker'} size={14} color={isVisited ? '#fff' : '#9ca3af'} />
+              <Text style={{ color: isVisited ? '#fff' : '#9ca3af', fontSize: 14, fontWeight: '600' }}>
+                {isVisited ? 'Been There' : 'Mark Visited'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => { mediumHaptic(); toggleFavorite.mutate(restaurantId); }}
+              style={{
+                flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+                backgroundColor: isFavorited ? '#431407' : '#262626',
+                paddingVertical: 10, borderRadius: 10, gap: 6,
+              }}
+            >
+              <FontAwesome name={isFavorited ? 'heart' : 'heart-o'} size={14} color={isFavorited ? '#f97316' : '#9ca3af'} />
+              <Text style={{ color: isFavorited ? '#f97316' : '#9ca3af', fontSize: 14, fontWeight: '600' }}>
+                {isFavorited ? 'Saved' : 'Save'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Reviews section */}
+        <View style={{ paddingHorizontal: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>Reviews</Text>
+            <TouchableOpacity
+              onPress={() => setShowWriteReview(!showWriteReview)}
+              style={{ backgroundColor: '#f97316', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8 }}
+            >
+              <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>Write a Review</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Write review form */}
+          {showWriteReview && (
+            <View style={{ backgroundColor: '#171717', borderRadius: 14, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#262626' }}>
+              <Text style={{ color: '#9ca3af', fontSize: 13, marginBottom: 8 }}>Your rating</Text>
+              <StarRow rating={reviewRating} onRate={setReviewRating} />
+              <TextInput
+                value={reviewText}
+                onChangeText={setReviewText}
+                placeholder="What did you think? (min 20 characters)"
+                placeholderTextColor="#6b7280"
+                multiline
+                maxLength={500}
+                style={{
+                  color: '#fff', backgroundColor: '#262626', borderRadius: 10,
+                  padding: 12, marginTop: 12, minHeight: 80, fontSize: 14,
+                }}
+              />
+              <Text style={{ color: '#6b7280', fontSize: 12, marginTop: 4, textAlign: 'right' }}>
+                {reviewText.length}/500
+              </Text>
+              <TouchableOpacity
+                onPress={handleSubmitReview}
+                disabled={submitReview.isPending}
+                style={{ backgroundColor: '#f97316', borderRadius: 10, padding: 12, alignItems: 'center', marginTop: 12 }}
+              >
+                {submitReview.isPending
+                  ? <ActivityIndicator color="#fff" />
+                  : <Text style={{ color: '#fff', fontWeight: '600' }}>Submit Review</Text>
+                }
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Persona filter chips */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {PERSONAS.map(p => (
+                <TouchableOpacity
+                  key={p}
+                  onPress={() => setPersonaFilter(p)}
+                  style={{
+                    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20,
+                    backgroundColor: personaFilter === p ? '#f97316' : '#262626',
+                    borderWidth: 1, borderColor: personaFilter === p ? '#f97316' : '#404040',
+                  }}
+                >
+                  <Text style={{ color: personaFilter === p ? '#fff' : '#9ca3af', fontSize: 13, fontWeight: '500' }}>
+                    {PERSONA_LABELS[p]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+
+          {/* Review list */}
+          {reviewsLoading ? (
+            <ActivityIndicator color="#f97316" style={{ marginTop: 20 }} />
+          ) : reviews.length === 0 ? (
+            <View style={{ alignItems: 'center', paddingVertical: 32 }}>
+              <Text style={{ color: '#6b7280', fontSize: 15 }}>
+                {personaFilter === 'all' ? 'No reviews yet. Be the first!' : `No ${PERSONA_LABELS[personaFilter]} reviews yet.`}
+              </Text>
+            </View>
+          ) : (
+            reviews.map(review => (
+              <View key={review.id} style={{
+                backgroundColor: '#171717', borderRadius: 14, padding: 16,
+                marginBottom: 12, borderWidth: 1, borderColor: '#262626',
+              }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>
+                      {review.users?.name ?? 'Anonymous'}
+                    </Text>
+                    {review.persona && (
+                      <Text style={{ color: '#f97316', fontSize: 12 }}>
+                        {PERSONA_LABELS[review.persona] ?? review.persona}
+                      </Text>
+                    )}
+                  </View>
+                  <StarRow rating={review.rating} />
+                </View>
+                <Text style={{ color: '#d1d5db', fontSize: 14, lineHeight: 20 }}>{review.text}</Text>
+              </View>
+            ))
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+```
+
+**Step 2: Update `list-detail.tsx` — make restaurant rows tappable**
+
+In `app/(screens)/list-detail.tsx`, wrap the restaurant row in a `TouchableOpacity` that navigates to restaurant detail. Change:
+
+```typescript
+<View style={{ flexDirection: 'row', alignItems: 'center', ... }}>
+```
+
+To:
+
+```typescript
+<TouchableOpacity
+  onPress={() => {
+    mediumHaptic();
+    router.push({
+      pathname: '/(screens)/restaurant-detail',
+      params: {
+        restaurantId: item.restaurant_id,
+        restaurantName: item.restaurants.name,
+        district: item.restaurants.district,
+      },
+    });
+  }}
+  style={{ flexDirection: 'row', alignItems: 'center', ... }}
+>
+  {/* existing content */}
+</TouchableOpacity>
+```
+
+Also import `useRouter` at the top of `list-detail.tsx` if not already imported.
+
+**Step 3: Test the full flow**
+
+1. Tap a list → see ranked restaurants
+2. Tap a restaurant row → navigate to Restaurant Detail
+3. Header shows restaurant name
+4. Tap "Mark Visited" → turns green
+5. Tap "Save" → turns orange
+6. Tap "Write a Review" → form expands
+7. Select stars + type 20+ characters → tap Submit → review appears
+8. Filter by persona chip → only matching reviews shown
+9. "All" chip → all reviews shown
+
+**Step 4: Commit**
+
+```bash
+git add app/(screens)/restaurant-detail.tsx app/(screens)/list-detail.tsx
+git commit -m "[Curated Lists] Task 10: Restaurant detail screen with persona-filtered reviews"
+```
+
+---
+
 ## Manual QA Checklist
 
 After all tasks complete, verify:
@@ -1019,18 +1468,23 @@ After all tasks complete, verify:
 - [ ] Bottom nav shows 4 icon-only tabs in order: cutlery | list | comments | bell
 - [ ] No labels visible on any tab
 - [ ] Profile tab not visible in tab bar
-- [ ] Header avatar appears on Browse (index) and Lists tabs
+- [ ] Header avatar appears on Browse and Lists tabs
 - [ ] Avatar shows user photo if set, fallback user icon if not
 - [ ] Tapping avatar → navigates to Profile screen
 - [ ] Lists tab loads and shows all published lists
 - [ ] Empty state shows if no lists exist
 - [ ] Tapping a list → List Detail with correct title
 - [ ] Ranked restaurants visible with #1, #2, #3 etc.
+- [ ] Tapping a restaurant row → Restaurant Detail screen
 - [ ] "Mark Visited" → turns green "Been There" instantly
-- [ ] Tapping again → reverts to "Mark Visited" instantly
-- [ ] Heart icon → turns orange when favorited
-- [ ] Tapping again → reverts to grey
-- [ ] State persists: close and reopen app → favorites/visits still saved
+- [ ] Tapping again → reverts instantly
+- [ ] "Save" → turns orange instantly, tapping again reverts
+- [ ] State persists after closing and reopening app
+- [ ] "Write a Review" form expands/collapses
+- [ ] Star rating required, min 20 chars enforced
+- [ ] Submitted review appears immediately in list
+- [ ] Persona filter chips filter reviews correctly
+- [ ] "All" shows all reviews regardless of persona
 
 ---
 
