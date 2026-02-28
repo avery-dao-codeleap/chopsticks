@@ -53,3 +53,6 @@ tmp/
 # Sprint tracking (local only)
 .sprint.json
 sprint-*.md
+
+# Git worktrees
+.worktrees/
