@@ -302,13 +302,7 @@ export async function getRestaurantDetail(
       .limit(3);
 
     const active_requests: ActiveRequestRow[] = await Promise.all(
-      (activeReqs ?? []).map(async (req: {
-        id: string;
-        time_window: string;
-        group_size: number;
-        join_type: 'open' | 'approval';
-        users: { id: string; name: string | null };
-      }) => {
+      ((activeReqs ?? []) as unknown as { id: string; time_window: string; group_size: number; join_type: 'open' | 'approval'; users: { id: string; name: string | null } }[]).map(async (req) => {
         const { count } = await supabase
           .from('request_participants')
           .select('*', { count: 'exact', head: true })
@@ -333,10 +327,7 @@ export async function getRestaurantDetail(
       .eq('lists.type', 'curated')
       .eq('lists.is_published', true);
 
-    const curated_list_memberships = (curatedMemberships ?? []).map((m: {
-      rank: number | null;
-      lists: { id: string; title: string };
-    }) => ({
+    const curated_list_memberships = ((curatedMemberships ?? []) as unknown as { rank: number | null; lists: { id: string; title: string } }[]).map((m) => ({
       list_id: m.lists.id,
       list_title: m.lists.title,
       rank: m.rank,
@@ -352,9 +343,7 @@ export async function getRestaurantDetail(
         .eq('lists.type', 'personal')
         .eq('lists.owner_id', userId);
 
-      user_list_memberships = (personalMemberships ?? []).map((m: {
-        lists: { id: string; title: string; emoji: string | null };
-      }) => ({
+      user_list_memberships = ((personalMemberships ?? []) as unknown as { lists: { id: string; title: string; emoji: string | null } }[]).map((m) => ({
         list_id: m.lists.id,
         list_title: m.lists.title,
         emoji: m.lists.emoji,

@@ -33,6 +33,7 @@ interface Translations {
   welcomeTagline: string; welcomeVision: string; welcomeFeature1: string; welcomeFeature2: string; welcomeFeature3: string; getStarted: string; welcomeFooter: string;
   leaveChat: string; notifications: string; markAllRead: string; noNotifications: string; notificationsWillAppearHere: string;
   noPendingRequests: string; noPendingRequestsDescription: string;
+  reportUser: string;
 }
 
 const en: Translations = {
@@ -75,6 +76,7 @@ const en: Translations = {
   getStarted: 'Get Started', welcomeFooter: 'By continuing, you agree to our Terms of Service',
   leaveChat: 'Leave Chat', notifications: 'Notifications', markAllRead: 'Mark all read', noNotifications: 'No notifications yet', notificationsWillAppearHere: "You'll see updates about your meals here",
   noPendingRequests: 'No pending requests', noPendingRequestsDescription: "When someone requests to join your meal, they'll appear here",
+  reportUser: 'Report User',
 };
 
 const vi: Translations = {
@@ -117,6 +119,7 @@ const vi: Translations = {
   getStarted: 'Bắt đầu', welcomeFooter: 'Tiếp tục có nghĩa là bạn đồng ý với Điều khoản dịch vụ',
   leaveChat: 'Rời chat', notifications: 'Thông báo', markAllRead: 'Đánh dấu tất cả đã đọc', noNotifications: 'Chưa có thông báo', notificationsWillAppearHere: 'Bạn sẽ thấy cập nhật về bữa ăn ở đây',
   noPendingRequests: 'Không có yêu cầu chờ', noPendingRequestsDescription: 'Khi ai đó yêu cầu tham gia bữa ăn của bạn, họ sẽ xuất hiện ở đây',
+  reportUser: 'Báo cáo người dùng',
 };
 
 const translations: Record<Lang, Translations> = { en, vi };
