@@ -21,6 +21,7 @@ type Step = 1 | 2 | 3;
 export default function CreateRequestScreen() {
   const router = useRouter();
   const { t, language } = useI18n();
+  const { restaurantId: prefilledRestaurantId } = useLocalSearchParams<{ restaurantId?: string }>();
   const session = useAuthStore(state => state.session);
   const createRequest = useCreateRequest();
   const addRestaurant = useAddRestaurant();
@@ -49,6 +50,18 @@ export default function CreateRequestScreen() {
   const [joinType, setJoinType] = useState<'open' | 'approval' | null>(null);
   const [description, setDescription] = useState('');
   const [showBudgetInfo, setShowBudgetInfo] = useState(false);
+
+  // Pre-fill from restaurant profile navigation
+  useEffect(() => {
+    if (prefilledRestaurantId && allRestaurants) {
+      const found = allRestaurants.find(r => r.id === prefilledRestaurantId);
+      if (found) {
+        setSelectedRestaurant(found);
+        setSelectedCuisineId(found.cuisine_type);
+        setStep(2);
+      }
+    }
+  }, [prefilledRestaurantId, allRestaurants]);
 
   const handleAsapToggle = (asap: boolean) => {
     setIsAsap(asap);
