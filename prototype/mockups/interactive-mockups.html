@@ -1131,6 +1131,130 @@
       margin-right: 6px;
       margin-bottom: 6px;
     }
+
+    /* ============================================================
+       EXPLORE — NEW DESIGN (dark theme, matches real app)
+       ============================================================ */
+    .phase-btn[data-phase="explore"] { background: #7c3aed; opacity: 0.5; }
+
+    /* Dark screen overrides */
+    .screen-dark { background: #0a0a0a !important; }
+    .status-bar-dark { background: #0a0a0a !important; color: #9ca3af !important; border-bottom: none !important; }
+    .screen-header-dark { background: #0a0a0a !important; color: #fff !important; border-bottom: 1px solid #1c1c1c !important; }
+    .screen-body-dark { background: #0a0a0a !important; }
+    .bottom-nav-dark { background: #0a0a0a !important; border-top: 1px solid #1c1c1c !important; }
+    .bottom-nav-dark .nav-label { color: #6b7280 !important; font-size: 9px; }
+    .bottom-nav-dark .nav-item.active .nav-label { color: #f97316 !important; }
+
+    /* Dark search bar */
+    .dk-search { display:flex;align-items:center;gap:8px;background:#171717;border-radius:10px;padding:10px 12px;margin-bottom:14px;border:1px solid #262626; }
+    .dk-search-text { flex:1;font-size:13px;color:#6b7280; }
+
+    /* Dark section label */
+    .dk-section { font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px; }
+
+    /* My list row */
+    .dk-list-row { display:flex;align-items:center;gap:10px;padding:11px 12px;background:#171717;border-radius:12px;margin-bottom:6px;border:1px solid #262626; }
+    .dk-list-name { flex:1;font-size:14px;color:#fff;font-weight:500; }
+    .dk-list-count { font-size:12px;color:#6b7280; }
+    .dk-list-arrow { font-size:16px;color:#404040; }
+    .dk-new-row { display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;margin-bottom:6px;border:1.5px dashed #2d2d2d; }
+
+    /* Curated list card */
+    .dk-curated { background:#171717;border-radius:14px;padding:12px;margin-bottom:8px;border:1px solid #262626; }
+    .dk-curated-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:4px; }
+    .dk-curated-title { font-size:14px;font-weight:600;color:#fff; }
+    .dk-curated-meta { font-size:11px;color:#6b7280;margin-bottom:7px; }
+    .dk-bar { height:4px;background:#262626;border-radius:2px;margin-bottom:4px; }
+    .dk-bar-fill { height:100%;background:#f97316;border-radius:2px; }
+    .dk-bar-text { font-size:11px;color:#6b7280; }
+    .dk-bar-text b { color:#f97316; }
+
+    /* Trending cards */
+    .dk-trending-row { display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px; }
+    .dk-trending-row::-webkit-scrollbar { display:none; }
+    .dk-trend-card { min-width:82px;background:#171717;border-radius:14px;padding:10px 8px;text-align:center;border:1px solid #262626;flex-shrink:0; }
+    .dk-trend-emoji { font-size:26px;margin-bottom:4px; }
+    .dk-trend-name { font-size:11px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .dk-trend-rating { font-size:10px;color:#f97316;margin-top:2px; }
+    .dk-trend-diners { font-size:10px;color:#6b7280; }
+
+    /* Search result card */
+    .dk-result { background:#171717;border-radius:14px;padding:12px;margin-bottom:8px;border:1px solid #262626; }
+    .dk-result-name { font-size:14px;font-weight:600;color:#fff; }
+    .dk-result-meta { font-size:11px;color:#6b7280;margin-top:2px; }
+    .dk-result-stats { display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap; }
+    .dk-rating { font-size:12px;color:#f97316;font-weight:600; }
+    .dk-diners { font-size:11px;color:#6b7280; }
+    .dk-badge-list { font-size:10px;background:#7c3aed22;color:#a78bfa;padding:2px 6px;border-radius:6px;font-weight:600; }
+    .dk-badge-personal { font-size:10px;background:#f9731622;color:#f97316;padding:2px 6px;border-radius:6px;font-weight:600; }
+
+    /* Dark filter pill */
+    .dk-pill { padding:5px 12px;border-radius:16px;font-size:12px;white-space:nowrap;background:#171717;color:#6b7280;border:1px solid #262626;margin-right:6px;display:inline-block; }
+    .dk-pill.active { background:#f97316;color:#fff;border-color:#f97316; }
+
+    /* Restaurant profile (dark) */
+    .dk-rest-hero { height:90px;background:#1c1c1c;margin:-12px -12px 12px;display:flex;align-items:center;justify-content:center;font-size:44px; }
+    .dk-rest-name { font-size:19px;font-weight:700;color:#fff;margin-bottom:3px; }
+    .dk-rest-meta { font-size:12px;color:#6b7280;margin-bottom:2px; }
+    .dk-rest-rating { font-size:14px;color:#f97316;font-weight:600; }
+    .dk-rest-rating span { color:#6b7280;font-weight:400;font-size:11px; }
+    .dk-action-row { display:flex;gap:6px;margin:12px 0; }
+    .dk-action-btn { flex:1;padding:9px 4px;background:#171717;border-radius:10px;border:1px solid #262626;text-align:center; }
+    .dk-action-icon { font-size:15px; }
+    .dk-action-label { font-size:10px;color:#9ca3af;margin-top:2px; }
+    .dk-cta { display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;background:#f97316;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;margin-bottom:8px; }
+    .dk-cta.secondary { background:#171717;border:1px solid #262626;color:#fff; }
+    .dk-stat-row { display:flex;gap:6px;margin-bottom:12px; }
+    .dk-stat { flex:1;background:#171717;border-radius:10px;padding:9px 4px;text-align:center;border:1px solid #262626; }
+    .dk-stat-num { font-size:17px;font-weight:700;color:#fff; }
+    .dk-stat-label { font-size:10px;color:#6b7280;margin-top:1px; }
+    .dk-quote { background:#171717;border-radius:10px;padding:10px 12px;margin-bottom:7px;border:1px solid #262626; }
+    .dk-quote-text { font-size:12px;color:#d1d5db;font-style:italic;line-height:1.4; }
+    .dk-quote-author { font-size:11px;color:#6b7280;margin-top:3px; }
+    .dk-mini-req { display:flex;align-items:center;gap:8px;padding:8px 10px;background:#171717;border-radius:10px;margin-bottom:6px;border:1px solid #262626; }
+    .dk-mini-time { font-size:12px;color:#f97316;font-weight:600;min-width:40px; }
+    .dk-mini-name { font-size:12px;color:#fff;font-weight:500; }
+    .dk-mini-meta { font-size:10px;color:#6b7280; }
+    .dk-mini-join { background:#f97316;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600; }
+    .dk-on-lists { margin-top:12px;padding-top:10px;border-top:1px solid #1c1c1c; }
+    .dk-on-lists-title { font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px; }
+    .dk-on-lists-item { font-size:12px;color:#9ca3af;padding:3px 0; }
+
+    /* List detail (dark) */
+    .dk-progress-header { background:#171717;border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid #262626; }
+    .dk-progress-label { font-size:12px;color:#6b7280;margin-bottom:6px; }
+    .dk-rest-row { padding:10px 0;border-bottom:1px solid #1c1c1c; }
+    .dk-rest-row:last-child { border-bottom:none; }
+    .dk-rest-rank { font-size:16px;font-weight:700;color:#f97316;min-width:22px; }
+    .dk-rest-row-name { font-size:13px;font-weight:600;color:#fff; }
+    .dk-rest-row-meta { font-size:11px;color:#6b7280;margin-top:1px; }
+    .dk-rest-row-actions { display:flex;gap:6px;margin-top:7px; }
+    .dk-btn-visited { padding:5px 10px;border-radius:8px;font-size:11px;font-weight:600;border:none;background:#10b98120;color:#10b981; }
+    .dk-btn-mark { padding:5px 10px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid #2d2d2d;background:transparent;color:#6b7280; }
+    .dk-btn-save { padding:5px 10px;border-radius:8px;font-size:11px;font-weight:600;border:none;background:#f9731622;color:#f97316; }
+
+    /* Save sheet */
+    .dk-sheet { background:#1c1c1c;border-radius:16px 16px 0 0;padding:14px 12px;border-top:1px solid #2d2d2d; }
+    .dk-sheet-handle { width:36px;height:4px;background:#3d3d3d;border-radius:2px;margin:0 auto 14px; }
+    .dk-sheet-title { font-size:14px;font-weight:600;color:#fff;margin-bottom:10px; }
+    .dk-sheet-divider { height:1px;background:#262626;margin-bottom:8px; }
+    .dk-sheet-row { display:flex;align-items:center;gap:10px;padding:8px 0; }
+    .dk-sheet-check { width:18px;height:18px;border-radius:5px;background:#f97316;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0; }
+    .dk-sheet-check.empty { background:transparent;border:1.5px solid #3d3d3d; }
+    .dk-sheet-name { flex:1;font-size:14px;color:#fff; }
+    .dk-sheet-count { font-size:12px;color:#6b7280; }
+    .dk-sheet-new { display:flex;align-items:center;gap:10px;padding:8px 0;margin-top:2px; }
+
+    /* Create request (dark, pre-filled) */
+    .dk-field { margin-bottom:12px; }
+    .dk-field-label { font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px; }
+    .dk-field-locked { background:#171717;border-radius:10px;padding:10px 12px;border:1.5px solid #f97316;display:flex;align-items:center;gap:8px; }
+    .dk-field-locked-text { flex:1;font-size:14px;color:#fff;font-weight:500; }
+    .dk-field-auto { background:#171717;border-radius:10px;padding:10px 12px;border:1px solid #262626;display:flex;align-items:center;gap:8px; }
+    .dk-field-auto-text { flex:1;font-size:14px;color:#fff; }
+    .dk-auto-chip { font-size:10px;background:#10b98120;color:#10b981;padding:2px 6px;border-radius:6px;font-weight:600; }
+    .dk-field-open { background:#171717;border-radius:10px;padding:10px 12px;border:1px solid #262626;font-size:14px;color:#6b7280; }
   </style>
 </head>
 <body>
@@ -1144,6 +1268,7 @@
     <button class="phase-btn" data-phase="phase1" onclick="selectPhase('phase1')">Phase 1 — Discovery</button>
     <button class="phase-btn" data-phase="phase2" onclick="selectPhase('phase2')">Phase 2 — Social</button>
     <button class="phase-btn" data-phase="phase3" onclick="selectPhase('phase3')">Phase 3 — Monetization</button>
+    <button class="phase-btn" data-phase="explore" onclick="selectPhase('explore')">🔭 Explore — New Design</button>
   </div>
 
   <!-- Feature Nav Rows -->
@@ -1170,6 +1295,15 @@
   <div class="feature-nav-row" data-phase="phase3">
     <button class="tab-btn" onclick="selectFeature('history', this)">Food History</button>
     <button class="tab-btn" onclick="selectFeature('ai', this)">AI Insights</button>
+  </div>
+
+  <div class="feature-nav-row" data-phase="explore">
+    <button class="tab-btn" onclick="selectFeature('ex-browse', this)">Current: Browse Tab</button>
+    <button class="tab-btn" onclick="selectFeature('ex-explore', this)">New: Explore Tab</button>
+    <button class="tab-btn" onclick="selectFeature('ex-lists', this)">My Lists</button>
+    <button class="tab-btn" onclick="selectFeature('ex-listdetail', this)">List Detail</button>
+    <button class="tab-btn" onclick="selectFeature('ex-restaurant', this)">Restaurant Profile</button>
+    <button class="tab-btn" onclick="selectFeature('ex-create', this)">Create (Pre-filled)</button>
   </div>
 
   <!-- ============================================================ -->
@@ -2642,6 +2776,819 @@
 
     </div><!-- end phone-grid ai -->
   </div><!-- end tab-content ai -->
+
+
+  <!-- ============================================================ -->
+  <!-- EXPLORE — NEW DESIGN SCREENS                                 -->
+  <!-- ============================================================ -->
+
+  <!-- 1. CURRENT: Browse Tab (for comparison) -->
+  <div class="tab-content" id="ex-browse">
+    <div style="text-align:center;margin-bottom:16px;padding:10px 20px;background:#1a1a2e;border-radius:10px;font-size:13px;color:#aaa;">
+      ← <strong style="color:#fff;">Current state</strong> — 5 separate filter chips, each opens its own bottom sheet, no discovery layer, no restaurant profiles
+    </div>
+    <div class="phone-grid">
+
+      <div class="phone-wrapper">
+        <div class="phone-label">Browse Feed (Today)</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="font-size:16px;font-weight:700;color:#fff;">Chopsticks</span>
+              <span style="margin-left:auto;font-size:16px;">⚙️</span>
+            </div>
+            <div class="screen-body screen-body-dark">
+              <!-- 5 filter chips -->
+              <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:8px 0 12px;">
+                <span class="dk-pill active">⏰ Time</span>
+                <span class="dk-pill">📍 Area</span>
+                <span class="dk-pill">🍽️ Cuisine</span>
+                <span class="dk-pill">💰 Budget</span>
+                <span class="dk-pill">👥 Spots</span>
+              </div>
+              <!-- Request cards -->
+              <div style="background:#171717;border-radius:14px;padding:12px;margin-bottom:10px;border:1px solid #262626;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:14px;font-weight:700;color:#fff;">Phở Thìn Bờ Hồ</div>
+                  <div style="background:#10b98120;padding:3px 8px;border-radius:8px;font-size:11px;color:#10b981;font-weight:700;">2 spots</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                  <span style="background:#262626;padding:3px 8px;border-radius:6px;font-size:11px;color:#9ca3af;">🍜 Vietnamese</span>
+                  <span style="background:#262626;padding:3px 8px;border-radius:6px;font-size:11px;color:#9ca3af;">🕐 Today 12pm</span>
+                  <span style="background:#262626;padding:3px 8px;border-radius:6px;font-size:11px;color:#9ca3af;">💰 50–100k/pp</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:11px;color:#6b7280;">by Minh</span>
+                  <span style="background:#f9731620;padding:2px 8px;border-radius:6px;font-size:11px;color:#f97316;font-weight:600;">Open</span>
+                </div>
+              </div>
+              <div style="background:#171717;border-radius:14px;padding:12px;margin-bottom:10px;border:1px solid #262626;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:14px;font-weight:700;color:#fff;">Bánh Mì Huỳnh Hoa</div>
+                  <div style="background:#10b98120;padding:3px 8px;border-radius:8px;font-size:11px;color:#10b981;font-weight:700;">1 spot</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                  <span style="background:#262626;padding:3px 8px;border-radius:6px;font-size:11px;color:#9ca3af;">🥖 Street Food</span>
+                  <span style="background:#262626;padding:3px 8px;border-radius:6px;font-size:11px;color:#9ca3af;">🕐 Today 8am</span>
+                  <span style="background:#262626;padding:3px 8px;border-radius:6px;font-size:11px;color:#9ca3af;">💰 &lt;50k/pp</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:11px;color:#6b7280;">by Linh</span>
+                  <span style="background:#8b5cf620;padding:2px 8px;border-radius:6px;font-size:11px;color:#a78bfa;font-weight:600;">Approval</span>
+                </div>
+              </div>
+              <div style="background:#171717;border-radius:14px;padding:12px;border:1px solid #262626;opacity:0.5;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:14px;font-weight:700;color:#fff;">District 3</div>
+                  <div style="background:#ef444420;padding:3px 8px;border-radius:8px;font-size:11px;color:#ef4444;font-weight:700;">🔒 Full</div>
+                </div>
+                <div style="font-size:11px;color:#6b7280;">🍚 Rice · Today 1pm · 100–200k/pp</div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item active"><div class="nav-icon">🗺️</div><div class="nav-label" style="color:#f97316;">Browse</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-wrapper">
+        <div class="phone-label">Filter Bottom Sheet (1 of 5)</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="font-size:16px;font-weight:700;color:#fff;">Chopsticks</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="display:flex;flex-direction:column;padding:0;">
+              <div style="flex:1;padding:12px;opacity:0.25;">
+                <div style="background:#171717;border-radius:14px;height:70px;margin-bottom:10px;border:1px solid #262626;"></div>
+                <div style="background:#171717;border-radius:14px;height:70px;margin-bottom:10px;border:1px solid #262626;"></div>
+              </div>
+              <!-- Cuisine filter sheet open -->
+              <div style="background:#1c1c1c;border-radius:16px 16px 0 0;padding:16px;border-top:1px solid #2d2d2d;">
+                <div style="width:36px;height:4px;background:#3d3d3d;border-radius:2px;margin:0 auto 14px;"></div>
+                <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:12px;">🍽️ Cuisine</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <span style="padding:7px 14px;border-radius:20px;font-size:13px;background:#f97316;color:#fff;font-weight:600;">All</span>
+                  <span style="padding:7px 14px;border-radius:20px;font-size:13px;background:#262626;color:#9ca3af;">🍜 Noodles</span>
+                  <span style="padding:7px 14px;border-radius:20px;font-size:13px;background:#262626;color:#9ca3af;">🍚 Rice</span>
+                  <span style="padding:7px 14px;border-radius:20px;font-size:13px;background:#262626;color:#9ca3af;">🥖 Bánh Mì</span>
+                  <span style="padding:7px 14px;border-radius:20px;font-size:13px;background:#262626;color:#9ca3af;">🦐 Seafood</span>
+                  <span style="padding:7px 14px;border-radius:20px;font-size:13px;background:#262626;color:#9ca3af;">🍔 Fast Food</span>
+                  <span style="padding:7px 14px;border-radius:20px;font-size:13px;background:#262626;color:#9ca3af;">🥗 Healthy</span>
+                </div>
+                <div style="margin-top:14px;font-size:11px;color:#6b7280;text-align:center;">Repeat for 4 more filters ↑</div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item active"><div class="nav-icon">🗺️</div><div class="nav-label" style="color:#f97316;">Browse</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end ex-browse -->
+
+  <!-- 2. NEW: Explore Tab -->
+  <div class="tab-content" id="ex-explore">
+    <div style="text-align:center;margin-bottom:16px;padding:10px 20px;background:#1a1a2e;border-radius:10px;font-size:13px;color:#aaa;">
+      ↓ <strong style="color:#7c3aed;">New Explore tab</strong> — unified discovery: My Lists (personal, replaces Google Maps) + Curated Lists (editorial, gamified, future paywall) + Trending + Search
+    </div>
+    <div class="phone-grid">
+
+      <!-- Phone 1: Explore Tab main -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Explore Tab — Home</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark" style="justify-content:space-between;">
+              <div style="width:30px;height:30px;background:#f97316;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:700;">A</div>
+              <span style="font-size:16px;font-weight:700;color:#fff;">Chopsticks</span>
+              <div style="width:30px;"></div>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <div class="dk-search">
+                <span style="color:#6b7280;font-size:14px;">🔍</span>
+                <span class="dk-search-text">Search restaurants, dishes...</span>
+              </div>
+              <div class="dk-section">My Lists</div>
+              <div class="dk-list-row">
+                <span style="font-size:18px;">📌</span>
+                <span class="dk-list-name">Want to Go</span>
+                <span class="dk-list-count">14</span>
+                <span class="dk-list-arrow">›</span>
+              </div>
+              <div class="dk-list-row">
+                <span style="font-size:18px;">🎬</span>
+                <span class="dk-list-name">From TikTok</span>
+                <span class="dk-list-count">6</span>
+                <span class="dk-list-arrow">›</span>
+              </div>
+              <div class="dk-list-row">
+                <span style="font-size:18px;">💑</span>
+                <span class="dk-list-name">Date spots</span>
+                <span class="dk-list-count">3</span>
+                <span class="dk-list-arrow">›</span>
+              </div>
+              <div class="dk-new-row">
+                <span style="font-size:16px;color:#f97316;">+</span>
+                <span style="font-size:14px;color:#f97316;font-weight:500;">New List</span>
+              </div>
+              <div class="dk-section">Curated Lists</div>
+              <div class="dk-curated">
+                <div class="dk-curated-header">
+                  <span class="dk-curated-title">🏆 Best Pho in Saigon</span>
+                  <span style="color:#6b7280;font-size:16px;">›</span>
+                </div>
+                <div class="dk-curated-meta">12 spots · Vietnamese</div>
+                <div class="dk-bar"><div class="dk-bar-fill" style="width:25%;"></div></div>
+                <div class="dk-bar-text"><b>3</b> of 12 visited</div>
+              </div>
+              <div class="dk-curated">
+                <div class="dk-curated-header">
+                  <span class="dk-curated-title">🏆 Best Bánh Mì in D1</span>
+                  <span style="color:#6b7280;font-size:16px;">›</span>
+                </div>
+                <div class="dk-curated-meta">8 spots · Street Food</div>
+                <div class="dk-bar"><div class="dk-bar-fill" style="width:0%;"></div></div>
+                <div class="dk-bar-text"><b>0</b> of 8 visited</div>
+              </div>
+              <div class="dk-curated" style="opacity:0.6;">
+                <div class="dk-curated-header">
+                  <span class="dk-curated-title" style="color:#6b7280;">🔒 Late Night Eats</span>
+                  <span style="font-size:10px;background:#f97316;color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">PRO</span>
+                </div>
+                <div class="dk-curated-meta">6 spots · Unlock with Pro</div>
+              </div>
+              <div class="dk-section">Trending This Week</div>
+              <div class="dk-trending-row">
+                <div class="dk-trend-card"><div class="dk-trend-emoji">🍜</div><div class="dk-trend-name">Phở Thìn</div><div class="dk-trend-rating">⭐ 4.6</div><div class="dk-trend-diners">23 diners</div></div>
+                <div class="dk-trend-card"><div class="dk-trend-emoji">🍲</div><div class="dk-trend-name">Bún Bò Huế</div><div class="dk-trend-rating">⭐ 4.4</div><div class="dk-trend-diners">11 diners</div></div>
+                <div class="dk-trend-card"><div class="dk-trend-emoji">🍚</div><div class="dk-trend-name">Cơm Tấm B.</div><div class="dk-trend-rating">⭐ 4.8</div><div class="dk-trend-diners">31 diners</div></div>
+                <div class="dk-trend-card"><div class="dk-trend-emoji">🥗</div><div class="dk-trend-name">Bếp Nhà</div><div class="dk-trend-rating">⭐ 4.5</div><div class="dk-trend-diners">8 diners</div></div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Search Results -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Search Results</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark" style="gap:6px;">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <div class="dk-search" style="flex:1;margin:0;padding:7px 10px;">
+                <span style="color:#6b7280;font-size:13px;">🔍</span>
+                <span style="flex:1;font-size:13px;color:#fff;">bún bò</span>
+                <span style="color:#6b7280;font-size:13px;">✕</span>
+              </div>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <div style="display:flex;gap:6px;margin-bottom:10px;">
+                <span class="dk-pill active">Vietnamese</span>
+                <span class="dk-pill">District 1</span>
+                <span class="dk-pill">&lt;100k</span>
+              </div>
+              <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">4 restaurants found</div>
+              <div class="dk-result">
+                <div class="dk-result-name">Bún Bò Huế Mệ Kéo</div>
+                <div class="dk-result-meta">📍 District 3 · Vietnamese</div>
+                <div class="dk-result-stats">
+                  <span class="dk-rating">⭐ 4.7</span>
+                  <span class="dk-diners">8 Chopstickers</span>
+                  <span class="dk-badge-list">🏆 Top 5 Bún Bò</span>
+                </div>
+              </div>
+              <div class="dk-result">
+                <div class="dk-result-name">Bún Bò Nam Bộ</div>
+                <div class="dk-result-meta">📍 District 1 · Vietnamese</div>
+                <div class="dk-result-stats">
+                  <span class="dk-rating">⭐ 4.2</span>
+                  <span class="dk-diners">5 Chopstickers</span>
+                  <span class="dk-badge-personal">📌 Your list</span>
+                </div>
+              </div>
+              <div class="dk-result">
+                <div class="dk-result-name">Bún Bò Gánh</div>
+                <div class="dk-result-meta">📍 Phú Nhuận · Vietnamese</div>
+                <div class="dk-result-stats">
+                  <span class="dk-rating">⭐ 4.4</span>
+                  <span class="dk-diners">3 Chopstickers</span>
+                </div>
+              </div>
+              <div class="dk-result">
+                <div class="dk-result-name">Bún Bò Lạc Cảnh</div>
+                <div class="dk-result-meta">📍 District 10 · Vietnamese</div>
+                <div class="dk-result-stats">
+                  <span class="dk-rating">⭐ 4.5</span>
+                  <span class="dk-diners">12 Chopstickers</span>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end ex-explore -->
+
+  <!-- 3. MY LISTS -->
+  <div class="tab-content" id="ex-lists">
+    <div style="text-align:center;margin-bottom:16px;padding:10px 20px;background:#1a1a2e;border-radius:10px;font-size:13px;color:#aaa;">
+      Replaces saving TikTok/Instagram food content to Google Maps. Users create named lists, add restaurants from anywhere, convert to meal requests in one tap.
+    </div>
+    <div class="phone-grid">
+
+      <!-- Phone 1: My Lists screen -->
+      <div class="phone-wrapper">
+        <div class="phone-label">My Lists</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:16px;font-weight:700;color:#fff;">My Lists</span>
+              <span style="font-size:13px;color:#f97316;font-weight:600;">+ New</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <div style="font-size:12px;color:#6b7280;margin-bottom:14px;line-height:1.5;">Save restaurants from TikTok, Instagram, or anywhere — all in one place, ready to act on.</div>
+              <div class="dk-list-row" style="padding:12px;">
+                <span style="font-size:20px;">📌</span>
+                <div style="flex:1;">
+                  <div class="dk-list-name">Want to Go</div>
+                  <div style="font-size:11px;color:#6b7280;">14 restaurants</div>
+                </div>
+                <span class="dk-list-arrow">›</span>
+              </div>
+              <div class="dk-list-row" style="padding:12px;">
+                <span style="font-size:20px;">🎬</span>
+                <div style="flex:1;">
+                  <div class="dk-list-name">From TikTok</div>
+                  <div style="font-size:11px;color:#6b7280;">6 restaurants</div>
+                </div>
+                <span class="dk-list-arrow">›</span>
+              </div>
+              <div class="dk-list-row" style="padding:12px;">
+                <span style="font-size:20px;">💑</span>
+                <div style="flex:1;">
+                  <div class="dk-list-name">Date spots</div>
+                  <div style="font-size:11px;color:#6b7280;">3 restaurants</div>
+                </div>
+                <span class="dk-list-arrow">›</span>
+              </div>
+              <div class="dk-list-row" style="padding:12px;">
+                <span style="font-size:20px;">🍺</span>
+                <div style="flex:1;">
+                  <div class="dk-list-name">Late Night</div>
+                  <div style="font-size:11px;color:#6b7280;">2 restaurants</div>
+                </div>
+                <span class="dk-list-arrow">›</span>
+              </div>
+              <div class="dk-new-row" style="padding:12px;margin-top:6px;">
+                <span style="font-size:18px;color:#f97316;">+</span>
+                <span style="font-size:14px;color:#f97316;font-weight:500;">Create a new list</span>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Save to list sheet (from restaurant) -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Save to List — Sheet</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:16px;font-weight:600;color:#fff;">Phở Thìn Bờ Hồ</span>
+            </div>
+            <!-- restaurant content (dimmed) + sheet -->
+            <div class="screen-body screen-body-dark" style="display:flex;flex-direction:column;padding:0;overflow:hidden;">
+              <div style="flex:1;padding:12px;opacity:0.25;">
+                <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:3px;">Phở Thìn Bờ Hồ</div>
+                <div style="font-size:12px;color:#6b7280;">📍 District 1 · Vietnamese</div>
+                <div style="font-size:13px;color:#f97316;margin-top:4px;">⭐ 4.6 <span style="color:#6b7280;font-size:11px;">(23 Chopstickers)</span></div>
+                <div style="height:1px;background:#1c1c1c;margin:10px 0;"></div>
+                <div style="height:36px;background:#171717;border-radius:10px;margin-bottom:8px;"></div>
+              </div>
+              <!-- dark overlay + sheet -->
+              <div style="background:rgba(0,0,0,0.6);padding:4px 0;"></div>
+              <div class="dk-sheet">
+                <div class="dk-sheet-handle"></div>
+                <div class="dk-sheet-title">Save to list...</div>
+                <div class="dk-sheet-divider"></div>
+                <div class="dk-sheet-row">
+                  <div class="dk-sheet-check">✓</div>
+                  <span class="dk-sheet-name">📌 Want to Go</span>
+                  <span class="dk-sheet-count">14</span>
+                </div>
+                <div class="dk-sheet-row">
+                  <div class="dk-sheet-check empty"></div>
+                  <span class="dk-sheet-name">🎬 From TikTok</span>
+                  <span class="dk-sheet-count">6</span>
+                </div>
+                <div class="dk-sheet-row">
+                  <div class="dk-sheet-check empty"></div>
+                  <span class="dk-sheet-name">💑 Date spots</span>
+                  <span class="dk-sheet-count">3</span>
+                </div>
+                <div class="dk-sheet-divider" style="margin-top:6px;"></div>
+                <div class="dk-sheet-new">
+                  <span style="font-size:16px;color:#f97316;">+</span>
+                  <span style="font-size:14px;color:#f97316;font-weight:500;">Create new list</span>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end ex-lists -->
+
+  <!-- 4. LIST DETAIL (enhanced) -->
+  <div class="tab-content" id="ex-listdetail">
+    <div style="text-align:center;margin-bottom:16px;padding:10px 20px;background:#1a1a2e;border-radius:10px;font-size:13px;color:#aaa;">
+      Extends Phase 1 list detail. Adds: gamified progress bar, Been There toggle, Save-to-list dropdown, Chopsticks community ratings. Personal lists are the same UI minus the progress bar.
+    </div>
+    <div class="phone-grid">
+
+      <!-- Phone 1: Curated list detail -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Curated List Detail</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:15px;font-weight:700;color:#fff;">🏆 Best Pho in Saigon</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <!-- Progress header -->
+              <div class="dk-progress-header">
+                <div class="dk-progress-label">Your progress</div>
+                <div class="dk-bar" style="margin-bottom:6px;"><div class="dk-bar-fill" style="width:25%;"></div></div>
+                <div style="font-size:12px;color:#6b7280;"><b style="color:#f97316;">3</b> of 12 restaurants visited</div>
+              </div>
+              <!-- Restaurant rows -->
+              <div class="dk-rest-row" style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="dk-rest-rank">#1</span>
+                <div style="flex:1;">
+                  <div class="dk-rest-row-name">Phở Thìn Bờ Hồ</div>
+                  <div class="dk-rest-row-meta">📍 District 1 · ⭐ 4.6 · 23 Chopstickers</div>
+                  <div class="dk-rest-row-actions">
+                    <button class="dk-btn-visited">✓ Been There</button>
+                    <button class="dk-btn-save">📌 Save ▾</button>
+                  </div>
+                </div>
+              </div>
+              <div class="dk-rest-row" style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="dk-rest-rank">#2</span>
+                <div style="flex:1;">
+                  <div class="dk-rest-row-name">Phở Lệ</div>
+                  <div class="dk-rest-row-meta">📍 District 3 · ⭐ 4.2 · 11 Chopstickers</div>
+                  <div class="dk-rest-row-actions">
+                    <button class="dk-btn-mark">Mark Visited</button>
+                    <button class="dk-btn-save">📌 Save ▾</button>
+                  </div>
+                </div>
+              </div>
+              <div class="dk-rest-row" style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="dk-rest-rank">#3</span>
+                <div style="flex:1;">
+                  <div class="dk-rest-row-name">Phở Hòa Pasteur</div>
+                  <div class="dk-rest-row-meta">📍 District 3 · ⭐ 4.5 · 17 Chopstickers</div>
+                  <div class="dk-rest-row-actions">
+                    <button class="dk-btn-mark">Mark Visited</button>
+                    <button class="dk-btn-save">📌 Save ▾</button>
+                  </div>
+                </div>
+              </div>
+              <div class="dk-rest-row" style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="dk-rest-rank" style="color:#6b7280;">#4</span>
+                <div style="flex:1;opacity:0.5;">
+                  <div class="dk-rest-row-name">Phở Biên</div>
+                  <div class="dk-rest-row-meta">📍 District 5</div>
+                  <div class="dk-rest-row-actions">
+                    <button class="dk-btn-mark">Mark Visited</button>
+                    <button class="dk-btn-save">📌 Save ▾</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Personal list detail (From TikTok) -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Personal List — "From TikTok"</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:15px;font-weight:700;color:#fff;">🎬 From TikTok</span>
+              <span style="font-size:18px;color:#6b7280;">•••</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">6 restaurants saved · Private</div>
+              <div class="dk-rest-row" style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:22px;">🍜</span>
+                <div style="flex:1;">
+                  <div class="dk-rest-row-name">Phở Thìn Bờ Hồ</div>
+                  <div class="dk-rest-row-meta">📍 D1 · ⭐ 4.6 on Chopsticks</div>
+                  <div class="dk-rest-row-actions">
+                    <button class="dk-btn-save">🍽️ Create request</button>
+                  </div>
+                </div>
+              </div>
+              <div class="dk-rest-row" style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:22px;">🥖</span>
+                <div style="flex:1;">
+                  <div class="dk-rest-row-name">Bánh Mì Huỳnh Hoa</div>
+                  <div class="dk-rest-row-meta">📍 D5 · ⭐ 4.8 on Chopsticks</div>
+                  <div class="dk-rest-row-actions">
+                    <button class="dk-btn-save">🍽️ Create request</button>
+                  </div>
+                </div>
+              </div>
+              <div class="dk-rest-row" style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:22px;">🍲</span>
+                <div style="flex:1;">
+                  <div class="dk-rest-row-name">Lẻ Quán</div>
+                  <div class="dk-rest-row-meta">📍 D7 · New on Chopsticks</div>
+                  <div class="dk-rest-row-actions">
+                    <button class="dk-btn-save">🍽️ Create request</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end ex-listdetail -->
+
+  <!-- 5. RESTAURANT PROFILE -->
+  <div class="tab-content" id="ex-restaurant">
+    <div style="text-align:center;margin-bottom:16px;padding:10px 20px;background:#1a1a2e;border-radius:10px;font-size:13px;color:#aaa;">
+      The hub every surface links to. Social proof is Chopsticks-native (not Google Maps). Active requests surface here. Saves go directly to personal lists. Create request is pre-filled.
+    </div>
+    <div class="phone-grid">
+
+      <!-- Phone 1: Full restaurant profile -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Restaurant Profile</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:16px;font-weight:700;color:#fff;">Phở Thìn Bờ Hồ</span>
+              <span style="font-size:16px;color:#6b7280;">↗</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <div class="dk-rest-hero">🍜</div>
+              <div class="dk-rest-name">Phở Thìn Bờ Hồ</div>
+              <div class="dk-rest-meta">📍 District 1 · 🍜 Vietnamese</div>
+              <div class="dk-rest-rating">⭐ 4.6 <span>(23 Chopstickers rated this)</span></div>
+              <div class="dk-action-row">
+                <div class="dk-action-btn"><div class="dk-action-icon">📌</div><div class="dk-action-label">Save ▾</div></div>
+                <div class="dk-action-btn"><div class="dk-action-icon">✓</div><div class="dk-action-label">Been Here</div></div>
+                <div class="dk-action-btn"><div class="dk-action-icon">↗</div><div class="dk-action-label">Share</div></div>
+              </div>
+              <button class="dk-cta">🍽️ Create Meal Request Here</button>
+              <div class="dk-section">On Chopsticks</div>
+              <div class="dk-stat-row">
+                <div class="dk-stat"><div class="dk-stat-num">31</div><div class="dk-stat-label">Meals here</div></div>
+                <div class="dk-stat"><div class="dk-stat-num">89</div><div class="dk-stat-label">Diners</div></div>
+                <div class="dk-stat"><div class="dk-stat-num">4.6</div><div class="dk-stat-label">Avg rating</div></div>
+              </div>
+              <div class="dk-quote">
+                <div class="dk-quote-text">"The broth is unreal, go before 8am"</div>
+                <div class="dk-quote-author">— Minh · last week</div>
+              </div>
+              <div class="dk-quote">
+                <div class="dk-quote-text">"Order the fried dough sticks with it"</div>
+                <div class="dk-quote-author">— Linh · 2 weeks ago</div>
+              </div>
+              <div class="dk-section">Active Requests Now</div>
+              <div class="dk-mini-req">
+                <span class="dk-mini-time">12pm</span>
+                <div style="flex:1;">
+                  <div class="dk-mini-name">Today · 2 spots left</div>
+                  <div class="dk-mini-meta">by Minh · Open join</div>
+                </div>
+                <button class="dk-mini-join">Join</button>
+              </div>
+              <div class="dk-on-lists">
+                <div class="dk-on-lists-title">Part of Lists</div>
+                <div class="dk-on-lists-item">🏆 Best Pho in Saigon &nbsp;(#1 of 12)</div>
+                <div class="dk-on-lists-item">📌 Your "Want to Go"</div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Restaurant profile with save sheet open -->
+      <div class="phone-wrapper">
+        <div class="phone-label">Save Sheet Open</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:16px;font-weight:700;color:#fff;">Phở Thìn Bờ Hồ</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="display:flex;flex-direction:column;padding:0;overflow:hidden;">
+              <div style="flex:1;padding:12px;opacity:0.2;">
+                <div class="dk-rest-name">Phở Thìn Bờ Hồ</div>
+                <div class="dk-rest-meta">📍 District 1 · 🍜 Vietnamese</div>
+                <div class="dk-rest-rating">⭐ 4.6</div>
+                <div style="height:36px;background:#171717;border-radius:10px;margin-top:10px;"></div>
+                <div style="height:36px;background:#171717;border-radius:10px;margin-top:8px;"></div>
+              </div>
+              <div style="background:rgba(0,0,0,0.5);height:6px;"></div>
+              <div class="dk-sheet">
+                <div class="dk-sheet-handle"></div>
+                <div class="dk-sheet-title">Save to list...</div>
+                <div class="dk-sheet-divider"></div>
+                <div class="dk-sheet-row">
+                  <div class="dk-sheet-check">✓</div>
+                  <span class="dk-sheet-name">📌 Want to Go</span>
+                  <span class="dk-sheet-count">14</span>
+                </div>
+                <div class="dk-sheet-row">
+                  <div class="dk-sheet-check empty"></div>
+                  <span class="dk-sheet-name">🎬 From TikTok</span>
+                  <span class="dk-sheet-count">6</span>
+                </div>
+                <div class="dk-sheet-row">
+                  <div class="dk-sheet-check empty"></div>
+                  <span class="dk-sheet-name">💑 Date spots</span>
+                  <span class="dk-sheet-count">3</span>
+                </div>
+                <div class="dk-sheet-row">
+                  <div class="dk-sheet-check empty"></div>
+                  <span class="dk-sheet-name">🍺 Late Night</span>
+                  <span class="dk-sheet-count">2</span>
+                </div>
+                <div class="dk-sheet-divider" style="margin-top:6px;"></div>
+                <div class="dk-sheet-new">
+                  <span style="font-size:16px;color:#f97316;">+</span>
+                  <span style="font-size:14px;color:#f97316;font-weight:500;">Create new list</span>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end ex-restaurant -->
+
+  <!-- 6. CREATE REQUEST (pre-filled vs blank) -->
+  <div class="tab-content" id="ex-create">
+    <div style="text-align:center;margin-bottom:16px;padding:10px 20px;background:#1a1a2e;border-radius:10px;font-size:13px;color:#aaa;">
+      Starting from a restaurant profile pre-fills restaurant, cuisine, and district — skipping the hardest part of the current flow. FAB entry (blank) still works unchanged.
+    </div>
+    <div class="phone-grid">
+
+      <!-- Phone 1: Pre-filled from restaurant profile -->
+      <div class="phone-wrapper">
+        <div class="phone-label">From Restaurant Profile — Pre-filled ✓</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:16px;font-weight:600;color:#fff;">Create Meal Request</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <div class="dk-field">
+                <div class="dk-field-label">Restaurant</div>
+                <div class="dk-field-locked">
+                  <span style="font-size:22px;">🍜</span>
+                  <span class="dk-field-locked-text">Phở Thìn Bờ Hồ</span>
+                  <span style="font-size:12px;color:#f97316;">🔒</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <div class="dk-field" style="flex:1;">
+                  <div class="dk-field-label">Cuisine</div>
+                  <div class="dk-field-auto">
+                    <span class="dk-field-auto-text">Vietnamese</span>
+                    <span class="dk-auto-chip">auto</span>
+                  </div>
+                </div>
+                <div class="dk-field" style="flex:1;">
+                  <div class="dk-field-label">District</div>
+                  <div class="dk-field-auto">
+                    <span class="dk-field-auto-text">District 1</span>
+                    <span class="dk-auto-chip">auto</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">When?</div>
+                <div class="dk-field-open">Pick a time...</div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">Group Size</div>
+                <div style="display:flex;align-items:center;gap:12px;background:#171717;border-radius:10px;padding:10px 12px;border:1px solid #262626;">
+                  <span style="color:#9ca3af;font-size:20px;">−</span>
+                  <span style="flex:1;text-align:center;font-size:16px;color:#fff;font-weight:600;">4 people</span>
+                  <span style="color:#f97316;font-size:20px;">+</span>
+                </div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">Budget</div>
+                <div class="dk-field-open">Select budget per person...</div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">Join Type</div>
+                <div style="display:flex;gap:8px;">
+                  <div style="flex:1;padding:10px;background:#f97316;border-radius:10px;text-align:center;font-size:13px;color:#fff;font-weight:600;">Open</div>
+                  <div style="flex:1;padding:10px;background:#171717;border-radius:10px;text-align:center;font-size:13px;color:#6b7280;border:1px solid #262626;">Approval</div>
+                </div>
+              </div>
+              <button class="dk-cta" style="margin-top:4px;">Post Request</button>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item"><div class="nav-icon">🗺️</div><div class="nav-label">Browse</div></div>
+              <div class="nav-item active"><div class="nav-icon">🔭</div><div class="nav-label" style="color:#f97316;">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: FAB entry (blank, unchanged) -->
+      <div class="phone-wrapper">
+        <div class="phone-label">From FAB — Blank (unchanged)</div>
+        <div class="phone">
+          <div class="screen screen-dark">
+            <div class="status-bar status-bar-dark"><span>9:41</span><span>●●● 🔋</span></div>
+            <div class="screen-header screen-header-dark">
+              <span style="color:#9ca3af;font-size:18px;">←</span>
+              <span style="flex:1;font-size:16px;font-weight:600;color:#fff;">Create Meal Request</span>
+            </div>
+            <div class="screen-body screen-body-dark" style="padding:12px;">
+              <div class="dk-field">
+                <div class="dk-field-label">Restaurant</div>
+                <div class="dk-field-open">Search or type restaurant name...</div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <div class="dk-field" style="flex:1;">
+                  <div class="dk-field-label">Cuisine</div>
+                  <div class="dk-field-open" style="font-size:13px;">Select...</div>
+                </div>
+                <div class="dk-field" style="flex:1;">
+                  <div class="dk-field-label">District</div>
+                  <div class="dk-field-open" style="font-size:13px;">Select...</div>
+                </div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">When?</div>
+                <div class="dk-field-open">Pick a time...</div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">Group Size</div>
+                <div style="display:flex;align-items:center;gap:12px;background:#171717;border-radius:10px;padding:10px 12px;border:1px solid #262626;">
+                  <span style="color:#9ca3af;font-size:20px;">−</span>
+                  <span style="flex:1;text-align:center;font-size:16px;color:#fff;font-weight:600;">4 people</span>
+                  <span style="color:#f97316;font-size:20px;">+</span>
+                </div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">Budget</div>
+                <div class="dk-field-open">Select budget per person...</div>
+              </div>
+              <div class="dk-field">
+                <div class="dk-field-label">Join Type</div>
+                <div style="display:flex;gap:8px;">
+                  <div style="flex:1;padding:10px;background:#f97316;border-radius:10px;text-align:center;font-size:13px;color:#fff;font-weight:600;">Open</div>
+                  <div style="flex:1;padding:10px;background:#171717;border-radius:10px;text-align:center;font-size:13px;color:#6b7280;border:1px solid #262626;">Approval</div>
+                </div>
+              </div>
+              <button class="dk-cta" style="margin-top:4px;">Post Request</button>
+            </div>
+            <div class="bottom-nav bottom-nav-dark">
+              <div class="nav-item active"><div class="nav-icon">🗺️</div><div class="nav-label" style="color:#f97316;">Browse</div></div>
+              <div class="nav-item"><div class="nav-icon">🔭</div><div class="nav-label">Explore</div></div>
+              <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+              <div class="nav-item"><div class="nav-icon">🔔</div><div class="nav-label">Notifs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end ex-create -->
 
 </div><!-- end container -->
 
